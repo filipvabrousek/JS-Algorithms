@@ -27,3 +27,38 @@ console.log(r);
 
 
 ```
+
+```js
+
+function fib(n){
+   if(n <= 1){
+       return n;
+   } else {
+       return fib(n-1) + fib(n-2);
+   }
+    
+}
+
+let f = fib(12);
+// 144
+```
+```js
+
+
+function reverse(str){
+    return str.split(' ').reverse().join(' ').split('').reverse().join('');
+}
+
+let e = reverse("I love you !");
+// I evol uoy !
+```
+
+```js
+function isPalindrome(str){
+    str = str.toLowerCase();
+    return str == str.split('').reverse().join('');
+}
+
+let s = isPalindrome("lol");
+// true
+```
