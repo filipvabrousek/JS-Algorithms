@@ -3,7 +3,6 @@ const random = () => (Math.random() * 2) - 1;
 const sigmoid = value => 1 / (1 + Math.exp((-1 * value) / 1));
 
 
-
 class Brain {
   constructor(settings) {
     this.layers = [];
