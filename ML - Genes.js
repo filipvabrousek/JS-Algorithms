@@ -1,27 +1,24 @@
-let genome_mother = [ 1, 1, 0, 0, 1, 0 ];
-let genome_father = [ 0, 0, 1, 1, 0, 1 ];
+let genMother = [1, 1, 0, 0, 1, 0];
+let genFather = [0, 0, 1, 1, 0, 1];
+
+// crossover algorithms (lengths must be the same)
+let dnaSplit = (Math.random() * genMother.length) | 0;
+let genDaughter = new Array(genMother.length);
+let genSon = new Array(genMother.length);
 
 
-// crossover algorithm
-// XXX: assumes that both genomes have same length
+for (let d = 0; d < genMother.length; d++) {
 
-let dna_split       = (Math.random() * genome_mother.length) | 0;
-let genome_daughter = new Array(genome_mother.length);
-let genome_son      = new Array(genome_mother.length);
-
-for (let d = 0; d < genome_mother.length; d++) {
-
-	if (d > dna_split) {
-		genome_son[d]      = genome_mother[d];
-		genome_daughter[d] = genome_father[d];
-	} else {
-		genome_son[d]      = genome_father[d];
-		genome_daughter[d] = genome_mother[d];
-	}
-
+  if (d > dnaSplit) {
+    genSon[d] = genMother[d];
+    genDaughter[d] = genFather[d];
+  } else {
+    genSon[d] = genFather[d];
+    genDaughter[d] = genMother[d];
+  }
 }
 
-console.log(genome_daughter);
-console.log(genome_son);
+console.log(genDaughter); // [1, 1, 0, 1, 0, 1]
+console.log(genSon); // [0, 0, 1, 0, 1, 0]
 
-// https://chatbotslife.com/machine-learning-for-dummies-part-1-dbaca076ec07
+// vnoucata02
