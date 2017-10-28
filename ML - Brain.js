@@ -1,6 +1,6 @@
-const _random = () => (Math.random() * 2) - 1;
+const random = () => (Math.random() * 2) - 1;
 
-const _sigmoid = value => 1 / (1 + Math.exp((-1 * value) / 1));
+const sigmoid = value => 1 / (1 + Math.exp((-1 * value) / 1));
 
 
 
@@ -50,8 +50,8 @@ class Brain {
 
       // Each Neuron has value and weights
       return new Array(size).fill(0).map(_ => ({
-        value: _random(),
-        weights: new Array(prev).fill(0).map(val => _random())
+        value: random(),
+        weights: new Array(prev).fill(0).map(val => random())
       }));
 
     });
@@ -76,7 +76,7 @@ class Brain {
         let values = prev_layer.map((prev, p) => prev.value * neuron.weights[p]);
         let sum = values.reduce((a, b) => a + b, 0);
 
-        neuron.value = _sigmoid(sum);
+        neuron.value = sigmoid(sum);
 
       });
 
