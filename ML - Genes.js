@@ -23,3 +23,5 @@ for (let d = 0; d < genome_mother.length; d++) {
 
 console.log(genome_daughter);
 console.log(genome_son);
+
+// https://chatbotslife.com/machine-learning-for-dummies-part-1-dbaca076ec07
