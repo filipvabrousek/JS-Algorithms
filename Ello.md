@@ -1,3 +1,29 @@
+# Ello.js
+Ello.js is simple, modern React-like virtual DOM manipulating experimental library written in ES6. ​
+
+## Step 1: Define element
+
+```javascript
+const el = Ello.render('h2', {}, "Hello world!");
+```
+
+## Step 2: Connect DOM
+
+```javascript
+Ello.update(document.body, el);
+```
+
+
+## Using JSX:
+```javascript
+const el = (
+  <button className="item" onClick={() => alert("hi!")}>Say hi!</button>
+);
+```
+
+
+
+
 ```js
 const Ello = (() => {
 
@@ -129,9 +155,9 @@ Ello.update(document.body, b);
 //const a = <h2>Hello!</h2>
 ```
 
-# API
 
-# Ello.js
+-------------------------------------------------------------------------------------------
+# API
 ## Hello world!
 This example will simply render heading with text "Hello world" into body.
 ```js
