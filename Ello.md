@@ -1,3 +1,4 @@
+```js
 const Ello = (() => {
 
   const h = (type, props, ...chn) => {
@@ -126,3 +127,77 @@ Ello.update(document.body, b);
 
 /** @jsx Ello.h */
 //const a = <h2>Hello!</h2>
+```
+
+# API
+
+# Ello.js
+## Hello world!
+This example will simply render heading with text "Hello world" into body.
+```js
+const el = Ello.h("h2", {}, "Hello world!");
+Ello.update(document.body, el);
+```
+
+
+## Classes
+```js
+const el = Ello.render('h2', {className: "class-name-here" },"Hello! I have a class");
+```
+
+
+## JSX
+```js
+const el3 = (
+  <button className="item">Say hi!</button>
+);
+```
+
+```js
+const el2 = (
+  <button onClick={() => alert("hi!")}>Say hi!</button>
+);
+```
+## Updating elements
+```javascript
+
+const a = (
+  <ul>
+    <li>item 1</li>
+    <li>item 2</li>
+  </ul>
+);
+
+const b = (
+  <ul>
+    <li>item 1</li>
+    <li>hello!</li>
+  </ul>
+);
+
+
+const root = document.querySelector('#root');
+const reload = document.querySelector('button');
+
+Ello.update(root, a);
+
+reload.addEventListener('click', () => {
+  Ello.update(root, b, a);
+});
+```
+
+
+
+Note - You need to use:
+```javascript
+/** @jsx Ello.h */ 
+```
+to use JSX Components
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
+
+
+
