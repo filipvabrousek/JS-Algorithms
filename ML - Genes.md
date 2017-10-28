@@ -127,6 +127,7 @@ class Population {
 const population = new Population("Hello", 10);
 population.generation();
 
+// http://burakkanber.com/blog/machine-learning-genetic-algorithms-part-1-javascript/
 ```
 
 
