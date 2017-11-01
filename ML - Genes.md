@@ -18,19 +18,26 @@ class Gene {
     }
 
     
-    /*---------------------------------------MUTATE----------------------------------------
-   1 - finds center point
-   2 - creates a new String
+    /*---------------------------------------MUTATE---------------------------------------
+   1 - if Math.random() is bigger than passed chance, do nothing
+   
+   2 - creates a new  character from a random char. code 
+   - finds center point upOrDown is either -1 or 1 
+   - and a random index (0 or 1)
+   
+   3 - loop through characters of the "code" string and if the letter from the index in the for loop in the "code" string is equal to random index (0 or 1) add character to the "newString", else skip it
     */
+    
     mutate(chance) {
+        // 1
         if (Math.random() > chance) {return};
 
-        // 1
+        // 2
         const index = Math.floor(Math.random() * this.code.length);
         const upOrDown = Math.random() <= 0.5 ? -1 : 1;
         const newChar = String.fromCharCode(this.code.charCodeAt(index) + upOrDown);
         
-        // 2
+        // 3
         let newString = '';
         for (let i = 0; i < this.code.length; i++) {
             if (i == index) newString += newChar;
@@ -38,23 +45,25 @@ class Gene {
         }
 
         this.code = newString;
+        console.log(`${newString} + ${index} `);
     }
 
     
-    /*---------------------------------------MATE----------------------------------------
-    takes model String as an argument, finds differences in ASCII codes and squares them
+    /*--------------------------------------MATE-------------------------------------
+  splits the string in half and returns the 2 mated Strings
     */
     mate(gene) {
-        const pivot = Math.round(this.code.length / 2) - 1;
+        const half = Math.round(this.code.length / 2) - 1;
 
-        const child1 = this.code.substr(0, pivot) + gene.code.substr(pivot);
-        const child2 = gene.code.substr(0, pivot) + this.code.substr(pivot);
+        const child1 = this.code.substr(0, half) + gene.code.substr(half);
+        const child2 = gene.code.substr(0, half) + this.code.substr(half);
 
         return [new Gene(child1), new Gene(child2)];
     }
 
-    /*--------------------------------------CALC COST--------------------------------------
-    compareTo is the passed String
+ 
+     /*---------------------------------------CALC COST----------------------------------------
+    takes "compareTo" String as an argument, finds differences in ASCII codes and squares them
     */
     calcCost(compareTo) {
         let total = 0;
@@ -67,14 +76,17 @@ class Gene {
 
 Gene.prototype.code = '';
 
+
 ```
 
 
 ## Population class
 ```js
+
 /*----------------------------------------------------------------------------------
 1 -add random letters to the gene and push it to memebers
 */
+
 class Population {
     
     constructor(goal, size) {
@@ -109,7 +121,7 @@ class Population {
 
     
     /*--------------------------------------GENERATION--------------------------------------
-    1 - calculate cost of the string and display, create chn by mating and splice them
+    1 - calculate cost of the string and display, create chn by mating the using "mate()" and splice them
     2 - looping through memebers 50% mutation rate using the mutate method
     3 - we have the result !!!!
     4 - increase generationNumber and call "generation()" every 20 ms
@@ -148,10 +160,10 @@ class Population {
 }
 
 
-const population = new Population("Hello", 10); // 373
+const population = new Population("Hello", 3); // 373
 population.generation();
 
-// http://burakkanber.com/blog/machine-learning-genetic-algorithms-part-1-javascript/
+// http://burakkanber.com/blog/
 ```
 
 
