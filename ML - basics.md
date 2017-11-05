@@ -2,6 +2,7 @@
 
 ```js
 class Candidates {
+    
 	constructor(code) {
 		if (code) this.code = code;
 		this.cost = 9999;
@@ -13,6 +14,7 @@ class Candidates {
 			this.code += String.fromCharCode(Math.floor(Math.random() * 255));
 		}
 	}
+    
     
     
     
@@ -28,6 +30,8 @@ class Candidates {
 	}
     
     
+    
+    
 	/*--------------------------------------COMBINE-------------------------------------
   splits the string in half and returns the 2 mated Strings
     */
@@ -39,6 +43,7 @@ class Candidates {
 	}
     
     
+    
 	/*---------------------------------------MUTATE---------------------------------------
    1 - if Math.random() is bigger than passed chance, do nothing
    
@@ -48,19 +53,12 @@ class Candidates {
    
    3 - loop through characters of the "code" string and if the letter from the index in the for loop in the "code" string is equal to random index (0 or 1) add character to the "newString", else skip it
     */
-    
 	mutate(chance) {
-        
-        // 1
-		if (Math.random() > chance) { return};
-        
-        // 2
+		if (Math.random() > chance) return;
 		const index = Math.floor(Math.random() * this.code.length);
 		const upOrDown = Math.random() <= 0.5 ? -1 : 1;
 		const newChar = String.fromCharCode(this.code.charCodeAt(index) + upOrDown);
 		let newString = '';
-        
-        // 3
 		for (let i = 0; i < this.code.length; i++) {
 			if (i == index) newString += newChar;
 			else newString += this.code[i];
@@ -72,12 +70,13 @@ class Candidates {
 
 Candidates.prototype.code = '';
 
-
 ```
+
 
 
 ## Group
 ```js
+
 class Group {
 	constructor(goal, size) {
 		this.members = [];
@@ -89,7 +88,6 @@ class Group {
 			this.members.push(gene);
 		}
 	}
-    
     
     
 	display() {
@@ -131,8 +129,7 @@ class Group {
 		for (var i = 0; i < this.members.length; i++) {
 			this.members[i].mutate(0.5);
 			this.members[i].calcCost(this.goal);
-			
-            // 3
+			// 3
 			if (this.members[i].code == this.goal) {
 				this.sort();
 				this.display();
@@ -156,5 +153,4 @@ population.stage();
 
 // <body></body>
 // https://medium.com/@ddcreationstudi/easy-javascript-machine-learning-algorithm-a056f9acc9b6
-
 ```
