@@ -1,4 +1,4 @@
-# Basics
+# Candidates class
 
 ```js
 class Candidates {
@@ -48,12 +48,19 @@ class Candidates {
    
    3 - loop through characters of the "code" string and if the letter from the index in the for loop in the "code" string is equal to random index (0 or 1) add character to the "newString", else skip it
     */
+    
 	mutate(chance) {
-		if (Math.random() > chance) return;
+        
+        // 1
+		if (Math.random() > chance) { return};
+        
+        // 2
 		const index = Math.floor(Math.random() * this.code.length);
 		const upOrDown = Math.random() <= 0.5 ? -1 : 1;
 		const newChar = String.fromCharCode(this.code.charCodeAt(index) + upOrDown);
 		let newString = '';
+        
+        // 3
 		for (let i = 0; i < this.code.length; i++) {
 			if (i == index) newString += newChar;
 			else newString += this.code[i];
@@ -62,14 +69,15 @@ class Candidates {
 		console.log(`${newString} + ${index} `);
 	}
 }
+
 Candidates.prototype.code = '';
+
+
 ```
 
 
 ## Group
 ```js
-
-/*------------------------------------------------------------------------------------------------------------------*/
 class Group {
 	constructor(goal, size) {
 		this.members = [];
@@ -100,14 +108,17 @@ class Group {
 		this.members.sort((a, b) => a.cost - b.cost);
 	}
     
+    
 	/*--------------------------------------STAGE--------------------------------------
 	1 - calculate cost of the string and display, create chn by mating the using "mate()" and splice them
 	2 - looping through memebers 50% mutation rate using the mutate method
 	3 - we have the result !!!!
 	4 - increase generationNumber and call "generation()" every 20 ms
 	*/
+    
 	stage() {
-		// 1
+		
+        // 1
 		for (let i = 0; i < this.members.length; i++) {
 			this.members[i].calcCost(this.goal);
 		}
@@ -115,18 +126,21 @@ class Group {
 		this.display();
 		const children = this.members[0].combine(this.members[1]);
 		this.members.splice(this.members.length - 2, 2, children[0], children[1]);
-		// 2
+		
+        // 2
 		for (var i = 0; i < this.members.length; i++) {
 			this.members[i].mutate(0.5);
 			this.members[i].calcCost(this.goal);
-			// 3
+			
+            // 3
 			if (this.members[i].code == this.goal) {
 				this.sort();
 				this.display();
 				return true;
 			}
 		}
-		// 4
+		
+        // 4
 		this.stageNumber++;
 		const scope = this;
 		setTimeout(() => {
@@ -138,6 +152,7 @@ class Group {
 
 const population = new Group('Hello', 25);
 population.stage();
+
 
 // <body></body>
 // https://medium.com/@ddcreationstudi/easy-javascript-machine-learning-algorithm-a056f9acc9b6
