@@ -1,4 +1,41 @@
 ```js
+
+const num = [2, 8, 3, 9];
+
+function sort(a) {
+	let swapped;
+	
+	
+	do {
+		swapped = false;
+		
+		for (let i = 0; i < a.length - 1; i++) {
+			if (a[1] > a[i + 1]) {
+				const temp = a[i];
+				a[i] = a[i + 1];
+				a[i + 1] = temp;
+				swapped = true;
+			}
+		}
+		
+	} while (swapped)
+}
+
+
+sort(num);
+console.log(num);  // [2, 3, 8, 9]
+
+```
+
+
+
+
+
+
+
+
+
+```js
 function mix(arr){
     let res = [];
     
