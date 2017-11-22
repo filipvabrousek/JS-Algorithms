@@ -1,7 +1,6 @@
 # Candidates class
 
 ```js
-
 class Candidates {
     
 	constructor(code) {
@@ -9,7 +8,7 @@ class Candidates {
 		this.cost = 9999;
 	}
     
-    // fmethod for building a random string
+    // method for building a random string
 	random(length) {
 		while (length--) {
 			this.code += String.fromCharCode(Math.floor(Math.random() * 255));
@@ -34,6 +33,8 @@ class Candidates {
   if string is "Hello" pivot is 3 - 1 = 2
   child1 is this.code.substr(0, 2) + cand.code.substr(2)
   child2 is cand.code.substr(0, 2) + cand.code.substr(2)
+  
+  substr(start, length)
     */
 	combine(cand) {
 		const pivot = Math.round(this.code.length / 2) - 1;
@@ -79,14 +80,13 @@ class Candidates {
 
 Candidates.prototype.code = '';
 
-
-
 ```
 
 
 
 ## Group
 ```js
+
 /*--------------------------------------------------------------
 1 - "Hello", 25 is the size of the group
 2 - fills the whole group with random candidates
@@ -122,6 +122,7 @@ class Group {
     sort(){
         this.members.sort((a, b) => a.cost - b.cost);
     };
+    
     
     
     /*--------------------------------------STAGE--------------------------------------
