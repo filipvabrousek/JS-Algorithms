@@ -28,7 +28,7 @@ class Candidates {
 	}
     
     
-	/*--------------------------------------COMBINE-------------------------------------
+	/*--------------------------------------COMBINE -------------------------------------
   splits the string in half and returns the 2 mated Strings
   if string is "Hello" pivot is 3 - 1 = 2
   child1 is this.code.substr(0, 2) + cand.code.substr(2)
@@ -80,13 +80,13 @@ class Candidates {
 
 Candidates.prototype.code = '';
 
+
 ```
 
 
 
 ## Group
 ```js
-
 /*--------------------------------------------------------------
 1 - "Hello", 25 is the size of the group
 2 - fills the whole group with random candidates
@@ -126,13 +126,15 @@ class Group {
     
     
     /*--------------------------------------STAGE--------------------------------------
-	1 - calculate cost of the string and display, create chn by mating the using "mate()" and splice them
+	1 - calculate cost of the string and display, create chn by mating the using "mate()" and 
+    1.1 - use the combine method to splice them
     splice(from, to)
     
 	2 - looping through memebers and mutate each 50% mutation rate using the mutate method
 	3 - we have the result !!!!
 	4 - increase stage and call "generation()" every 20 ms
 	*/
+    
     stage(){
         
         //  1
@@ -141,6 +143,7 @@ class Group {
         }
         this.sort();
         this.display();
+        // 1.1
         const chn = this.members[0].combine(this.members[1]);
         this.members.splice(this.members.length - 2, 2, chn[0], chn[1]);
         
