@@ -1,21 +1,14 @@
-/*
-
-K - means clustering
-
-you have to initalize 3 points: cluster centroids 
-because we want to group data int 3 clusters
-
+# K means clustering
+* you have to initalize 3 points: cluster centroids 
+* because we want to group data int 3 clusters
 1) cluster assignment - algorithm goes through each of the data points and depending on which cluster is closer (k)
-
 2) move centroid - moving centroid to the average data point in cluster
 
-(repeated, until there's no change in the cluster)
+* (repeated, until there's no change in the cluster)
+* https://burakkanber.com/blog/machine-learning-k-means-clustering-in-javascript-part-1/
 
 
-https://burakkanber.com/blog/machine-learning-k-means-clustering-in-javascript-part-1/
-
-*/ 
-
+```js
 let canvas;
 let ctx;
 const height = 400;
@@ -351,3 +344,4 @@ setup();
         }
 </style>
     */
+```
