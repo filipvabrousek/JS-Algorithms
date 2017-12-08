@@ -1,19 +1,27 @@
 # K means clustering
-* you have to initalize 3 points: cluster centroids 
-* because we want to group data int 3 clusters
-1) cluster assignment - algorithm goes through each of the data points and depending on which cluster is closer (k)
-2) move centroid - moving centroid to the average data point in cluster
 
-* (repeated, until there's no change in the cluster)
+1) plot data points (from the array)
+2) create "k" additional points, place them randomly on canvas 
+(cluester centroids, candidates for the center of the cluster)
+3) Repeat:
+* a) assign each data point to the centroid near to it  
+* b) move the centroid to the average position of all the data that belong to it  
+* c) if any centroids moved, repeat, else exit  
+
+    
 * https://burakkanber.com/blog/machine-learning-k-means-clustering-in-javascript-part-1/
 
 
 ```js
+
+
+    
 let canvas; 
 let ctx;
 const height = 400;
 const width = 400;
-    const data = [
+
+const data = [
     [1, 2],
     [2, 1],
     [2, 4], 
@@ -69,7 +77,7 @@ function setup() {
 
 
 /*------------------------------------------------------GET DATA RANGES------------------------------------------------------
-just helper method, get ranges of each dimension
+get ranges of each dimension from "data" array with the points
 X ranges from 1 to 11
 Y ranges from 3 to 7
 */
@@ -86,7 +94,8 @@ function getDataRanges(extremes) {
 
 
 /*------------------------------------------------------GET DATA EXTREMES------------------------------------------------------
-loop through all the points, and each dimension in the point 
+loop through all the points, and each dimension in each point 
+
 1) loop through "data" array defined above and get point
 2) loop through points and get extreme data points (min and max)
 
@@ -104,18 +113,15 @@ function getDataExtremes(points) {
         // 2
         for (const dimension in point)
         {
-            if ( ! extremes[dimension] )
-            {
+            if ( ! extremes[dimension] ){
                 extremes[dimension] = {min: 1000, max: 0};
             }
 
-            if (point[dimension] < extremes[dimension].min)
-            {
+            if (point[dimension] < extremes[dimension].min){
                 extremes[dimension].min = point[dimension];
             }
 
-            if (point[dimension] > extremes[dimension].max)
-            {
+            if (point[dimension] > extremes[dimension].max){
                 extremes[dimension].max = point[dimension];
             }
         }
@@ -133,18 +139,10 @@ function getDataExtremes(points) {
 
 /*------------------------------------------------------INIT MEANS------------------------------------------------------
 Initalize K random clusters
-1) moving centroids to the position closest to it
-then move centroid to the average position of all data points assigned to it
-repeat until centtroids stop moving
-decrease k and fill in MEAN array with dimensions (we get it from dataExtremes array)
+creating new points with random coordinates within the ranges and dimensions of our data set
+1) decrease k and fill in MEAN array with dimensions (we get it from dataExtremes array)
 */
 function initMeans(k = 3) {
-
-    /*/
-    if (!k){
-        k = 3;
-    }
-    */
 
     // 1
     while (k--) {
@@ -163,12 +161,16 @@ function initMeans(k = 3) {
 
 
 
+    
 
 
 
 
 /*------------------------------------------------------MAKE ASSIGNMENTS------------------------------------------------------
 called by "loop" function and calculate Euclidean distance between each point and cluster center
+assigning all our data points to the centroid closest to it
+moving the centroids to the average position of all the data points assigned to it
+repeat that until the centroids stop moving
 */
 function makeAssignments() {
 
@@ -303,9 +305,9 @@ function draw() {
     ctx.clearRect(0,0,width, height);
     ctx.globalAlpha = 0.3;
    
-    
-    for (const point_index in assignments)
-    {
+    //----------------------------------
+    for (const point_index in assignments){
+        
         const mean_index = assignments[point_index];
         var point = data[point_index];
         const mean = means[mean_index];
@@ -324,13 +326,14 @@ function draw() {
         );
         ctx.stroke();
         ctx.closePath();
-    
         ctx.restore();
     }
+    
     ctx.globalAlpha = 1;
 
-    for (var i in data)
-    {
+   
+     //----------------------------------
+    for (var i in data) {
         ctx.save();
 
         var point = data[i];
@@ -344,12 +347,12 @@ function draw() {
         ctx.arc(0, 0, 5, 0, Math.PI*2, true);
         ctx.stroke();
         ctx.closePath();
-
         ctx.restore();
     }
 
-    for (var i in means)
-    {
+    
+    //----------------------------------
+    for (var i in means) {
         ctx.save();
 
         var point = means[i];
@@ -363,14 +366,15 @@ function draw() {
         ctx.arc(0, 0, 5, 0, Math.PI*2, true);
         ctx.fill();
         ctx.closePath();
-
         ctx.restore();
-
     }
 
 }
 
 setup();
+
+
+
 
     /*
     <canvas id="canvas" height="400" width="400"></canvas>
