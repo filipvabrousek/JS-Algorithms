@@ -16,6 +16,8 @@
 
 
     
+
+    
 let canvas; 
 let ctx;
 const height = 400;
@@ -49,17 +51,14 @@ let means = [];
 const assignments = [];
 let dataExtremes;
 let dataRange;
-const drawDelay = 2000;
 
 
 
 
 
-
-
-
-
-/*------------------------------------------------------SETUP------------------------------------------------------*/
+/*------------------------------------------------------SETUP------------------------------------------------------
+called at the bottom
+*/
 function setup() {
     canvas = document.querySelector('canvas');
     ctx = canvas.getContext('2d');
@@ -68,10 +67,10 @@ function setup() {
     dataRange = getDataRanges(dataExtremes);
     means = initMeans(3);
 
-    makeAssignments();
+    assignPoints();
     draw();
 
-    setTimeout(run, drawDelay);
+    setTimeout(run, 2000);
 }
 
 
@@ -166,13 +165,13 @@ function initMeans(k = 3) {
 
 
 
-/*------------------------------------------------------MAKE ASSIGNMENTS------------------------------------------------------
+/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
 called by "loop" function and calculate Euclidean distance between each point and cluster center
 assigning all our data points to the centroid closest to it
 moving the centroids to the average position of all the data points assigned to it
 repeat that until the centroids stop moving
 */
-function makeAssignments() {
+function assignPoints() {
 
     for (const i in data)
     {
@@ -195,7 +194,12 @@ function makeAssignments() {
         }
 
         assignments[i] = distances.indexOf( Math.min.apply(null, distances) );
+        
+          console.log(assignments[i]);
+        console.log("---------------------------")
     }
+    
+  
 
 }
 
@@ -210,7 +214,7 @@ moving centroids to the position closest to it
 */
 function moveMeans() {
 
-    makeAssignments();
+    assignPoints();
 
     const sums = Array( means.length );
     const counts = Array( means.length );
@@ -285,7 +289,7 @@ function run() {
 
     if (moved)
     {
-        setTimeout(run, drawDelay);
+        setTimeout(run, 2000);
     }
 
 }
@@ -368,11 +372,9 @@ function draw() {
         ctx.closePath();
         ctx.restore();
     }
-
 }
 
 setup();
-
 
 
 
