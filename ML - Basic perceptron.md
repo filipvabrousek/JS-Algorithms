@@ -1,3 +1,6 @@
+
+# Perceptron
+
 * the perceptron is an algorithm for supervised learning of binary classifiers 
 
 ```js
