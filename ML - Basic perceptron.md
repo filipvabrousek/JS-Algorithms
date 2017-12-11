@@ -1,3 +1,4 @@
+```js
 class Perceptron {
     constructor(weights, bias) {
         this.weights = weights;
@@ -27,3 +28,5 @@ a.run([1, 0]); // 1
 a.run([1, 1]); // 0
 
 // https://gist.github.com/jonathanmarvens/dcf1975b34ef0d596a93
+```
+
