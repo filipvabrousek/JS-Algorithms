@@ -228,7 +228,7 @@ neuralNetwork.setWeights(newWeights);
     
     
     
-    
-    
+   
 // https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
 ```
+![https://github.com/DivineOmega/simple-neural-network-js]
