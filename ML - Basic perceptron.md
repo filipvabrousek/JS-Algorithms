@@ -1,3 +1,5 @@
+* the perceptron is an algorithm for supervised learning of binary classifiers 
+
 ```js
 class Perceptron {
     constructor(weights, bias) {
