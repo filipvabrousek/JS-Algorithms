@@ -1,6 +1,17 @@
 ## Simple Neural network
 
 ```js
+
+/*
+-------------------------------------------------NEURAL NETWORK-----------------------------------------------------
+its constructor contains
+numInputs
+numOutputs
+numHiddenLayers
+numNeuronsPerHiddenLayer
+
+
+*/
 class NeuralNetwork {
 	constructor(numInputs, numOutputs, numHiddenLayers, numNeuronsPerHiddenLayer) {
 
@@ -9,22 +20,31 @@ class NeuralNetwork {
 		this.numHiddenLayers = numHiddenLayers;
 		this.numNeuronsPerHiddenLayer = numNeuronsPerHiddenLayer;
 
+    
 		this.bias = -1.0;
 		this.activationResponse = 1.0;
 		this.neuronLayers = [];
 
+        
 		this.createNetwork();
 	}
 
 	
 	
 	
-	
+/*-------------------------------------------- 1 --------------------------------------------------
+1 - create network
+(if we have any layrs)
+1.1 - create the layers of the network
+1.2 - create first hidden layer
+1.3 - create output layers
+*/
 	createNetwork() {
 
-		//create the layers of the network
-		if (this.numHiddenLayers > 0) {
-			//create first hidden layer
+		//1.1
+        if (this.numHiddenLayers > 0) {
+			
+            //1.2
 			var firstHiddenLayer = new NeuronLayer(this.numNeuronsPerHiddenLayer, this.numInputs);
 			this.neuronLayers.push(firstHiddenLayer);
 
@@ -33,11 +53,11 @@ class NeuralNetwork {
 				this.neuronLayers.push(newHiddenLayer);
 			}
 
-			//create output layer
+			//1.3
 			var outputLayer = new NeuronLayer(this.numOutputs, this.numNeuronsPerHiddenLayer);
 			this.neuronLayers.push(outputLayer);
 		} else {
-			//create output layer
+			//1.3
 			var outputLayer = new NeuronLayer(this.numOutputs, this.numInputs);
 			this.neuronLayers.push(outputLayer);
 		}
@@ -47,18 +67,27 @@ class NeuralNetwork {
 	
 	
 	
+/*-------------------------------------------- 2 -------------------------------------------------- 
+UPDATE INPUTS
+2.1 - If the number of inputs supplied is incorrect...
+2.2 - loop through all the layesr
+2.3 - 
+For each neuron sum the (inputs * corresponding weights).
+Throw the total at our sigmoid function to get the output.
+
+*/
 	update(inputs) {
 
 		var outputs = [];
 
 		var cWeight = 0;
 
-		// If the number of inputs supplied is incorrect...
+		// 2.1
 		if (inputs.length != this.numInputs) {
 			return outputs; // Return empty outputs
 		}
 
-		// Loop through all layers
+		// 2.2
 		var inputLayer = true;
 		for (var i = 0; i < this.numHiddenLayers + 1; ++i) {
 			var neuronLayer = this.neuronLayers[i];
@@ -74,8 +103,7 @@ class NeuralNetwork {
 
 			cWeight = 0;
 
-			// For each neuron sum the (inputs * corresponding weights).
-			// Throw the total at our sigmoid function to get the output.
+			// 2.3
 			for (var j = 0; j < neuronLayer.neurons.length; ++j) {
 				var neuron = neuronLayer.neurons[j];
 
@@ -83,13 +111,15 @@ class NeuralNetwork {
 
 				// For each weight...
 				for (var k = 0; k < neuron.numInputs - 1; ++k) {
-					// Multiply it with the input.
+					
+                    // Multiply it with the input.
 					totalInput += neuron.weights[k] *
 						inputs[cWeight];
 
 					cWeight++;
 				}
 
+                
 				// Add in the bias (final weight)
 				totalInput += neuron.weights[neuron.weights.length - 1] * this.bias;
 
@@ -106,13 +136,26 @@ class NeuralNetwork {
 
 
 	
-
+/*-------------------------------------------- 3 -------------------------------------------------- 
+SIGMOID - starter function
+*/
+    
+    
 	sigmoid(totalInput, activationResponse) {
 		return (1 / (1 + Math.exp(-totalInput / activationResponse)));
 	}
 
 
 
+/*-------------------------------------------- 3 -------------------------------------------------- 
+GET WEIGHTS
+2.1 - If the number of inputs supplied is incorrect...
+2.2 - loop through all the layesr
+2.3 - 
+For each neuron sum the (inputs * corresponding weights).
+Throw the total at our sigmoid function to get the output.
+
+*/
 	getWeights() {
 		var weights = [];
 
@@ -131,8 +174,11 @@ class NeuralNetwork {
 		return weights;
 	}
 
-
-
+    
+/*-------------------------------------------- 3 -------------------------------------------------- 
+SET WEIGHTS
+loop through layers
+*/
 
 	setWeights(weights) {
 		var cWeight = 0;
@@ -159,10 +205,7 @@ class NeuralNetwork {
 
 
 
-
-
-
-
+/*------------------------------------------------- NEURON -----------------------------------------------------*/
 class Neuron {
 	constructor(numInputs) {
 		this.weights = [];
@@ -181,6 +224,8 @@ class Neuron {
 
 
 
+
+/*----------------------------------------------- NEURON LAYER ---------------------------------------------------*/
 class NeuronLayer {
 	constructor(numNeuronsPerHiddenLayer, numInputs) {
 		this.neurons = [];
@@ -192,6 +237,10 @@ class NeuronLayer {
 		}
 	}
 }
+
+
+
+
 
 
 
@@ -225,8 +274,6 @@ neuralNetwork.setWeights(newWeights);
 */
 
 // SOURCE: https://github.com/DivineOmega/simple-neural-network-js
-    
-    
     
    
 // https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
