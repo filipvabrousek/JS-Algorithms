@@ -1,7 +1,6 @@
 ## Simple Neural network
 
 ```js
-
 /*
 -------------------------------------------------NEURAL NETWORK-----------------------------------------------------
 its constructor contains
@@ -126,32 +125,21 @@ Throw the total at our sigmoid function to get the output.
 		return outputs;
 	}
 
-    
-
-
 	
 /*-------------------------------------------- 3 -------------------------------------------------- 
 SIGMOID - starter function (totalInput, activationResponse)
 */
-    
-    
 	sigmoid(totalInput, activationResponse) {
 		return (1 / (1 + Math.exp(-totalInput / activationResponse)));
 	}
-
-
-
 }
     
 
 
 
 /*------------------------------------------------- NEURON -----------------------------------------------------
-use number of inpupts and add a random weight to  "weigths" array
+use number of inputs and add a random weight to  "weigths" array
 */
-
-
-
 
 
 class Neuron {
@@ -167,6 +155,9 @@ class Neuron {
 }
 
 
+
+    
+    
 
 /*----------------------------------------------- NEURON LAYER ---------------------------------------------------
 (density of neurons per hidden layer, number of inputs,)
@@ -194,7 +185,6 @@ const inputs = [0.12, 0.24];
 const outputs = network.update(inputs);
 
 console.log(outputs);
-
 
 
 /*
