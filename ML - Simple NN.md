@@ -5,20 +5,20 @@
 /*
 -------------------------------------------------NEURAL NETWORK-----------------------------------------------------
 its constructor contains
-numInputs
-numOutputs
-numHiddenLayers
-numNeuronsPerHiddenLayer
+ni - number of inputs
+no - number of outputs
+hidden - number of hidden layers
+density - neurons per hidden layer
 
 
 */
 class NeuralNetwork {
-	constructor(numInputs, numOutputs, numHiddenLayers, numNeuronsPerHiddenLayer) {
+	constructor(ni, no, hidden, density) {
 
-		this.numInputs = numInputs;
-		this.numOutputs = numOutputs;
-		this.numHiddenLayers = numHiddenLayers;
-		this.numNeuronsPerHiddenLayer = numNeuronsPerHiddenLayer;
+		this.ni = ni;
+		this.no = no;
+		this.hidden = hidden;
+		this.density = density;
 
 		this.bias = -1.0;
 		this.activationResponse = 1.0;
@@ -37,24 +37,24 @@ class NeuralNetwork {
 */
 	createNetwork() {
 
-        if (this.numHiddenLayers > 0) {
+        if (this.hidden > 0) {
 			
             // 1.1
-			const first = new NeuronLayer(this.numNeuronsPerHiddenLayer, this.numInputs);
+			const first = new NeuronLayer(this.density, this.ni);
 			this.neuronLayers.push(first);
 
-			for (let i = 0; i < this.numHiddenLayers - 1; ++i) {
-				const newHiddenLayer = new NeuronLayer(this.numNeuronsPerHiddenLayer, this.numNeuronsPerHiddenLayer);
+			for (let i = 0; i < this.hidden - 1; ++i) {
+				const newHiddenLayer = new NeuronLayer(this.density, this.density);
 				this.neuronLayers.push(newHiddenLayer);
 			}
 
 			// 1.2
-			var outputLayer = new NeuronLayer(this.numOutputs, this.numNeuronsPerHiddenLayer);
+			var outputLayer = new NeuronLayer(this.no, this.density);
 			this.neuronLayers.push(outputLayer);
             
         } else {
 			// 1.3
-			var outputLayer = new NeuronLayer(this.numOutputs, this.numInputs);
+			var outputLayer = new NeuronLayer(this.no, this.ni);
 			this.neuronLayers.push(outputLayer);
 		}
 	}
@@ -72,9 +72,7 @@ UPDATE INPUTS
 2.3 - For each neuron sum the (inputs * corresponding weights).
 Throw the total at our sigmoid function to get the output.
 
-2.4 -  we can store the outputs from each layer as we generate them.
-the combined activation is first filtered through the sigmoid function
-
+2.4 -  store outputs from each layer  
 */
 	update(inputs) {
 
@@ -82,13 +80,13 @@ the combined activation is first filtered through the sigmoid function
 		let cWeight = 0;
 
 		// 2.1
-		if (inputs.length != this.numInputs) {
+		if (inputs.length != this.ni) {
 			return outputs; // Return empty outputs
 		}
 
 		// 2.2
 		let inputLayer = true;
-		for (let i = 0; i < this.numHiddenLayers + 1; ++i) {
+		for (let i = 0; i < this.hidden + 1; ++i) {
             const neuronLayer = this.neuronLayers[i];
 
             if (!inputLayer) {
@@ -106,12 +104,10 @@ the combined activation is first filtered through the sigmoid function
                 let totalInput = 0;
 
                 // For each weight...
-                for (let k = 0; k < neuron.numInputs - 1; ++k) {
+                for (let k = 0; k < neuron.ni - 1; ++k) {
 					
                     // Multiply it with the input.
-					totalInput += neuron.weights[k] *
-						inputs[cWeight];
-
+					totalInput += neuron.weights[k] * inputs[cWeight];
 					cWeight++;
 				}
 
@@ -122,13 +118,15 @@ the combined activation is first filtered through the sigmoid function
                 
             //2.4
                 outputs.push(this.sigmoid(totalInput, this.activationResponse));
-
+                //console.log(outputs);
                 cWeight = 0;
             }
         }
 
 		return outputs;
 	}
+
+    
 
 
 	
@@ -143,87 +141,43 @@ SIGMOID - starter function (totalInput, activationResponse)
 
 
 
-/*-------------------------------------------- 3 -------------------------------------------------- 
-GET WEIGHTS
-*/
-	getWeights() {
-		const weights = [];
-
-		//for each layer
-		for (let i = 0; i < this.numHiddenLayers + 1; ++i) {
-
-			//for each neuron
-			for (let j = 0; j < this.neuronLayers[i].neurons.length; ++j) {
-				//for each weight
-				for (let k = 0; k < this.neuronLayers[i].neurons[j].numInputs; ++k) {
-					weights.push(this.neuronLayers[i].neurons[j].weights[k]);
-				}
-			}
-		}
-
-		return weights;
-	}
-
+}
     
-/*-------------------------------------------- 3 -------------------------------------------------- 
-SET WEIGHTS
-loop through layers
+
+
+
+/*------------------------------------------------- NEURON -----------------------------------------------------
+use number of inpupts and add a random weight to  "weigths" array
 */
 
-	setWeights(weights) {
-		let cWeight = 0;
-
-		//for each layer
-		for (let i = 0; i < this.numHiddenLayers + 1; ++i) {
-
-			//for each neuron
-			for (let j = 0; j < this.neuronLayers[i].neurons.length; ++j) {
-				//for each weight
-				for (let k = 0; k < this.neuronLayers[i].neurons[j].numInputs; ++k) {
-					this.neuronLayers[i].neurons[j].weights[k] = weights[cWeight++];
-				}
-			}
-		}
-	}
-}
 
 
 
 
-
-
-
-
-
-/*------------------------------------------------- NEURON -----------------------------------------------------*/
 class Neuron {
-	constructor(numInputs) {
-		this.weights = [];
-		this.numInputs = numInputs;
-
-		for (let i = 0; i < numInputs + 1; ++i) {
-			const newWeight = -1 + (Math.random() * 2);
-			this.weights.push(newWeight);
-		}
-	}
+    constructor(ni){
+        this.weights = [];
+        this.ni = ni;
+        
+        for (let i = 0; i < ni; ++i){
+            const newWeigth = -1 + (Math.random() * 2);
+            this.weights.push(newWeigth);
+        }
+    }
 }
-
-
-
-
-
 
 
 
 /*----------------------------------------------- NEURON LAYER ---------------------------------------------------
-use neuron class to push neuron into the "neurons" array layer
+(density of neurons per hidden layer, number of inputs,)
+use "Neuron" class to push neuron into the "neurons" array layer
 */
 class NeuronLayer {
-	constructor(numNeuronsPerHiddenLayer, numInputs) {
+    constructor(density, ni) {
 		this.neurons = [];
 
-		for (let i = 0; i < numNeuronsPerHiddenLayer; ++i) {
-			const newNeuron = new Neuron(numInputs);
+		for (let i = 0; i < density; ++i) {
+			const newNeuron = new Neuron(ni);
 			this.neurons.push(newNeuron);
 		}
 	}
@@ -240,7 +194,6 @@ const inputs = [0.12, 0.24];
 const outputs = network.update(inputs);
 
 console.log(outputs);
-
 
 
 
@@ -261,3 +214,58 @@ network.setWeights(newWeights);
 // https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
 ```
 Source: https://github.com/DivineOmega/simple-neural-network-js
+
+
+
+
+```
+/*-------------------------------------------- 3 -------------------------------------------------- 
+Not required
+
+	getWeights() {
+		const weights = [];
+
+		//for each layer
+		for (let i = 0; i < this.hidden + 1; ++i) {
+
+			//for each neuron
+			for (let j = 0; j < this.neuronLayers[i].neurons.length; ++j) {
+				//for each weight
+				for (let k = 0; k < this.neuronLayers[i].neurons[j].ni; ++k) {
+					weights.push(this.neuronLayers[i].neurons[j].weights[k]);
+				}
+			}
+		}
+
+		return weights;
+	}
+
+    
+
+SET WEIGHTS
+looping through a nested structure
+
+
+	setWeights(weights) {
+		let cWeight = 0;
+
+		//for each layer
+		for (let i = 0; i < this.hidden + 1; ++i) {
+
+			//for each neuron
+			for (let j = 0; j < this.neuronLayers[i].neurons.length; ++j) {
+				//for each weight
+				for (let k = 0; k < this.neuronLayers[i].neurons[j].ni; ++k) {
+					this.neuronLayers[i].neurons[j].weights[k] = weights[cWeight++];
+				}
+			}
+		}
+	}
+}
+
+*/
+
+
+
+
+```
