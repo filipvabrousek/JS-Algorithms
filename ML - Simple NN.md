@@ -208,6 +208,12 @@ Source: https://github.com/DivineOmega/simple-neural-network-js
 
 
 
+
+
+
+
+
+## Not required
 ```
 /*-------------------------------------------- 3 -------------------------------------------------- 
 Not required
