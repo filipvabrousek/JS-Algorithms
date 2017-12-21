@@ -201,21 +201,7 @@ const outputs = network.update(inputs);
 console.log(outputs);
 
 
-/*
-var weights = network.getWeights();
 
-var newWeights = [];
-for (var i=0; i < weights.length; i++) {
-    newWeights.push(weights[i] * 0.5); 
-}
-
-network.setWeights(newWeights);
-*/
-
-// SOURCE: https://github.com/DivineOmega/simple-neural-network-js
-
-   
-// https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
 ```
 Source: https://github.com/DivineOmega/simple-neural-network-js
 
@@ -229,8 +215,8 @@ Source: https://github.com/DivineOmega/simple-neural-network-js
 
 ## Not required
 ```
-/*-------------------------------------------- 3 -------------------------------------------------- 
-Not required
+
+
 
 	getWeights() {
 		const weights = [];
@@ -273,8 +259,21 @@ looping through a nested structure
 	}
 }
 
+
+
+/*
+var weights = network.getWeights();
+
+var newWeights = [];
+for (var i=0; i < weights.length; i++) {
+    newWeights.push(weights[i] * 0.5); 
+}
+
+network.setWeights(newWeights);
 */
 
+// SOURCE: https://github.com/DivineOmega/simple-neural-network-js   
+// https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
 
 
 
