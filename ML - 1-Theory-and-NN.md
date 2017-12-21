@@ -22,9 +22,8 @@ ni - number of inputs
 no - number of outputs
 hidden - number of hidden layers
 density - neurons per hidden layer
-
-
 */
+    
 class NeuralNetwork {
 	constructor(ni, no, hidden, density) {
 
@@ -44,7 +43,8 @@ class NeuralNetwork {
 	
 	
 /*-------------------------------------------- 1 --------------------------------------------------
-1.1 - create the first hidden layer and push (add to end) it to "neuronLayers"
+1.1 - create the first hidden layer with desnity and number of inputs and push (add to end) it to "neuronLayers"
+- create hidden layers based on "hidden" size
 1.2 - create output layers
 1.3 - if we do not have any hidden layers create output layer 
 */
@@ -79,7 +79,7 @@ class NeuralNetwork {
 /*-------------------------------------------- 2 -------------------------------------------------- 
 UPDATE INPUTS
 2.1 - If the number of inputs supplied is incorrect...
-2.2 - loop through all the layers, get one neuro layer from neuroLayers at index  
+2.2 - loop through all the hidden, get one layer from "neuroLayers" array at index  
 - add outputs to inputs (by concat)
 
 2.3 - For each neuron sum the (inputs * corresponding weights).
@@ -128,12 +128,12 @@ Throw the total at our sigmoid function to get the output.
                 // Add in the bias (final weight)
                 totalInput += neuron.weights[neuron.weights.length - 1] * this.bias;
 
-                
-            //2.4
+                //2.4
                 outputs.push(this.sigmoid(totalInput, this.activationResponse));
-                //console.log(outputs);
                 cWeight = 0;
-            }
+            } // end of the loop 
+            
+            
         }
 
 		return outputs;
@@ -153,6 +153,7 @@ SIGMOID - starter function (totalInput, activationResponse)
 
 /*------------------------------------------------- NEURON -----------------------------------------------------
 use number of inputs and add a random weight to  "weigths" array
+(because we want to start with some connections and compare them to the desired output)
 */
 
 
@@ -199,8 +200,6 @@ const inputs = [0.12, 0.24];
 const outputs = network.update(inputs);
 
 console.log(outputs);
-
-
 
 ```
 Source: https://github.com/DivineOmega/simple-neural-network-js
