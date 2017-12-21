@@ -1,4 +1,4 @@
-## ML in JS
+# ML in JS
 1) Supervised learning
 * classification - prediciting value in the form of categories
 * regression -  predict the outcome of the given sample (output is in the form of real values)
