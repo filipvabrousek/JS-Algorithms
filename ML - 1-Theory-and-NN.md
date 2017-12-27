@@ -31,8 +31,6 @@ class Network {
 	}
 
 	
-	
-	
 
 	createNetwork() {
 
@@ -60,9 +58,6 @@ class Network {
 
     
     
-	
-	
-	
     
 	update(inputs) {
 
@@ -71,9 +66,8 @@ class Network {
         
 		// number of inputs is incorrect (rem. 0)
         inputs.length != this.ni ? outputs : 0;
-
-	
 		let inputLayer = true;
+        
         
         // LOOP -------------------------------------------------------------- through hidden layers, get one at index
 		for (let i = 0; i < this.hidden + 1; i++) {
@@ -90,22 +84,20 @@ class Network {
             outputs = [];
             cw = 0;
 
-            // NESTED LOOP -------------------------------------
+            
             for (const neuron of specificLayer.neurons) {
                 let totalInput = 0;
-
                 // For each weight...
                 for (let k = 0; k < neuron.ni - 1; ++k) {
 					totalInput += neuron.weights[k] * inputs[cw];
 					cw++;
 				}
-
+                
                 // Add in the bias (final weight) and store outputs
                 totalInput += neuron.weights[neuron.weights.length - 1] * this.bias;
                 outputs.push(this.sigmoid(totalInput, this.activationResponse));
                 cw = 0;
-                
-            } // NESTED LOOP end -------------------------------------------- 
+            } 
             
             
         } //------------------------------------------------------------------------------
@@ -114,7 +106,7 @@ class Network {
 	}
 
 	
-// starter function
+    // starter function
 	sigmoid(totalInput, activationResponse) {
 		return (1 / (1 + Math.exp(-totalInput / activationResponse)));
 	}
@@ -174,81 +166,13 @@ const inputs = [0.12, 0.24];
 const outputs = network.update(inputs);
 
 console.log(outputs);
-```
-Source: https://github.com/DivineOmega/simple-neural-network-js
-
-
-
-
-
-
-
-
-
-## Not required
-```
-
-
-
-	getWeights() {
-		const weights = [];
-
-		//for each layer
-		for (let i = 0; i < this.hidden + 1; ++i) {
-
-			//for each neuron
-			for (let j = 0; j < this.neuronLayers[i].neurons.length; ++j) {
-				//for each weight
-				for (let k = 0; k < this.neuronLayers[i].neurons[j].ni; ++k) {
-					weights.push(this.neuronLayers[i].neurons[j].weights[k]);
-				}
-			}
-		}
-
-		return weights;
-	}
-
-    
-
-SET WEIGHTS
-looping through a nested structure
-
-
-	setWeights(weights) {
-		let cWeight = 0;
-
-		//for each layer
-		for (let i = 0; i < this.hidden + 1; ++i) {
-
-			//for each neuron
-			for (let j = 0; j < this.neuronLayers[i].neurons.length; ++j) {
-				//for each weight
-				for (let k = 0; k < this.neuronLayers[i].neurons[j].ni; ++k) {
-					this.neuronLayers[i].neurons[j].weights[k] = weights[cWeight++];
-				}
-			}
-		}
-	}
-}
-
-
-
-/*
-var weights = network.getWeights();
-
-var newWeights = [];
-for (var i=0; i < weights.length; i++) {
-    newWeights.push(weights[i] * 0.5); 
-}
-
-network.setWeights(newWeights);
-*/
-
-// SOURCE: https://github.com/DivineOmega/simple-neural-network-js   
-// https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
-
-
 
 ```
+* Source: https://github.com/DivineOmega/simple-neural-network-js  
+* https://hackernoon.com/neural-networks-from-scratch-for-javascript-linguists-part1-the-perceptron-632a4d1fbad2
+
+
+
+
 
 
