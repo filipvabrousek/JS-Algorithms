@@ -70,7 +70,7 @@ class Network {
         
         
         // LOOP -------------------------------------------------------------- through hidden layers, get one at index
-		for (let i = 0; i < this.hidden + 1; i++) {
+	 for (let i = 0; i < this.hidden + 1; i++) {
             const specificLayer = this.layers[i];
 
             // there is no input layer merge inputs and outputs
@@ -106,7 +106,7 @@ class Network {
 	}
 
 	
-    // starter function
+        // starter function
 	sigmoid(totalInput, activationResponse) {
 		return (1 / (1 + Math.exp(-totalInput / activationResponse)));
 	}
