@@ -10,7 +10,8 @@
 ## Phase 2
 * learn using going backwards (backpropagation)
 * comparing output desired one
-* using the difference to modify weight of the connections between units
+* using the difference to modify weight of the connections between units  
+
 ![neural network](https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
 
 
