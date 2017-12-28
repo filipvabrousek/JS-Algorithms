@@ -1,18 +1,9 @@
-# ML in JS
-1) Supervised learning
-* classification - prediciting value in the form of categories
-* regression -  predict the outcome of the given sample (output is in the form of real values)
+# Neural networks
+* interconected group of nodes, similiar to the neurons in human brain
 
-2) Unsupervised learning
-* Association - probability of co-occurance of items
-* Clustering - object in one cluster are simmiliar
-* Dimensional Reduction - reducing the information, just the important are persisted
+![image])https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
 
-3) Reinforcement learning - maximizing the reward
-
-
-
-## Simple Neural network
+## Example
 
 ```js
 class Network {
