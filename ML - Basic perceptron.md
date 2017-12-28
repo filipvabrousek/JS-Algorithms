@@ -2,6 +2,10 @@
 # Perceptron
 
 * the perceptron is an algorithm for supervised learning of binary classifiers 
+* neuron's output is determined by whether the weighted sum of inputs is bigger than treshold value
+* less or equal -> 0
+* bigger -> 1
+
 
 ```js
 class Perceptron {
