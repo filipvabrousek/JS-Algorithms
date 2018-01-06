@@ -87,15 +87,15 @@ setInterval(() => {
 ## Made into lib :)
 
 ```js
-   
 // <canvas width="800" height = "800"></canvas>
-
+    
 const Regres = (() => {
 
 	const x = [];
 	const y = [];
 	let m = 2;
 	let b = 2;
+    
 	const mouse = {
 		x: 0,
 		y: 0
@@ -112,29 +112,23 @@ const Regres = (() => {
 		make() {
 			this.element = document.querySelector(this.selector);
 			this.element.ctx = this.element.getContext("2d");
-			this.fillStyle = "green";
-			this.textAlign = "center";
-			return this.element;
+			this.element.ctx.fillStyle = "green";
 		}
 
 		addEL() {
 			this.element.addEventListener("click", e => {
 				x.push(e.offsetX);
 				y.push(this.element.height - e.offsetY);
-				console.log(x);
 			});
-			return this.element;
+			
 		}
-
-
 
 
 
 		drawPoints() {
 			for (let i = 0; i < x.length; i++) {
-				this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4);
+				this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4); // x, y, w, h
 			}
-			return this.element;
 		}
 
 
@@ -144,9 +138,9 @@ const Regres = (() => {
 			let sum1 = 0;
 			let sum2 = 0;
 
-			for (let i = 0; i <  x.length; i++) {
-				sum1 += this.line(x[i] - y[i]);
-				sum2 += this.line(x[i]) - y[i] * x[i];
+			for (let i = 0; i < x.length; i++) {
+				sum1 += this.line(x[i]) - y[i];
+				sum2 += (this.line(x[i]) - y[i]) * x[i];
 			}
 
 			b = b - 1000000 * alpha * sum1 / (x.length);
@@ -157,7 +151,6 @@ const Regres = (() => {
 
 		line(x) {
 			return m * x + b;
-
 		}
 
 
@@ -170,17 +163,12 @@ const Regres = (() => {
 		}
 
 
-
-
 		do() {
 			setInterval(() => {
-				console.log(this.element);
 				this.element.ctx.clearRect(0, 0, this.element.width, this.element.height); // x, y, w, h
 				this.learn(0.000001);
 				this.drawPoints();
 				this.drawLine();
-				this.element.ctx.fillText(`${mouse.x}, ${mouse.y}`, mouse.x, mouse.y);
-				return this.element;
 			}, 1000 / 60);
 		}
 
@@ -208,5 +196,4 @@ const Regres = (() => {
 
 
 Regres.S("canvas");
-    
 ```
