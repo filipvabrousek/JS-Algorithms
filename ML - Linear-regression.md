@@ -87,7 +87,7 @@ setInterval(() => {
 ## Made into lib :)
 
 ```js
-// <canvas width="800" height = "800"></canvas>
+
     
 const Regres = (() => {
 
@@ -95,7 +95,7 @@ const Regres = (() => {
 	const y = [];
 	let m = 2;
 	let b = 2;
-    
+
 	const mouse = {
 		x: 0,
 		y: 0
@@ -120,7 +120,7 @@ const Regres = (() => {
 				x.push(e.offsetX);
 				y.push(this.element.height - e.offsetY);
 			});
-			
+
 		}
 
 
@@ -184,9 +184,6 @@ const Regres = (() => {
 	}
 
 
-
-
-
 	return {
 		S
 	}
@@ -196,4 +193,5 @@ const Regres = (() => {
 
 
 Regres.S("canvas");
+// <canvas width="800" height = "800"></canvas>
 ```
