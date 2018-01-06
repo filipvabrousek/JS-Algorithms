@@ -87,138 +87,126 @@ setInterval(() => {
 ## Make into lib - not working
 
 ```js
-
-
+   
 // <canvas width="800" height = "800"></canvas>
 
 const Regres = (() => {
-    
-const x = [];
-const y = [];
-let m = 2;
-let b = 2;
-const mouse = {
-    x:0, y:0
-}
+
+	const x = [];
+	const y = [];
+	let m = 2;
+	let b = 2;
+	const mouse = {
+		x: 0,
+		y: 0
+	}
 
 
 
-class E {
-    constructor(selector){
-        this.selector = selector || null;
-        this.element = null;
-    }
-    
-    make(){
-        this.element =  document.querySelector(this.selector);
-        this.element.ctx = this.element.getContext("2d");
-        this.fillStyle = "green";
-        this.textAlign = "center";
-        return this.element;
-    }  
-    
-    addEL(){
-        this.element.addEventListener("click", e => {
-        x.push(e.offsetX);
-            y.push(this.element - e.offsetY);
-        console.log(x);
-        });
-        return this.element;
-    }
-    
-    
-    
-   
-    
- drawPoints(){
-    for (let i = 0; i < x.length; i++){
-        this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4);
-    }
-     return this.element;
-}
+	class E {
+		constructor(selector) {
+			this.selector = selector || null;
+			this.element = null;
+		}
 
-    
- learn(alpha){
-    if (x.length <= 0) return;
-    
-    let sum1 = 0;
-    let sum2 = 0;
-    
-    for (let i = 0; i < x.length; i++){
-        sum1 += line(x[i] - y[i]);
-        sum2 += line(x[i]) - y[i] * x[i];
-    }
-    
-    b = b - 1000000  * alpha * sum1 / (x.length);
-    m = m - alpha * sum2 / (x.length);
-    return this.element;
-}
-    
-    
- line(x){
-    return m * x + b;
-     
-}
-    
-    
- drawLine(){
-    this.element.ctx.beginPath();
-    this.element.ctx.moveTo(0, this.element.height - this.line(0));
-    this.element.ctx.lineTo(this.element.width, this.element.height - this.line(this.element.width));
-    this.element.ctx.stroke();
-    return this.element;
-}
-    
- begin(){
-     console.log(this.element);
-    this.element.ctx.clearRect(0,0, this.element.width, this.element.height); // x, y, w, h
-    this.learn(0.000001);
-    this.drawPoints();
-    this.drawLine();
-    this.element.ctx.fillText(`${mouse.x}, ${mouse.y}`, mouse.x, mouse.y);
-     return this.element;
-}
-  
-    
- fire(){
-  setInterval(this.begin, 1000 / 60 ); 
-}
+		make() {
+			this.element = document.querySelector(this.selector);
+			this.element.ctx = this.element.getContext("2d");
+			this.fillStyle = "green";
+			this.textAlign = "center";
+			return this.element;
+		}
 
-}
-    
-    
-const S = (selector) => {
-    const el = new E(selector);
-    el.make();
-    el.addEL();
-    el.begin();
-    //el.fire();
-    return el;
-}
-      
+		addEL() {
+			this.element.addEventListener("click", e => {
+				x.push(e.offsetX);
+				y.push(this.element.height - e.offsetY);
+				console.log(x);
+			});
+			return this.element;
+		}
 
 
 
-    
-    return {
-        S
-    }
-   
-    
-})();  
 
-    
+
+		drawPoints() {
+			for (let i = 0; i < x.length; i++) {
+				this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4);
+			}
+			return this.element;
+		}
+
+
+		learn(alpha) {
+			if (x.length <= 0) return;
+
+			let sum1 = 0;
+			let sum2 = 0;
+
+			for (let i = 0; i <  x.length; i++) {
+				sum1 += this.line(x[i] - y[i]);
+				sum2 += this.line(x[i]) - y[i] * x[i];
+			}
+
+			b = b - 1000000 * alpha * sum1 / (x.length);
+			m = m - alpha * sum2 / (x.length);
+			return this.element;
+		}
+
+
+		line(x) {
+			return m * x + b;
+
+		}
+
+
+		drawLine() {
+			this.element.ctx.beginPath();
+			this.element.ctx.moveTo(0, this.element.height - this.line(0));
+			this.element.ctx.lineTo(this.element.width, this.element.height - this.line(this.element.width));
+			this.element.ctx.stroke();
+			return this.element;
+		}
+
+
+
+
+		do() {
+			setInterval(() => {
+				console.log(this.element);
+				this.element.ctx.clearRect(0, 0, this.element.width, this.element.height); // x, y, w, h
+				this.learn(0.000001);
+				this.drawPoints();
+				this.drawLine();
+				this.element.ctx.fillText(`${mouse.x}, ${mouse.y}`, mouse.x, mouse.y);
+				return this.element;
+			}, 1000 / 60);
+		}
+
+	}
+
+
+	const S = (selector) =>  {
+		const el = new E(selector);
+		el.make();
+		el.addEL();
+		el.do();
+		return el;
+	}
+
+
+
+
+
+	return {
+		S
+	}
+
+
+})();
+
+
 Regres.S("canvas");
     
-
-
-    
-    
-  
-    
-
-    
-
-
-
 ```
