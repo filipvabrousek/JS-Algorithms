@@ -4,7 +4,6 @@
 
 ```js
 
-    
 const Think = (() => {
 
 	const x = [];
@@ -17,26 +16,26 @@ const Think = (() => {
 		y: 0
 	}
 
-    
-    class Perceptron {
-        constructor(bias, weights){
-            this.weights = weights;
-            this.treshold = bias * -1;
-        }
-        
-        run(inputs){
-            let sum = 0.0;
-            for (let i = 0; i < inputs.length; i++){
-                sum += inputs[i] * this.weights[i];
-            }
-            
-        if (sum <= this.threshold) {
-            return 0;
-        } else {
-            return 1;
-        }
-        }
-    }
+
+	class Perceptron {
+		constructor(bias, weights) {
+			this.weights = weights;
+			this.treshold = bias * -1;
+		}
+
+		run(inputs) {
+			let sum = 0.0;
+			for (let i = 0; i < inputs.length; i++) {
+				sum += inputs[i] * this.weights[i];
+			}
+
+			if (sum <= this.threshold) {
+				return 0;
+			} else {
+				return 1;
+			}
+		}
+	}
 
 
 	class E {
@@ -119,14 +118,14 @@ const Think = (() => {
 		return el;
 	}
 
-    const P = (bias, ...weights) => {
-        const p = new Perceptron(weights, bias)
-        return p;
-    }
+	const P = (bias, ...weights) => {
+		const p = new Perceptron(weights, bias)
+		return p;
+	}
 
 	return {
 		S,
-        P
+		P
 	}
 
 
@@ -134,7 +133,7 @@ const Think = (() => {
 
 
 let res = Think.P([-2, -2], 3);
-console.log(res.run([0,1]));
+console.log(res.run([0, 1]));
 
 // Think.S("canvas");
 // <canvas width="800" height = "800"></canvas>
