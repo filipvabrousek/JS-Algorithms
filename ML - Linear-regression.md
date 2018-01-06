@@ -84,7 +84,7 @@ setInterval(() => {
 ```
 
 
-## Make into lib - not working
+## Made into lib :)
 
 ```js
    
