@@ -1,7 +1,7 @@
 # Think
 * simple ML library which allows to create perceptron or use linear regression
 * for educational purposes
-* To do: K means, Neural network (classes)
+* To do: Neural network, K means (classes)
 
 ```js
 
