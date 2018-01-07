@@ -2,6 +2,13 @@
 * simple ML library which allows to create perceptron or use linear regression
 * for educational purposes
 * To do: Neural network, K means (classes)
+## Linear regression
+* we predict scores on one variable from scores on 2nd variable
+* Y - criterion (the variable we are predicting)
+* X - predictor (we are basing our predictions on it)
+* regression line - best fitting straight line between the points (minimizing error)
+
+![regression](http://onlinestatbook.com/2/regression/graphics/reg_error.gif)
 
 ```js
 
