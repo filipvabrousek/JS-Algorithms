@@ -1,6 +1,8 @@
 # Think
 * simple ML library which allows to create perceptron or use linear regression
 
+## Perceptron
+
 
 ## Linear regression
 * we predict scores on one variable from scores on 2nd variable
@@ -21,6 +23,7 @@
 * learn using going backwards (backpropagation)
 * compare output with desired on and use the diffrence to modify weights of connections between the units
 
+![neural network](https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
 ```js
 const Think = (() => {
 
