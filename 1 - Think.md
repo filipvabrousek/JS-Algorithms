@@ -1,7 +1,7 @@
 # Think
 * simple ML library which allows to create perceptron or use linear regression
-* for educational purposes
-* To do: Neural network, K means (classes)
+
+
 ## Linear regression
 * we predict scores on one variable from scores on 2nd variable
 * Y - criterion (the variable we are predicting)
@@ -10,9 +10,18 @@
 
 ![regression](http://onlinestatbook.com/2/regression/graphics/reg_error.gif)
 
-```js
+## Neural network
+**Phase 1:**
+* input -> hidden units -> outputs (feedforward)
+* each unit receives input from the unit on the left
+* (inputs are multiplied by the weight of the connection they travel along)
+* every unit adds the total sum (if s. > treshold -> unit fires and triggers next)
 
-    
+**Phase 2:**
+* learn using going backwards (backpropagation)
+* compare output with desired on and use the diffrence to modify weights of connections between the units
+
+```js
 const Think = (() => {
 
 	const x = [];
