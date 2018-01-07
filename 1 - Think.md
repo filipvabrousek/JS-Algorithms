@@ -317,17 +317,22 @@ const Think = (() => {
 })();
 
 
+
+// XOR example
+for (let i = 0; i < 1000; i++) {
+	let w = Think.Net(2, 2, 2, 6, [1, 1]);
+	console.log(Math.round(w[0])); // mostly 0 as predicted :D
+}
+
+
+```
+### Perceptron
+```js
 let res = Think.P([-2, -2], 3);
 console.log(res.run([0, 1]));
-
-
-
-/*
-let w = Think.Net(2, 2, 2, 6, [0.12, 0.24]);
-console.log(w);
-*/
-
-// Think.S("canvas");
+```
+### Linear regression
+```js
 // <canvas width="800" height = "800"></canvas>
-
+Think.S("canvas");
 ```
