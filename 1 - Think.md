@@ -2,10 +2,12 @@
 * simple ML library which allows to create perceptron or use linear regression
 
 ## Perceptron
-* follows "feed-forward" model
+follows "feed-forward" model
 1) for every input multiply it by its weight
 2) sum all weighted inputs
 3) compute the output based on the sum passed through an activation f. (sign of the sum)
+![perceptron](https://qph.ec.quoracdn.net/main-qimg-70af31b2f67f064c4aa5b7824fe5ad50)
+
 
 ## Linear regression
 * we predict scores on one variable from scores on 2nd variable
