@@ -29,11 +29,13 @@ follows "feed-forward" model
 * compare output with desired on and use the diffrence to modify weights of connections between the units
 
 ![neural network](https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
+
 ```js
+
 const Think = (() => {
 
-    
-// Regression variables
+
+	// Regression variables
 	const x = [];
 	const y = [];
 	let m = 2;
@@ -45,43 +47,43 @@ const Think = (() => {
 	}
 
 
-/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-P([-2, -2], 3) -> 1 "linear classifier" "supervised learning of binary classifiers"
-*/
-    class Perceptron {
-        constructor(bias, weights){
-            this.weights = weights;
-            this.treshold = bias * -1; // -3 in this case
-        }
-        
-        // multiply each input with correponding weight
-        run(inputs){
-            let sum = 0.0;
-            for (let i = 0; i < inputs.length; i++){
-                sum += inputs[i] * this.weights[i]; // += 0, +=-2
-            }
-            
-        // if sum of all weighted inputs is > treshold -> 1   "-2 >-3 => 1"
-            if (sum <= this.treshold){
-                return 0;
-            } else {
-                return 1;
-            }
-        }
-    }
+	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	P([-2, -2], 3) -> 1 "linear classifier" "supervised learning of binary classifiers"
+	*/
+	class Perceptron {
+		constructor(bias, weights) {
+			this.weights = weights;
+			this.treshold = bias * -1; // -3 in this case
+		}
+
+		// multiply each input with correponding weight
+		run(inputs) {
+			let sum = 0.0;
+			for (let i = 0; i <  inputs.length; i++) {
+				sum += inputs[i] * this.weights[i]; // += 0, +=-2
+			}
+
+			// if sum of all weighted inputs is > treshold -> 1   "-2 >-3 => 1"
+			if (sum <= this.treshold) {
+				return 0;
+			} else {
+				return 1;
+			}
+		}
+	}
 
 
 
 
 
-/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 	class Network {
 		constructor(ni, no, hidden, density) {
 
 			this.ni = ni; // number of inputs
 			this.no = no;
-			this.hidden = hidden; 
-			this.density = density; 
+			this.hidden = hidden;
+			this.density = density;
 
 			this.bias = -1.0;
 			this.activationResponse = 1.0; // when will the next unit fire
@@ -226,12 +228,12 @@ P([-2, -2], 3) -> 1 "linear classifier" "supervised learning of binary classifie
 
 
 
-/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-L. regression: we predict scores on one varible Y, based on the scores from 2nd variable X
-finding best fitting straight line between points (minimizing error)
-*/
+	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	L. regression: we predict scores on one varible Y, based on the scores from 2nd variable X
+	finding best fitting straight line between points (minimizing error)
+	*/
 
-	class E {
+	class L {
 		constructor(selector) {
 			this.selector = selector || null;
 			this.element = null;
@@ -303,13 +305,13 @@ finding best fitting straight line between points (minimizing error)
 	}
 
 
-    const P = (bias, ...weights) => {
+	const P = (bias, ...weights) => {
 		const obj = new Perceptron(weights, bias)
 		return obj;
 	}
-        
+
 	const Line = (selector) =>  {
-		const el = new E(selector);
+		const el = new L(selector);
 		el.make();
 		el.addEL();
 		el.do();
@@ -325,8 +327,8 @@ finding best fitting straight line between points (minimizing error)
 	}
 
 	return {
-		Line,
 		P,
+		Line,
 		Net
 	}
 
