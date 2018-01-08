@@ -305,10 +305,12 @@ const Think = (() => {
 	}
 
 
+
 	const P = (bias, ...weights) => {
 		const obj = new Perceptron(weights, bias)
 		return obj;
 	}
+
 
 	const Line = (selector) =>  {
 		const el = new L(selector);
@@ -317,8 +319,6 @@ const Think = (() => {
 		el.do();
 		return el;
 	}
-
-
 
 	const Net = (ni, no, hidden, density, ...inputs) => {
 		const network = new Network(ni, no, hidden, density);
@@ -343,13 +343,12 @@ console.log(res.run([0, 1]));
 
 ### Neural network
 ```js
-/*
 // XOR example
 for (let i = 0; i < 1000; i++) {
 	let w = Think.Net(2, 2, 2, 6, [1, 1]);
 	console.log(Math.round(w[0])); // mostly 0 as predicted :D
 }
-*/
+
 ```
 ### Linear regression
 ```js
