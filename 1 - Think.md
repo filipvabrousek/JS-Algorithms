@@ -32,6 +32,8 @@ follows "feed-forward" model
 ```js
 const Think = (() => {
 
+    
+// Regression variables
 	const x = [];
 	const y = [];
 	let m = 2;
@@ -43,49 +45,54 @@ const Think = (() => {
 	}
 
 
-	class Perceptron {
-		constructor(bias, weights) {
-			this.weights = weights;
-			this.treshold = bias * -1;
-		}
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+P([-2, -2], 3) -> 1 "linear classifier" "supervised learning of binary classifiers"
+*/
+    class Perceptron {
+        constructor(bias, weights){
+            this.weights = weights;
+            this.treshold = bias * -1; // -3 in this case
+        }
+        
+        // multiply each input with correponding weight
+        run(inputs){
+            let sum = 0.0;
+            for (let i = 0; i < inputs.length; i++){
+                sum += inputs[i] * this.weights[i]; // += 0, +=-2
+            }
+            
+        // if sum of all weighted inputs is > treshold -> 1   "-2 >-3 => 1"
+            if (sum <= this.treshold){
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+    }
 
-		run(inputs) {
-			let sum = 0.0;
-			for (let i = 0; i < inputs.length; i++) {
-				sum += inputs[i] * this.weights[i];
-			}
-
-			if (sum <= this.threshold) {
-				return 0;
-			} else {
-				return 1;
-			}
-		}
-	}
 
 
 
 
-
-
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 	class Network {
 		constructor(ni, no, hidden, density) {
 
-			this.ni = ni;
+			this.ni = ni; // number of inputs
 			this.no = no;
-			this.hidden = hidden;
-			this.density = density;
+			this.hidden = hidden; 
+			this.density = density; 
 
 			this.bias = -1.0;
-			this.activationResponse = 1.0;
+			this.activationResponse = 1.0; // when will the next unit fire
 			this.layers = [];
 
-			this.createNetwork();
+			this.init(); // create our network
 		}
 
 
 
-		createNetwork() {
+		init() {
 
 			if (this.hidden > 0) {
 
@@ -122,11 +129,11 @@ const Think = (() => {
 			let inputLayer = true;
 
 
-			// LOOP -------------------------------------------------------------- through hidden layers, get one at index
+			// LOOP -------------------------------------------------------------- through hidden (number) layers, get one at index
 			for (let i = 0; i < this.hidden + 1; i++) {
 				const specificLayer = this.layers[i];
 
-				// there is no input layer merge inputs and outputs
+				// no input layer: merge inputs and outputs
 				if (!inputLayer) {
 					inputs = [];
 					inputs = inputs.concat(outputs);
@@ -219,7 +226,10 @@ const Think = (() => {
 
 
 
-
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+L. regression: we predict scores on one varible Y, based on the scores from 2nd variable X
+finding best fitting straight line between points (minimizing error)
+*/
 
 	class E {
 		constructor(selector) {
@@ -293,7 +303,12 @@ const Think = (() => {
 	}
 
 
-	const S = (selector) =>  {
+    const P = (bias, ...weights) => {
+		const obj = new Perceptron(weights, bias)
+		return obj;
+	}
+        
+	const Line = (selector) =>  {
 		const el = new E(selector);
 		el.make();
 		el.addEL();
@@ -301,10 +316,7 @@ const Think = (() => {
 		return el;
 	}
 
-	const P = (bias, ...weights) => {
-		const p = new Perceptron(weights, bias)
-		return p;
-	}
+
 
 	const Net = (ni, no, hidden, density, ...inputs) => {
 		const network = new Network(ni, no, hidden, density);
@@ -313,7 +325,7 @@ const Think = (() => {
 	}
 
 	return {
-		S,
+		Line,
 		P,
 		Net
 	}
@@ -322,22 +334,23 @@ const Think = (() => {
 })();
 
 
+let res = Think.P([-2, -2], 3);
+console.log(res.run([0, 1]));
 
+```
+
+### Neural network
+```js
+/*
 // XOR example
 for (let i = 0; i < 1000; i++) {
 	let w = Think.Net(2, 2, 2, 6, [1, 1]);
 	console.log(Math.round(w[0])); // mostly 0 as predicted :D
 }
-
-
-```
-### Perceptron
-```js
-let res = Think.P([-2, -2], 3);
-console.log(res.run([0, 1]));
+*/
 ```
 ### Linear regression
 ```js
 // <canvas width="800" height = "800"></canvas>
-Think.S("canvas");
+Think.Line("canvas");
 ```
