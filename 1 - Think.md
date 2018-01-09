@@ -244,7 +244,7 @@ const Think = (() => {
 			this.element.ctx.fillStyle = "green";
 		}
 
-		// fill in "x" and "y" arrays, with click coordinates
+		// fill in "x" and "y" arrays, with coordinates of the click
 		addEL() {
 			this.element.addEventListener("click", e => {
 				x.push(e.offsetX);
@@ -253,22 +253,24 @@ const Think = (() => {
 
 		}
 
-		// draw points when clicked
+		// draw green points when clicked, called by "setInterval()" every 17ms
 		drawPoints() {
 			for (let i = 0; i < x.length; i++) {
 				this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4); // x, y, w, h
 			}
 		}
 
-		// pass data into "line()": 2x + 2
+
+
+		// algorithm, which calculates our "b" values, called by "setInterval()" every 17ms
 		learn(alpha) {
 			if (x.length <= 0) return;
 
 			let sum1 = 0;
 			let sum2 = 0;
 
-			// eg.: x [100, 200], y: [200, 300] => sum1: 2 * 100 + 2 - 200 => 2
-			// b is 2 - .... and we adjust its value in the line()
+			// eg.: x [100, 200], y: [200, 300] ======> sum1 is 2 * 100 + 2 - 200 = 2
+			// b is 2 - 1000000 * 0.000001 / 2 and we adjust its value in the "line()", same for "m"
 			for (let i = 0; i < x.length; i++) {
 				sum1 += this.line(x[i]) - y[i];
 				sum2 += (this.line(x[i]) - y[i]) * x[i];
@@ -278,17 +280,19 @@ const Think = (() => {
 			m = m - alpha * sum2 / (x.length);
 		}
 
-
+		// 2x + 2
 		line(x) {
 			return m * x + b;
 		}
 
 
+		// use the "moveTo()" function to begin and "lineTo()" draw the line
 		drawLine() {
-			this.element.ctx.beginPath();
-			this.element.ctx.moveTo(0, this.element.height - this.line(0));
-			this.element.ctx.lineTo(this.element.width, this.element.height - this.line(this.element.width));
-			this.element.ctx.stroke();
+			let el = this.element;
+			el.ctx.beginPath();
+			el.ctx.moveTo(0, el.height - this.line(0));
+			el.ctx.lineTo(el.width, el.height - this.line(el.width));
+			el.ctx.stroke();
 			return this.element;
 		}
 
@@ -305,6 +309,7 @@ const Think = (() => {
 	}
 
 
+	/*------------------------------------------------------------------------------------------------------*/
 	const P = (bias, ...weights) => {
 		const obj = new Perceptron(weights, bias)
 		return obj;
@@ -317,8 +322,6 @@ const Think = (() => {
 		el.do();
 		return el;
 	}
-
-
 
 	const Net = (ni, no, hidden, density, ...inputs) => {
 		const network = new Network(ni, no, hidden, density);
