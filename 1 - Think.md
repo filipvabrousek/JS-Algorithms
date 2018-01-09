@@ -3,9 +3,8 @@
 
 ## Perceptron
 follows "feed-forward" model
-1) for every input multiply it by its weight
-2) sum all weighted inputs
-3) compute the output based on the sum passed through an activation f. (sign of the sum)
+1) multiply each input by its weight
+2) if sum of all weighted inputs is bigger than treshold (count from bias) return 1
 ![perceptron](https://qph.ec.quoracdn.net/main-qimg-70af31b2f67f064c4aa5b7824fe5ad50)
 
 
@@ -63,7 +62,7 @@ const Think = (() => {
 				sum += inputs[i] * this.weights[i]; // += 0, +=-2
 			}
 
-			// if sum of all weighted inputs is > treshold -> 1   "-2 >-3 => 1"
+			// if sum of all weighted inputs is > treshold -> 1   "-2 > -3 => 1"
 			if (sum <= this.treshold) {
 				return 0;
 			} else {
@@ -206,7 +205,7 @@ const Think = (() => {
 
 	/*----------------------------------------------- NEURON LAYER ---------------------------------------------------
 	(density of neurons per hidden layer, number of inputs,)
-	use "N" class to push neuron into the "neurons" array layer
+	use "N" class to push neuron into the "neurons" array layer, increase density
 	*/
 
 	class Layer {
@@ -245,6 +244,7 @@ const Think = (() => {
 			this.element.ctx.fillStyle = "green";
 		}
 
+		// fill in "x" and "y" arrays, with click coordinates
 		addEL() {
 			this.element.addEventListener("click", e => {
 				x.push(e.offsetX);
@@ -253,21 +253,22 @@ const Think = (() => {
 
 		}
 
-
-
+		// draw points when clicked
 		drawPoints() {
 			for (let i = 0; i < x.length; i++) {
 				this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4); // x, y, w, h
 			}
 		}
 
-
+		// pass data into "line()": 2x + 2
 		learn(alpha) {
 			if (x.length <= 0) return;
 
 			let sum1 = 0;
 			let sum2 = 0;
 
+			// eg.: x [100, 200], y: [200, 300] => sum1: 2 * 100 + 2 - 200 => 2
+			// b is 2 - .... and we adjust its value in the line()
 			for (let i = 0; i < x.length; i++) {
 				sum1 += this.line(x[i]) - y[i];
 				sum2 += (this.line(x[i]) - y[i]) * x[i];
@@ -275,7 +276,6 @@ const Think = (() => {
 
 			b = b - 1000000 * alpha * sum1 / (x.length);
 			m = m - alpha * sum2 / (x.length);
-			return this.element;
 		}
 
 
@@ -305,12 +305,10 @@ const Think = (() => {
 	}
 
 
-
 	const P = (bias, ...weights) => {
 		const obj = new Perceptron(weights, bias)
 		return obj;
 	}
-
 
 	const Line = (selector) =>  {
 		const el = new L(selector);
@@ -319,6 +317,8 @@ const Think = (() => {
 		el.do();
 		return el;
 	}
+
+
 
 	const Net = (ni, no, hidden, density, ...inputs) => {
 		const network = new Network(ni, no, hidden, density);
@@ -338,7 +338,6 @@ const Think = (() => {
 
 let res = Think.P([-2, -2], 3);
 console.log(res.run([0, 1]));
-
 ```
 
 ### Neural network
