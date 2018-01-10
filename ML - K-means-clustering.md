@@ -3,10 +3,10 @@
 1) plot data points (from the array)
 2) create "k" additional points, place them randomly on canvas 
 (cluester centroids, candidates for the center of the cluster)
-3) Repeat:
-* a) assign each data point to the centroid near to it  
-* b) move the centroid to the average position of all the data that belong to it  
-* c) if any centroids moved, repeat, else exit  
+3) Repeat:  
+a) assign each data point to the centroid near to it  
+b) move the centroid to the average position of all the data that belong to it  
+c) if any centroids moved, repeat, else exit  
 
     
 * https://burakkanber.com/blog/machine-learning-k-means-clustering-in-javascript-part-1/
