@@ -58,7 +58,7 @@ const Think = (() => {
 		// multiply each input with correponding weight
 		run(inputs) {
 			let sum = 0.0;
-			for (let i = 0; i <  inputs.length; i++) {
+			for (let i = 0; i < inputs.length; i++) {
 				sum += inputs[i] * this.weights[i]; // += 0, +=-2
 			}
 
