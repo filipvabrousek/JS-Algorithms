@@ -17,7 +17,6 @@ c) if any centroids moved, repeat, else exit
 
     
 
-    
 let canvas; 
 let ctx;
 const height = 400;
@@ -62,21 +61,19 @@ called at the bottom
 function setup() {
     canvas = document.querySelector('canvas');
     ctx = canvas.getContext('2d');
-
     dataExtremes = getDataExtremes(data);
     dataRange = getDataRanges(dataExtremes);
     means = initMeans(3);
-
     assignPoints();
     draw();
-
     setTimeout(run, 2000);
 }
 
 
 
 /*------------------------------------------------------GET DATA RANGES------------------------------------------------------
-get ranges of each dimension from "data" array with the points
+1) pass in "data[]"
+2) fill in ranges array from "data" array with the points
 X ranges from 1 to 11
 Y ranges from 3 to 7
 */
@@ -86,18 +83,17 @@ function getDataRanges(extremes) {
     for (const dimension in extremes){
         ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
     }
-    return ranges;
+    return ranges;  // [9, 10]
+  
 }
 
 
 
 
 /*------------------------------------------------------GET DATA EXTREMES------------------------------------------------------
-loop through all the points, and each dimension in each point 
-
 1) loop through "data" array defined above and get point
 2) loop through points and get extreme data points (min and max)
-
+3) point[dimension] is smaller than current min. (extremes[diemnsion].min), make it the minimum
 */
 
 function getDataExtremes(points) {
@@ -116,6 +112,7 @@ function getDataExtremes(points) {
                 extremes[dimension] = {min: 1000, max: 0};
             }
 
+            // 3
             if (point[dimension] < extremes[dimension].min){
                 extremes[dimension].min = point[dimension];
             }
@@ -136,10 +133,10 @@ function getDataExtremes(points) {
 
 
 
-/*------------------------------------------------------INIT MEANS------------------------------------------------------
+/*------------------------------------------------------INIT MEANS-----------------------------------------------------
 Initalize K random clusters
 creating new points with random coordinates within the ranges and dimensions of our data set
-1) decrease k and fill in MEAN array with dimensions (we get it from dataExtremes array)
+1) decrease k and fill in MEAN (array of 3 arrays) with dimensions (we get it from dataExtremes array)
 */
 function initMeans(k = 3) {
 
@@ -153,8 +150,7 @@ function initMeans(k = 3) {
 
         means.push(mean);
     }
-
-    return means;
+    return means; 
 };
 
 
@@ -195,8 +191,8 @@ function assignPoints() {
 
         assignments[i] = distances.indexOf( Math.min.apply(null, distances) );
         
-          console.log(assignments[i]);
-        console.log("---------------------------")
+         // console.log(assignments[i]);
+        //console.log("---------------------------")
     }
     
   
@@ -209,7 +205,7 @@ function assignPoints() {
 
 
 
-/*------------------------------------------------------MOVE MEANS------------------------------------------------------
+/*------------------------------------------------------MOVE MEANS-----------------------------------------------------
 moving centroids to the position closest to it
 */
 function moveMeans() {
@@ -220,61 +216,54 @@ function moveMeans() {
     const counts = Array( means.length );
     let moved = false;
 
-    for (const j in means)
-    {
+    for (const j in means){
         counts[j] = 0;
         sums[j] = Array( means[j].length );
-        for (var dimension in means[j])
-        {
+        for (var dimension in means[j]) {
             sums[j][dimension] = 0;
         }
     }
 
-    for (const point_index in assignments)
-    {
-        var mean_index = assignments[point_index];
-        const point = data[point_index];
-        const mean = means[mean_index];
+    
+    for (const pointIndex in assignments){
+        var meanIndex = assignments[pointIndex];
+        const point = data[pointIndex];
+        const mean = means[meanIndex];
 
-        counts[mean_index]++;
+        counts[meanIndex]++;
 
-        for (var dimension in mean)
-        {
-            sums[mean_index][dimension] += point[dimension];
+        for (var dimension in mean){
+            sums[meanIndex][dimension] += point[dimension];
         }
     }
 
-    for (var mean_index in sums)
-    {
-        console.log(counts[mean_index]);
-        if ( 0 === counts[mean_index] ) 
-        {
-            sums[mean_index] = means[mean_index];
-            console.log("Mean with no points");
-            console.log(sums[mean_index]);
+    
+//-------------------------------------------3rd loop
+    for (var meanIndex in sums) {
+        //console.log(counts[meanIndex]);
+        
+        if ( 0 === counts[meanIndex] ) {
+            sums[meanIndex] = means[meanIndex];
+            //console.log("Mean with no points");
+           // console.log(sums[meanIndex]);
 
-            for (var dimension in dataExtremes)
-            {
-                sums[mean_index][dimension] = dataExtremes[dimension].min + ( Math.random() * dataRange[dimension] );
+            for (var dimension in dataExtremes) {
+                sums[meanIndex][dimension] = dataExtremes[dimension].min + ( Math.random() * dataRange[dimension] );
             }
             continue;
         }
 
-        for (var dimension in sums[mean_index])
-        {
-            sums[mean_index][dimension] /= counts[mean_index];
+        for (var dimension in sums[meanIndex]){
+            sums[meanIndex][dimension] /= counts[meanIndex];
         }
-    }
+    } // FOR meanIndex end
 
-    if (means.toString() !== sums.toString())
-    {
+    if (means.toString() !== sums.toString()){
         moved = true;
     }
 
     means = sums;
-
     return moved;
-
 }
 
 
@@ -286,12 +275,7 @@ function run() {
 
     const moved = moveMeans();
     draw();
-
-    if (moved)
-    {
-        setTimeout(run, 2000);
-    }
-
+    moved ? setTimeout(run, 2000) :0;
 }
 
 
@@ -309,12 +293,12 @@ function draw() {
     ctx.clearRect(0,0,width, height);
     ctx.globalAlpha = 0.3;
    
-    //----------------------------------
-    for (const point_index in assignments){
+    //------------------------------------------------------------ LOOP THROUGH ASSIGNMENTS
+    for (const pointIndex in assignments){
         
-        const mean_index = assignments[point_index];
-        var point = data[point_index];
-        const mean = means[mean_index];
+        const meanIndex = assignments[pointIndex];
+        var point = data[pointIndex];
+        const mean = means[meanIndex];
 
         ctx.save();
 
@@ -336,7 +320,7 @@ function draw() {
     ctx.globalAlpha = 1;
 
    
-     //----------------------------------
+    //------------------------------------------------------------ LOOP THROUGH DATA
     for (var i in data) {
         ctx.save();
 
@@ -355,7 +339,7 @@ function draw() {
     }
 
     
-    //----------------------------------
+        //------------------------------------------------------------ LOOP THROUGH MEANS
     for (var i in means) {
         ctx.save();
 
@@ -378,17 +362,8 @@ setup();
 
 
 
+
     /*
     <canvas id="canvas" height="400" width="400"></canvas>
-
-
-
-<style>
-        canvas {
-            margin: 1em;
-            border: 1px solid black;
-           
-        }
-</style>
-    */
+*/
 ```
