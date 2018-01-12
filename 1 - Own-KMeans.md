@@ -1,7 +1,6 @@
 
 
 ```js
-
 let canvas; 
 let ctx;
 const height = 400;
@@ -21,6 +20,7 @@ class KMeans {
         this.heigth = 400;
     }
     
+    
     // w, h 400
     make(){
         this.element = document.querySelector(this.selector);
@@ -32,15 +32,30 @@ class KMeans {
         this.means = this.initMeans(3);
         this.assignPoints();
         this.draw();
-        setTimeout(this.run, 2000);
+       //setTimeout(this.run, 2000); // executed at global scope
+        
+        //console.log(KMeans.moveMeans());
+        
+        setTimeout(() => {
+        const moved = this.moveMeans();
+        this.draw();
+        moved ? setTimeout(() => {
+             const moved = this.moveMeans();
+        this.draw(); 
+            
+        }, 2000) : 0;
+        }, 2000)
+        
+       //this.scope = this;// caught
     }
-       
+    
 
 /*------------------------------------------------------GET DATA RANGES------------------------------------------------------
 pass in "data[]"
 fill in ranges array from "data" array with the points, dimension is [x, y]
 */
      getDataRanges(extremes){
+  
      const ranges = [];
         for (const dimension in extremes){
             ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
@@ -144,6 +159,7 @@ move centroids
 */ 
     moveMeans() {
         
+   
     let ms = this.means;
         
     this.assignPoints();
@@ -209,22 +225,38 @@ move centroids
     }
     
 
+ /*
+
+    run() {
     
-    run(){
-        
-        const moved = moveMeans();
+        //console.log(KMeans.moveMeans());
+        const moved = this.moveMeans();
         draw();
         moved ? setTimeout(run, 2000) : 0;
-    }
+        }
+    
+ */
+   
     
     draw(){
        // draw on canvas
+    let el = this.element;
+    el.ctx.clearRect(0,0,this.width, this.height); // make new rectangle
+    el.ctx.globalAlpha = 0.3;
+    
+    for (const pointIndex in this.assignments){
+        const meanIndex = this.assignments[pointIndex];
+        let point = data[pointIndex];
+        const mean = this.means[meanIndex];
+        
+        el.ctx.save();
+        el.ctx.strokeStyle = 'blue';
+    }
     }
     
     
     
-    
-    
+
       
 }
 
@@ -258,9 +290,6 @@ const data = [
 
 let el = new KMeans(data, "canvas");
 el.make();
-el.moveMeans();
-// ranges wont work here
-// <canvas width="400" height="400"></canvas>
     
 ```
 
@@ -270,7 +299,7 @@ el.moveMeans();
 
 
 
-
+## old
 ```
 let canvas; 
 let ctx;
