@@ -16,7 +16,7 @@ class KMeans {
 	}
 
 
-	// w, h 400
+	/*------------------------------------------------------MAKE------------------------------------------------------*/
 	make() {
 		this.element = document.querySelector(this.selector);
 		this.element.ctx = this.element.getContext("2d");
@@ -34,9 +34,9 @@ class KMeans {
 
 
 	/*------------------------------------------------------GET DATA RANGES------------------------------------------------------
-1) pass in extremes array returned from method below
-2) fill in ranges array with range of each dimension (max - min value) 
-*/
+    1) pass in extremes array returned from method below
+    2) fill in ranges array with range of each dimension (max - min value) 
+    */
 	getDataRanges(extremes) {
 		const ranges = [];
 
@@ -81,10 +81,7 @@ class KMeans {
 				}
 
 				//console.log(extremes) - pair of 2 min and max objects
-				//{min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] on min and max object
-
-
-
+				//{min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] returns one of those
 			}
 		}
 
@@ -107,7 +104,6 @@ creating new points with random coordinates within the ranges and dimensions of 
 				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
 
 			}
-
 			this.means.push(mean);
 		}
 		// console.log(this.means);
@@ -116,7 +112,7 @@ creating new points with random coordinates within the ranges and dimensions of 
 
 
 	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
-called by "loop" function and calculate Euclidean distance between each point and cluster center
+called by "loop" function and calculate distance between each point and the cluster center
 assigning all our data points to the centroid closest to it
 */
 	assignPoints() {
@@ -132,19 +128,19 @@ assigning all our data points to the centroid closest to it
 				const mean = means[j];
 				let sum = 0;
 
+                // for each dimension get the difference from mean 
 				for (const dimension in point) {
 					let difference = point[dimension] - mean[dimension];
 					difference *= difference;
 					sum += difference;
 				}
 
-				distances[j] = Math.sqrt(sum);
+				distances[j] = Math.sqrt(sum); // negate multiplication?
+                // centroid 0 or centroid 1 or centroid 2
 			}
 
-			assignments[i] = distances.indexOf(Math.min.apply(null, distances));
-
-			console.log(assignments[i]); // 13 x 2 16 x 1
-			//console.log("---------------------------")
+			assignments[i] = distances.indexOf(Math.min.apply(null, distances)); // get distances
+			console.log(assignments); // array of 0s 2s and 1s (zeros...) [0,1,0,1] -> [0,0, 1, 1] transformed together
 		}
 
 	}
@@ -157,22 +153,26 @@ repeat that until the centroids stop moving
 	moveMeans() {
 		this.assignPoints();
 
+        // "ms" (this.means) is 3 arrays like this: [Array(2), Array(2), Array(2)]
 		let ms = this.means;
-		const sums = Array(ms.length);
-		const counts = Array(ms.length);
+		const sums = Array(ms.length); // empty, same length as "ms"
+		const counts = Array(ms.length); // also empty
 		let moved = false;
 
+         //-------------------------------------------1st loop
 		for (const j in ms) {
-			counts[j] = 0;
+			counts[j] = 0; 
 			sums[j] = Array(ms[j].length);
 			for (var dimension in ms[j]) {
-				sums[j][dimension] = 0;
+				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums"
 			}
 		}
-
-
+       // console.log(sums); //array of 3 points [ARRAY(2) -> [a = sum of all x points assigned to cluster one, b]]
+        
+         //-------------------------------------------3rd loop
+        //"this.assignments" is array with length of 19 and values 0s and 1s and 2s
 		for (const pointIndex in this.assignments) {
-			var meanIndex = this.assignments[pointIndex];
+			let meanIndex = this.assignments[pointIndex];
 			const point = data[pointIndex];
 			const mean = ms[meanIndex];
 
@@ -184,28 +184,15 @@ repeat that until the centroids stop moving
 		}
 
 
-		//-------------------------------------------3rd loop
+		//-------------------------------------------3rd loop GETTIN THE AVERAGE
 		for (var meanIndex in sums) {
-			//console.log(counts[meanIndex]);
-
-			if (0 === counts[meanIndex]) {
-				sums[meanIndex] = ms[meanIndex];
-				//console.log("Mean with no points");
-				// console.log(sums[meanIndex]);
-
-				for (var dimension in this.dataExtremes) {
-					sums[meanIndex][dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
-				}
-				continue;
-			}
-
+            // mean with no points, add...
 			for (var dimension in sums[meanIndex]) {
 				sums[meanIndex][dimension] /= counts[meanIndex];
 			}
 		}
 
-
-
+        // if mean is different from sums, the center has moved
 		if (this.means.toString() !== sums.toString()) {
 			moved = true;
 		}
@@ -280,10 +267,7 @@ repeat that until the centroids stop moving
 			ctx.closePath();
 			ctx.restore();
 		}
-
 	}
-
-
 
 }
 
@@ -318,13 +302,14 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
+        
   
-    
+ 
 ```
 
 ## Lines
 ```js
- //------------------------------------------------------------ DRAW THE BLUE LINES (uncomment, fix)
+  //------------------------------------------------------------ DRAW THE BLUE LINES (uncomment, fix)
     /*
     for (const pointIndex in this.assignments){
         
@@ -350,6 +335,22 @@ el.make();
         ctx.restore();
     }
     
+*/
+    
+// 2nd assignment
+/*
+
+console.log(counts[meanIndex]);
+			if (0 === counts[meanIndex]) {
+				sums[meanIndex] = ms[meanIndex];
+				console.log("Mean with no points");
+				// console.log(sums[meanIndex]);
+
+				for (var dimension in this.dataExtremes) {
+					sums[meanIndex][dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
+				}
+				continue;
+			}
 */
     
 ```
