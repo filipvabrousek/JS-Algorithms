@@ -2,15 +2,17 @@
 * fix lines, add to Think.js
 
 ```js
+    
+
 class KMeans {
 	constructor(data, selector) {
 		this.data = data;
 		this.selector = selector || null;
-		this.means = [];
-		this.assignments = [];
-		this.range = null; // change
-		this.dataExtremes = null;
-		this.element = null;
+		this.means = []; // centroids
+		this.assignments = []; // will be array of 0s 1s and 2s
+		this.range = null; // [9, 10]
+		this.dataExtremes = null; // array of 2 min and max objects
+		this.element = null; // <canvas>
 		this.width = 400;
 		this.height = 400;
 	}
@@ -34,7 +36,7 @@ class KMeans {
 
 
 	/*------------------------------------------------------GET DATA RANGES------------------------------------------------------
-    1) pass in extremes array returned from method below
+    1) pass in extremes array returned from "getDataExtremes" below
     2) fill in ranges array with range of each dimension (max - min value) 
     */
 	getDataRanges(extremes) {
@@ -58,17 +60,15 @@ class KMeans {
 
 		let data = this.data;
 
+        // this loop exists just because we want to get every single "point" [x, y]
 		for (const i in data) {
-			// 1
+			// 1 [x, y]
 			const point = data[i];
 
-			// 2
+			// 2 extremes[x]
 			for (const dimension in point) {
 				if (!extremes[dimension]) {
-					extremes[dimension] = {
-						min: 1000,
-						max: 0
-					};
+					extremes[dimension] = {min: 1000, max: 0};
 				}
 
 				// 3
@@ -80,7 +80,7 @@ class KMeans {
 					extremes[dimension].max = point[dimension];
 				}
 
-				//console.log(extremes) - pair of 2 min and max objects
+				//console.log(extremes); - array of 2 min and max objects
 				//{min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] returns one of those
 			}
 		}
@@ -92,9 +92,9 @@ class KMeans {
 
 
 	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
-Initalize K random clusters
-creating new points with random coordinates within the ranges and dimensions of our data set
-*/
+    initalize K random clusters
+    creating new points with random coordinates within the ranges and dimensions of our data set
+    */
 	initMeans(k = 3) {
 
 		while (k--) {
@@ -102,12 +102,10 @@ creating new points with random coordinates within the ranges and dimensions of 
 
 			for (const dimension in this.dataExtremes) {
 				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
-
 			}
 			this.means.push(mean);
 		}
-		// console.log(this.means);
-		return this.means;
+		return this.means; // (3) [Array(2), Array(2), Array(2)]
 	}
 
 
@@ -120,10 +118,12 @@ assigning all our data points to the centroid closest to it
 		let means = this.means;
 		let assignments = this.assignments;
 
+        // this loop exists just because we need to get the every single "point"
 		for (const i in data) {
 			const point = data[i];
 			const distances = [];
 
+            // this loop exists just because we want to get the every single "mean"
 			for (const j in means) {
 				const mean = means[j];
 				let sum = 0;
@@ -146,7 +146,7 @@ assigning all our data points to the centroid closest to it
 	}
 
 
-	/*
+/*------------------------------------------------------MOVE MEANS ------------------------------------------------------
 moving the centroids to the average position of all the data points assigned to it
 repeat that until the centroids stop moving
    */
@@ -172,14 +172,17 @@ repeat that until the centroids stop moving
          //-------------------------------------------3rd loop
         //"this.assignments" is array with length of 19 and values 0s and 1s and 2s
 		for (const pointIndex in this.assignments) {
-			let meanIndex = this.assignments[pointIndex];
+			let meanIndex = this.assignments[pointIndex]; // 0 or 1 or 2 - one of the 3 centroids
 			const point = data[pointIndex];
 			const mean = ms[meanIndex];
 
 			counts[meanIndex]++;
 
 			for (var dimension in mean) {
+                //console.log("before " + sums[meanIndex][dimension]);
 				sums[meanIndex][dimension] += point[dimension];
+                //console.log("after " + sums[meanIndex][dimension]);
+                console.log(sums)
 			}
 		}
 
@@ -203,7 +206,7 @@ repeat that until the centroids stop moving
 	}
 
 
-
+    // update and redraw
 	run() {
 		const moved = this.moveMeans();
 		this.draw();
@@ -269,6 +272,7 @@ repeat that until the centroids stop moving
 		}
 	}
 
+
 }
 
 
@@ -303,7 +307,6 @@ let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
         
-  
  
 ```
 
