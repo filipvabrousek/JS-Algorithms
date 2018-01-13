@@ -1,8 +1,7 @@
 # Own KMeans
+* too many points, lines don't show
 
 ```js
-
-
 class KMeans {
 	constructor(data, selector) {
 		this.data = data;
@@ -27,10 +26,10 @@ class KMeans {
 		this.means = this.initMeans(3);
 		this.assignPoints();
 		this.draw();
-	
-        this.run = this.run.bind(this);
-        setTimeout(this.run, 2000);
-        
+
+		this.run = this.run.bind(this);
+		setTimeout(this.run, 2000);
+
 
 	}
 
@@ -146,11 +145,9 @@ class KMeans {
 	move centroids
 	*/
 	moveMeans() {
-
-
+		this.assignPoints();
 		let ms = this.means;
 
-		this.assignPoints();
 
 		const sums = Array(ms.length); // Array.from
 		const counts = Array(ms.length);
@@ -213,21 +210,23 @@ class KMeans {
 	}
 
 
- run() {
-    //console.log(this.self);
-   const moved = this.moveMeans();
-    this.draw();
-    moved ? setTimeout(this.run, 2000):0;
-    }
+	run() {
+		const moved = this.moveMeans();
+		this.draw();
+		moved ? setTimeout(this.run, 2000) : 0;
+	}
+
 
 
 	draw() {
 		// draw on canvas
-        console.log(this)
+		console.log(this);
 		let el = this.element;
 		el.ctx.clearRect(0, 0, this.width, this.height); // make new rectangle
 		el.ctx.globalAlpha = 0.3;
 
+
+		//---------------------------------------------------------------- 1 DRAW THE LINES
 		for (const pointIndex in this.assignments) {
 			const meanIndex = this.assignments[pointIndex];
 			let point = this.data[pointIndex];
@@ -246,6 +245,8 @@ class KMeans {
 				(mean[1] - this.dataExtremes[1].min + 1) * (this.height / (this.range[1] + 2))
 			);
 
+
+
 			el.ctx.stroke();
 			el.ctx.closePath();
 			el.ctx.restore();
@@ -254,12 +255,12 @@ class KMeans {
 		el.ctx.globalAlpha = 1;
 
 
-		//---------------------------------LOOP
+		//---------------------------------------------------------------- 1 DRAW THE BORDER
 		for (var i in this.data) {
 			el.ctx.save();
 
 			let point = this.data[i];
-            
+
 
 			let x = (point[0] - this.dataExtremes[0].min + 1) *  (this.width / this.range[0] + 2);
 			let y = (point[1] - this.dataExtremes[1].min + 1) *  (this.width / this.range[1] + 2);
@@ -273,6 +274,8 @@ class KMeans {
 			el.ctx.restore();
 		}
 
+
+		//---------------------------------------------------------------- 1 DRAW THE POINTS
 		for (var i in this.means) {
 			el.ctx.save();
 
@@ -290,8 +293,8 @@ class KMeans {
 			el.ctx.restore();
 		}
 	}
-    
-   
+
+
 
 
 }
@@ -331,5 +334,4 @@ el.make();
 //el.moveMeans();
 // ranges wont work here
 // <canvas width="400" height="400"></canvas>
-
 ```
