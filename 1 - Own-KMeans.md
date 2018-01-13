@@ -1,5 +1,5 @@
 # Own KMeans
-* are the points displaying correctly ?, fix lines
+* fix lines, add to Think.js
 
 ```js
 
