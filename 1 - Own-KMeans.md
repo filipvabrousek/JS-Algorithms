@@ -108,6 +108,11 @@ class KMeans {
 		return this.means; // (3) [Array(2), Array(2), Array(2)]
 	}
 
+    
+    
+    
+    
+    
 
 	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
 called by "loop" function and calculate distance between each point and the cluster center
@@ -145,15 +150,23 @@ assigning all our data points to the centroid closest to it
 
 	}
 
+    
+    
+    
+    
+    
+    
+    
 
 /*------------------------------------------------------MOVE MEANS ------------------------------------------------------
 moving the centroids to the average position of all the data points assigned to it
 repeat that until the centroids stop moving
+1 - "ms" (this.means) is 3 arrays like this: [Array(2), Array(2), Array(2)]
    */
 	moveMeans() {
 		this.assignPoints();
 
-        // "ms" (this.means) is 3 arrays like this: [Array(2), Array(2), Array(2)]
+        // 1
 		let ms = this.means;
 		const sums = Array(ms.length); // empty, same length as "ms"
 		const counts = Array(ms.length); // also empty
@@ -167,7 +180,7 @@ repeat that until the centroids stop moving
 				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums"
 			}
 		}
-       // console.log(sums); //array of 3 points [ARRAY(2) -> [a = sum of all x points assigned to cluster one, b]]
+       //"sums" is array of 3 points [ARRAY(2)]
         
          //-------------------------------------------3rd loop
         //"this.assignments" is array with length of 19 and values 0s and 1s and 2s
