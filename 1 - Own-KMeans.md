@@ -2,6 +2,7 @@
 * too many points, lines don't show
 
 ```js
+
 class KMeans {
 	constructor(data, selector) {
 		this.data = data;
@@ -81,8 +82,7 @@ class KMeans {
 		}
 
 
-		//console.log(extremes)
-		return extremes; // {min: 1, max: 10} {min:1, max:1}
+		return extremes; // OBJECT: {min: 1, max: 10} {min:1, max:1}
 
 	}
 
@@ -100,12 +100,10 @@ class KMeans {
 
 			this.means.push(mean);
 		}
-		//console.log(this.means);
 		return this.means; // 3 array, each has 2 numbers in it (random)
 	}
 
 
-	// Really understand!!!
 
 	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
 	1) calculate distance between each point and the cluster center
@@ -115,14 +113,17 @@ class KMeans {
 
 	assignPoints() {
 
+        let ms = this.means;
+        let data = this.data; // remove?
+        
 		// 1
 		for (const i in data) {
 			const point = data[i];
 			const distances = [];
 
 			// 2
-			for (const j in this.means) {
-				const mean = this.means[j];
+			for (const j in ms) {
+				const mean = ms[j];
 				let sum = 0;
 				// 3
 				for (const dimension in point) {
@@ -145,10 +146,13 @@ class KMeans {
 	move centroids
 	*/
 	moveMeans() {
-		this.assignPoints();
-		let ms = this.means;
-
-
+        this.assignPoints();
+        
+        let extremes = this.dataExtremes;
+        let assignments = this.assignments;
+        let ms = this.means;
+        
+	
 		const sums = Array(ms.length); // Array.from
 		const counts = Array(ms.length);
 		let moved = false;
@@ -167,10 +171,10 @@ class KMeans {
 
 		//-------------------------------------2nd LOOP  
 		// assignments just an arrays of [pointIndex, centerIndex]
-		for (const pointIndex in this.assignments) {
-			let meanIndex = this.assignments[pointIndex];
+		for (const pointIndex in assignments) {
+			let meanIndex = assignments[pointIndex];
 			const point = data[pointIndex];
-			const mean = this.means[meanIndex];
+			const mean = ms[meanIndex];
 
 			counts[meanIndex] += 1; // ++
 
@@ -186,7 +190,7 @@ class KMeans {
 				sums[meanIndex] = this.means[meanIndex];
 
 				for (let dimension in this.dataExtremes) {
-					sums[meanIndex][dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
+					sums[meanIndex][dimension] = extremes[dimension].min + (Math.random() * this.range[dimension]);
 				}
 				continue;
 
@@ -198,13 +202,14 @@ class KMeans {
 		} // FOR meanIndex end
 
 
-		if (this.means.toString() !== sums.toString()) {
+        // check if anything moved (positions are not equal)
+		if (ms.toString() !== sums.toString()) {
 			moved = true;
 		}
 
 
-		this.means = sums;
-		//console.log(sums); // Array of 3 array (each with 3 members)
+		ms = sums;
+		console.log(sums); // Array of 3 array (each with 3 members)
 		return moved;
 
 	}
@@ -218,83 +223,79 @@ class KMeans {
 
 
 
-	draw() {
-		// draw on canvas
-		console.log(this);
-		let el = this.element;
-		el.ctx.clearRect(0, 0, this.width, this.height); // make new rectangle
-		el.ctx.globalAlpha = 0.3;
+    
+draw() {
+	let el = this.element;
+    let extremes = this.dataExtremes;
+    let range = this.range;
+    
+    el.ctx.clearRect(0,0,this.width, this.height);
+    el.ctx.globalAlpha = 0.3;
+   
+    //------------------------------------------------------------ LOOP THROUGH ASSIGNMENTS
+    for (const pointIndex in this.assignments){
+        
+        const meanIndex = this.assignments[pointIndex];
+        var point = this.data[pointIndex];
+        const mean = this.means[meanIndex];
 
+        el.ctx.save();
 
-		//---------------------------------------------------------------- 1 DRAW THE LINES
-		for (const pointIndex in this.assignments) {
-			const meanIndex = this.assignments[pointIndex];
-			let point = this.data[pointIndex];
-			const mean = this.means[meanIndex];
+        el.ctx.strokeStyle = 'blue';
+        el.ctx.beginPath();
+        el.ctx.moveTo(
+            (point[0] - extremes[0].min + 1) * (this.width / (range[0] + 2) ),
+            (point[1] - extremes[1].min + 1) * (this.height / (range[1] + 2) )
+        );
+        el.ctx.lineTo(
+            (mean[0] - extremes[0].min + 1) * (this.width / (range[0] + 2) ),
+            (mean[1] - extremes[1].min + 1) * (this.height / (range[1] + 2) )
+        );
+        el.ctx.stroke();
+        el.ctx.closePath();
+        el.ctx.restore();
+    }
+    
+    el.ctx.globalAlpha = 1;
 
-			el.ctx.save();
-			el.ctx.strokeStyle = 'blue';
-			el.ctx.beginPath();
-			el.ctx.moveTo(
-				(point[0] - this.dataExtremes[0].min + 1) * (this.width / (this.range[0] + 2)),
-				(point[1] - this.dataExtremes[1].min + 1) * (this.height / (this.range[1] + 2))
-			);
+   
+    //------------------------------------------------------------ LOOP THROUGH DATA
+    for (var i in this.data) {
+        el.ctx.save();
 
-			el.ctx.lineTo(
-				(mean[0] - this.dataExtremes[0].min + 1) * (this.width / (this.range[0] + 2)),
-				(mean[1] - this.dataExtremes[1].min + 1) * (this.height / (this.range[1] + 2))
-			);
+        var point = this.data[i];
 
+        var x = (point[0] - extremes[0].min + 1) * (this.width / (range[0] + 2) );
+        var y = (point[1] - extremes[1].min + 1) * (this.height / (range[1] + 2) );
 
+        el.ctx.strokeStyle = '#333333';
+        el.ctx.translate(x, y);
+        el.ctx.beginPath();
+        el.ctx.arc(0, 0, 5, 0, Math.PI*2, true);
+        el.ctx.stroke();
+        el.ctx.closePath();
+        el.ctx.restore();
+    }
 
-			el.ctx.stroke();
-			el.ctx.closePath();
-			el.ctx.restore();
-		}
+    
+        //------------------------------------------------------------ LOOP THROUGH MEANS
+    for (var i in this.means) {
+        el.ctx.save();
 
-		el.ctx.globalAlpha = 1;
+        var point = this.means[i];
 
+        var x = (point[0] - extremes[0].min + 1) * (this.width / (range[0] + 2) );
+        var y = (point[1] - extremes[1].min + 1) * (this.height / (range[1] + 2) );
 
-		//---------------------------------------------------------------- 1 DRAW THE BORDER
-		for (var i in this.data) {
-			el.ctx.save();
-
-			let point = this.data[i];
-
-
-			let x = (point[0] - this.dataExtremes[0].min + 1) *  (this.width / this.range[0] + 2);
-			let y = (point[1] - this.dataExtremes[1].min + 1) *  (this.width / this.range[1] + 2);
-
-			el.ctx.strokeStyle = "#333333";
-			el.ctx.translate(x, y); // move origin
-			el.ctx.beginPath();
-			el.ctx.arc(0, 0, 5, 0, Math.PI * 2, true); // ?
-			el.ctx.stroke();
-			el.ctx.closePath();
-			el.ctx.restore();
-		}
-
-
-		//---------------------------------------------------------------- 1 DRAW THE POINTS
-		for (var i in this.means) {
-			el.ctx.save();
-
-			let point = this.means[i];
-
-			let x = (point[0] - this.dataExtremes[0].min + 1) *  (this.width / this.range[0] + 2);
-			let y = (point[1] - this.dataExtremes[1].min + 1) *  (this.width / this.range[1] + 2);
-
-			el.ctx.fillStyle = "green";
-			el.ctx.translate(x, y);
-			el.ctx.beginPath();
-			el.ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
-			el.ctx.fill();
-			el.ctx.closePath();
-			el.ctx.restore();
-		}
-	}
-
-
+        el.ctx.fillStyle = 'green';
+        el.ctx.translate(x, y);
+        el.ctx.beginPath();
+        el.ctx.arc(0, 0, 5, 0, Math.PI*2, true);
+        el.ctx.fill();
+        el.ctx.closePath();
+        el.ctx.restore();
+    }
+}
 
 
 }
@@ -330,8 +331,5 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 
-
-//el.moveMeans();
-// ranges wont work here
 // <canvas width="400" height="400"></canvas>
 ```
