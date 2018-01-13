@@ -2,7 +2,6 @@
 * fix lines, add to Think.js
 
 ```js
-
 class KMeans {
 	constructor(data, selector) {
 		this.data = data;
@@ -22,270 +21,268 @@ class KMeans {
 		this.element = document.querySelector(this.selector);
 		this.element.ctx = this.element.getContext("2d");
 		this.dataExtremes = this.getDataExtremes(this.data);
-
 		this.range = this.getDataRanges(this.dataExtremes); // get ranges from extremes 
 		this.means = this.initMeans(3);
 		this.assignPoints();
 		this.draw();
 
-        
+		// call run every 2 sec.
 		this.run = this.run.bind(this);
 		setTimeout(this.run, 2000);
+	}
 
+
+
+	/*------------------------------------------------------GET DATA RANGES------------------------------------------------------
+1) pass in extremes array returned from method below
+2) fill in ranges array with range of each dimension (max - min value) 
+*/
+	getDataRanges(extremes) {
+		const ranges = [];
+
+		for (const dimension in extremes) {
+			ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
+		}
+		return ranges; // [9, 10]
+	}
+
+
+
+	/*------------------------------------------------------GET DATA EXTREMES------------------------------------------------------
+	1) get each point ([x,y]) from the points array
+	2) loop through points and get extreme data points (min and max) [x, y] pair
+	3) if point[dimension] is smaller than current min. (extremes[diemnsion].min), make it the minimum
+	*/
+	getDataExtremes(points) {
+		const extremes = [];
+
+		let data = this.data;
+
+		for (const i in data) {
+			// 1
+			const point = data[i];
+
+			// 2
+			for (const dimension in point) {
+				if (!extremes[dimension]) {
+					extremes[dimension] = {
+						min: 1000,
+						max: 0
+					};
+				}
+
+				// 3
+				if (point[dimension] < extremes[dimension].min) {
+					extremes[dimension].min = point[dimension];
+				}
+
+				if (point[dimension] > extremes[dimension].max) {
+					extremes[dimension].max = point[dimension];
+				}
+
+				//console.log(extremes) - pair of 2 min and max objects
+				//{min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] on min and max object
+
+
+
+			}
+		}
+
+		return extremes;
+	}
+
+
+
+
+	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
+Initalize K random clusters
+creating new points with random coordinates within the ranges and dimensions of our data set
+*/
+	initMeans(k = 3) {
+
+		while (k--) {
+			const mean = [];
+
+			for (const dimension in this.dataExtremes) {
+				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
+
+			}
+
+			this.means.push(mean);
+		}
+		// console.log(this.means);
+		return this.means;
+	}
+
+
+	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
+called by "loop" function and calculate Euclidean distance between each point and cluster center
+assigning all our data points to the centroid closest to it
+*/
+	assignPoints() {
+		let data = this.data;
+		let means = this.means;
+		let assignments = this.assignments;
+
+		for (const i in data) {
+			const point = data[i];
+			const distances = [];
+
+			for (const j in means) {
+				const mean = means[j];
+				let sum = 0;
+
+				for (const dimension in point) {
+					let difference = point[dimension] - mean[dimension];
+					difference *= difference;
+					sum += difference;
+				}
+
+				distances[j] = Math.sqrt(sum);
+			}
+
+			assignments[i] = distances.indexOf(Math.min.apply(null, distances));
+
+			console.log(assignments[i]); // 13 x 2 16 x 1
+			//console.log("---------------------------")
+		}
 
 	}
 
-    getDataRanges(extremes){
-     const ranges = [];
 
-    for (const dimension in extremes){
-        ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
-    }
-    return ranges;  // [9, 10]
-    }
-    
-    
-    
-    getDataExtremes(points){
-        const extremes = [];
+	/*
+moving the centroids to the average position of all the data points assigned to it
+repeat that until the centroids stop moving
+   */
+	moveMeans() {
+		this.assignPoints();
 
-        let data = this.data;
-        
-    for (const i in data)
-    {
-        // 1
-        const point = data[i];
+		let ms = this.means;
+		const sums = Array(ms.length);
+		const counts = Array(ms.length);
+		let moved = false;
 
-        // 2
-        for (const dimension in point)
-        {
-            if ( ! extremes[dimension] ){
-                extremes[dimension] = {min: 1000, max: 0};
-            }
-
-            // 3
-            if (point[dimension] < extremes[dimension].min){
-                extremes[dimension].min = point[dimension];
-            }
-
-            if (point[dimension] > extremes[dimension].max){
-                extremes[dimension].max = point[dimension];
-            }
-        }
-    }
-console.log(extremes);
-    return extremes;
-    }
-    
-    initMeans(k = 3){
-         // 1
-    while (k--) {
-        const mean = [];
-
-        for (const dimension in this.dataExtremes){
-            mean[dimension] = this.dataExtremes[dimension].min + ( Math.random() * this.range[dimension] );
-        }
-
-        this.means.push(mean);
-    }
-   // console.log(this.means);
-    return this.means; 
-    }
-    
-    
-    
-    assignPoints(){
-        let data = this.data;
-        let means = this.means;
-        let assignments = this.assignments;
-        
-    for (const i in data)
-    {
-        const point = data[i];
-        const distances = [];
-
-        for (const j in means)
-        {
-            const mean = means[j];
-            let sum = 0;
-
-            for (const dimension in point)
-            {
-                let difference = point[dimension] - mean[dimension];
-                difference *= difference;
-                sum += difference;
-            }
-
-            distances[j] = Math.sqrt(sum);
-        }
-
-        assignments[i] = distances.indexOf( Math.min.apply(null, distances) );
-        
-          console.log(assignments[i]); // 13 x 2 16 x 1
-        //console.log("---------------------------")
-    }
-    
-    }
-    
-    moveMeans(){
-         this.assignPoints();
-
-        
-    let ms = this.means;
-        
-    const sums = Array( ms.length );
-    const counts = Array( ms.length );
-    let moved = false;
-
-    for (const j in ms){
-        counts[j] = 0;
-        sums[j] = Array( ms[j].length );
-        for (var dimension in ms[j]) {
-            sums[j][dimension] = 0;
-        }
-    }
-
-    
-    for (const pointIndex in this.assignments){
-        var meanIndex = this.assignments[pointIndex];
-        const point = data[pointIndex];
-        const mean = ms[meanIndex];
-
-        counts[meanIndex]++;
-
-        for (var dimension in mean){
-            sums[meanIndex][dimension] += point[dimension];
-        }
-    }
-
-    
-//-------------------------------------------3rd loop
-    for (var meanIndex in sums) {
-        //console.log(counts[meanIndex]);
-        
-        if ( 0 === counts[meanIndex] ) {
-            sums[meanIndex] = ms[meanIndex];
-            //console.log("Mean with no points");
-           // console.log(sums[meanIndex]);
-
-            for (var dimension in this.dataExtremes) {
-                sums[meanIndex][dimension] = this.dataExtremes[dimension].min + ( Math.random() * this.range[dimension] );
-            }
-            continue;
-        }
-
-        for (var dimension in sums[meanIndex]){
-            sums[meanIndex][dimension] /= counts[meanIndex];
-        }
-    } // FOR meanIndex end
-
-    if (this.means.toString() !== sums.toString()){
-        moved = true;
-    }
-
-    this.means = sums;
-    console.log(moved);
-    return moved;
-    }
-    
-    
-    
-    run(){
-        const moved = this.moveMeans();
-    this.draw();
-    moved ? setTimeout(this.run, 2000) :0;
-    }
-    
-    
-    
-    draw(){
-     // moved 2 times false once true   
-    // works :D
-        
-    const width = 400;
-    const height = 400;
-        
-        
-
-    let extremes = this.dataExtremes;
-    let range = this.range;
-        
-    let ctx = this.element.ctx;
-    ctx.clearRect(0,0,this.width, this.height);
-    ctx.globalAlpha = 0.3;
-   
-        
-        
-    //------------------------------------------------------------ DRAW THE BLUE LINES (uncomment, fix)
-    /*
-    for (const pointIndex in this.assignments){
-        
-        const meanIndex = this.assignments[pointIndex];
-        var point = this.data[pointIndex];
-        const mean = this.means[meanIndex];
-
-        ctx.save();
-
-        ctx.strokeStyle = 'blue';
-        ctx.beginPath();
-        ctx.lineWidth = 2;
-        ctx.moveTo(
-            (point[0] - extremes[0].min + 1) * (width / ([0] + 2) ),
-            (point[1] - extremes[1].min + 1) * (height / (range[1] + 2) )
-        );
-        ctx.lineTo(
-            (mean[0] - extremes[0].min + 1) * (width / (range[0] + 2) ),
-            (mean[1] - extremes[1].min + 1) * (height / (range[1] + 2) )
-        );
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore();
-    }
-    
-*/
-        ctx.globalAlpha = 1;
-     //------------------------------------------------------------ DRAW GREY POINTS
-    for (var i in data) {
-        ctx.save();
-
-        var point = data[i];
-
-        var x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2) );
-        var y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2) );
-
-        ctx.strokeStyle = '#333333';
-        ctx.translate(x, y);
-        ctx.beginPath();
-        ctx.arc(0, 0, 5, 0, Math.PI*2, true);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore();
-    }
-        
-    
-    //------------------------------------------------------------ DRAW GREEN POINTS
-    for (var i in this.means) {
-        ctx.save();
-
-        var point = this.means[i];
-
-        var x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2) );
-        var y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2) );
-
-      
-        ctx.fillStyle = 'green';
-        ctx.translate(x, y);
-        ctx.beginPath();
-        ctx.arc(0, 0, 5, 0, Math.PI*2, true);
-        ctx.fill();
-        ctx.closePath();
-        ctx.restore();
-    }
+		for (const j in ms) {
+			counts[j] = 0;
+			sums[j] = Array(ms[j].length);
+			for (var dimension in ms[j]) {
+				sums[j][dimension] = 0;
+			}
+		}
 
 
-        
-    }
-   
+		for (const pointIndex in this.assignments) {
+			var meanIndex = this.assignments[pointIndex];
+			const point = data[pointIndex];
+			const mean = ms[meanIndex];
+
+			counts[meanIndex]++;
+
+			for (var dimension in mean) {
+				sums[meanIndex][dimension] += point[dimension];
+			}
+		}
+
+
+		//-------------------------------------------3rd loop
+		for (var meanIndex in sums) {
+			//console.log(counts[meanIndex]);
+
+			if (0 === counts[meanIndex]) {
+				sums[meanIndex] = ms[meanIndex];
+				//console.log("Mean with no points");
+				// console.log(sums[meanIndex]);
+
+				for (var dimension in this.dataExtremes) {
+					sums[meanIndex][dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
+				}
+				continue;
+			}
+
+			for (var dimension in sums[meanIndex]) {
+				sums[meanIndex][dimension] /= counts[meanIndex];
+			}
+		}
+
+
+
+		if (this.means.toString() !== sums.toString()) {
+			moved = true;
+		}
+
+		this.means = sums;
+		console.log(moved);
+		return moved;
+	}
+
+
+
+	run() {
+		const moved = this.moveMeans();
+		this.draw();
+		moved ? setTimeout(this.run, 2000) : 0;
+	}
+
+
+
+
+
+	draw() {
+
+		const width = 400;
+		const height = 400;
+
+		let extremes = this.dataExtremes;
+		let range = this.range;
+
+		let ctx = this.element.ctx;
+		ctx.clearRect(0, 0, this.width, this.height);
+
+
+		// to add blue lines insert loop here, globAlpha 0.3?
+
+
+		ctx.globalAlpha = 1;
+		//------------------------------------------------------------ DRAW GREY POINTS
+		for (var i in data) {
+			ctx.save();
+
+			var point = data[i];
+
+			var x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
+			var y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
+
+			ctx.strokeStyle = '#333333';
+			ctx.translate(x, y);
+			ctx.beginPath();
+			ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
+			ctx.stroke();
+			ctx.closePath();
+			ctx.restore();
+		}
+
+
+		//------------------------------------------------------------ DRAW GREEN POINTS
+		for (var i in this.means) {
+			ctx.save();
+
+			var point = this.means[i];
+
+			var x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
+			var y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
+
+
+			ctx.fillStyle = 'green';
+			ctx.translate(x, y);
+			ctx.beginPath();
+			ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
+			ctx.fill();
+			ctx.closePath();
+			ctx.restore();
+		}
+
+	}
+
 
 
 }
@@ -322,5 +319,37 @@ let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
   
+    
+```
+
+## Lines
+```js
+ //------------------------------------------------------------ DRAW THE BLUE LINES (uncomment, fix)
+    /*
+    for (const pointIndex in this.assignments){
+        
+        const meanIndex = this.assignments[pointIndex];
+        var point = this.data[pointIndex];
+        const mean = this.means[meanIndex];
+
+        ctx.save();
+
+        ctx.strokeStyle = 'blue';
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.moveTo(
+            (point[0] - extremes[0].min + 1) * (width / ([0] + 2) ),
+            (point[1] - extremes[1].min + 1) * (height / (range[1] + 2) )
+        );
+        ctx.lineTo(
+            (mean[0] - extremes[0].min + 1) * (width / (range[0] + 2) ),
+            (mean[1] - extremes[1].min + 1) * (height / (range[1] + 2) )
+        );
+        ctx.stroke();
+        ctx.closePath();
+        ctx.restore();
+    }
+    
+*/
     
 ```
