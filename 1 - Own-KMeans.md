@@ -3,12 +3,6 @@
 ```js
 
 
-let canvas;
-let ctx;
-const height = 400;
-const width = 400;
-
-
 class KMeans {
 	constructor(data, selector) {
 		this.data = data;
@@ -30,25 +24,14 @@ class KMeans {
 		this.dataExtremes = this.getDataExtremes(this.data);
 
 		this.range = this.getDataRanges(this.dataExtremes); // get ranges from extremes 
-		// console.log(this.range) 9,10 - WORKS here!
 		this.means = this.initMeans(3);
 		this.assignPoints();
 		this.draw();
-		//setTimeout(this.run, 2000); // executed at global scope
+	
+        this.run = this.run.bind(this);
+        setTimeout(this.run, 2000);
+        
 
-		//console.log(KMeans.moveMeans());
-
-		setTimeout(() => {
-			const moved = this.moveMeans();
-			this.draw();
-			moved ? setTimeout(() => {
-				const moved = this.moveMeans();
-				this.draw();
-
-			}, 2000) : 0;
-		}, 2000)
-
-		//this.scope = this;// caught
 	}
 
 
@@ -181,7 +164,7 @@ class KMeans {
 			for (let dimension in ms[j]) { // var ?
 				sums[j][dimension] = 0;
 			}
-			console.log("J " + j); // 0, 1, 2
+			//console.log("J " + j); // 0, 1, 2
 		}
 
 
@@ -224,27 +207,23 @@ class KMeans {
 
 
 		this.means = sums;
-		console.log(sums); // Array of 3 array (each with 3 members)
+		//console.log(sums); // Array of 3 array (each with 3 members)
 		return moved;
 
 	}
 
 
-	/*
-
-	   run() {
-	   
-	       //console.log(KMeans.moveMeans());
-	       const moved = this.moveMeans();
-	       draw();
-	       moved ? setTimeout(run, 2000) : 0;
-	       }
-	   
-	*/
+ run() {
+    //console.log(this.self);
+   const moved = this.moveMeans();
+    this.draw();
+    moved ? setTimeout(this.run, 2000):0;
+    }
 
 
 	draw() {
 		// draw on canvas
+        console.log(this)
 		let el = this.element;
 		el.ctx.clearRect(0, 0, this.width, this.height); // make new rectangle
 		el.ctx.globalAlpha = 0.3;
@@ -263,8 +242,8 @@ class KMeans {
 			);
 
 			el.ctx.lineTo(
-				(point[0] - this.dataExtremes[0].min + 1) * (this.width / (this.range[0] + 2)),
-				(point[1] - this.dataExtremes[1].min + 1) * (this.height / (this.range[1] + 2))
+				(mean[0] - this.dataExtremes[0].min + 1) * (this.width / (this.range[0] + 2)),
+				(mean[1] - this.dataExtremes[1].min + 1) * (this.height / (this.range[1] + 2))
 			);
 
 			el.ctx.stroke();
@@ -280,6 +259,7 @@ class KMeans {
 			el.ctx.save();
 
 			let point = this.data[i];
+            
 
 			let x = (point[0] - this.dataExtremes[0].min + 1) *  (this.width / this.range[0] + 2);
 			let y = (point[1] - this.dataExtremes[1].min + 1) *  (this.width / this.range[1] + 2);
@@ -310,7 +290,8 @@ class KMeans {
 			el.ctx.restore();
 		}
 	}
-
+    
+   
 
 
 }
@@ -345,6 +326,7 @@ const data = [
 
 let el = new KMeans(data, "canvas");
 el.make();
+
 
 //el.moveMeans();
 // ranges wont work here
