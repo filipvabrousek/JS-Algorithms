@@ -1,8 +1,16 @@
 # Own KMeans
-* fix lines, add to Think.js
+1) **points** - array we defined
+2) **getExtremes** - we loop through dimensions and fill "extremes" array - with those objects {min: 1000, max: 0};
+3) **getRanges** - we loop through "extremes" and get the difference (fill in "ranges")  [9, 10]
+4) **initMeans** - we create 3 random candidates for "centroid" within "extremes" and "ranges" (we get means array)
+5) **assignments** - we get the differences between "point[dimension] - mean[dimension]" add them to one sum, fill "distances" array with sums
+5.1) fill in "assignments" with indexes of lowest numbers from distance array
+6) **moveMeans** - fill in sums (get the average position) if "mean" is different from "sums" moved is true
+7) **run** - as long as moved is true, call "moveMeans" again and redraw the scene using "draw" on the canvas 
+
+* to-do: drawlines, add to Think.js
 
 ```js
-    
 
 class KMeans {
 	constructor(data, selector) {
@@ -80,8 +88,8 @@ class KMeans {
 					extremes[dimension].max = point[dimension];
 				}
 
-				//console.log(extremes); - array of 2 min and max objects
-				//{min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] returns one of those
+				// extremes - array of 2 min and max objects
+				// {min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] returns one of those
 			}
 		}
 
@@ -92,8 +100,8 @@ class KMeans {
 
 
 	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
-    initalize K random clusters
-    creating new points with random coordinates within the ranges and dimensions of our data set
+    initalize K(3) random clusters - candidates for centroids
+    meannew points with random coordinates within the ranges and dimensions of our data set
     */
 	initMeans(k = 3) {
 
@@ -133,19 +141,21 @@ assigning all our data points to the centroid closest to it
 				const mean = means[j];
 				let sum = 0;
 
-                // for each dimension get the difference from mean 
+                // for each dimension get the difference from mean (array with random points)
 				for (const dimension in point) {
 					let difference = point[dimension] - mean[dimension];
 					difference *= difference;
 					sum += difference;
 				}
 
-				distances[j] = Math.sqrt(sum); // negate multiplication?
-                // centroid 0 or centroid 1 or centroid 2
+                // we don't want to have negative values, power, than sqrt
+				distances[j] = Math.sqrt(sum); 
 			}
-
-			assignments[i] = distances.indexOf(Math.min.apply(null, distances)); // get distances
-			console.log(assignments); // array of 0s 2s and 1s (zeros...) [0,1,0,1] -> [0,0, 1, 1] transformed together
+            
+            // distances[] is eg. [0.69, 6.51, 10.10]
+            console.log("Index of lowest number from distance array " + distances.indexOf(Math.min.apply(null, distances)));
+			assignments[i] = distances.indexOf(Math.min.apply(null, distances)); 
+			// assignments // array of 0s 2s and 1s (zeros...) [0,1,0,1] -> [0,0, 1, 1] transformed together
 		}
 
 	}
@@ -177,10 +187,9 @@ repeat that until the centroids stop moving
 			counts[j] = 0; 
 			sums[j] = Array(ms[j].length);
 			for (var dimension in ms[j]) {
-				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums"
+				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, than with sums
 			}
 		}
-       //"sums" is array of 3 points [ARRAY(2)]
         
          //-------------------------------------------3rd loop
         //"this.assignments" is array with length of 19 and values 0s and 1s and 2s
@@ -192,15 +201,12 @@ repeat that until the centroids stop moving
 			counts[meanIndex]++;
 
 			for (var dimension in mean) {
-                //console.log("before " + sums[meanIndex][dimension]);
-				sums[meanIndex][dimension] += point[dimension];
-                //console.log("after " + sums[meanIndex][dimension]);
-                console.log(sums)
+                sums[meanIndex][dimension] += point[dimension];
 			}
 		}
 
 
-		//-------------------------------------------3rd loop GETTIN THE AVERAGE
+		//-------------------------------------------3rd loop GETTING MEAN POSTION FOR EACH CLUSTER CENTER AN MOVING IT
 		for (var meanIndex in sums) {
             // mean with no points, add...
 			for (var dimension in sums[meanIndex]) {
@@ -213,7 +219,7 @@ repeat that until the centroids stop moving
 			moved = true;
 		}
 
-		this.means = sums;
+		this.means = sums; // update our means
 		console.log(moved);
 		return moved;
 	}
@@ -247,13 +253,12 @@ repeat that until the centroids stop moving
 
 		ctx.globalAlpha = 1;
 		//------------------------------------------------------------ DRAW GREY POINTS
-		for (var i in data) {
+		for (let i in data) {
 			ctx.save();
 
-			var point = data[i];
-
-			var x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
-			var y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
+			let point = data[i];
+			let x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
+			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
 
 			ctx.strokeStyle = '#333333';
 			ctx.translate(x, y);
@@ -266,14 +271,12 @@ repeat that until the centroids stop moving
 
 
 		//------------------------------------------------------------ DRAW GREEN POINTS
-		for (var i in this.means) {
+		for (let i in this.means) {
 			ctx.save();
 
-			var point = this.means[i];
-
-			var x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
-			var y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
-
+			let point = this.means[i];
+			let x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
+			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
 
 			ctx.fillStyle = 'green';
 			ctx.translate(x, y);
@@ -290,6 +293,7 @@ repeat that until the centroids stop moving
 
 
 
+// custom code
 const data = [
 	[1, 2],
 	[2, 1],
@@ -319,6 +323,7 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
+        
         
  
 ```
