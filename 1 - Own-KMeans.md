@@ -11,16 +11,15 @@
 * to-do: drawlines, add to Think.js
 
 ```js
-
 class KMeans {
 	constructor(data, selector) {
-		this.data = data;
+		this.data = data; // our input
 		this.selector = selector || null;
 		this.means = []; // centroids
 		this.assignments = []; // will be array of 0s 1s and 2s
 		this.range = null; // [9, 10]
 		this.dataExtremes = null; // array of 2 min and max objects
-		this.element = null; // <canvas>
+		this.element = null; // selected by selector -  <canvas>
 		this.width = 400;
 		this.height = 400;
 	}
@@ -86,13 +85,12 @@ class KMeans {
 
 				if (point[dimension] > extremes[dimension].max) {
 					extremes[dimension].max = point[dimension];
-				}
-
-				// extremes - array of 2 min and max objects
-				// {min: 1, max: 10} AND  {min: 1, max: 11}, extremes[dimension] returns one of those
+				} 
+				// Extremes: [{min: 1, max: 10} AND  {min: 1, max: 11}]
+                // extremes[dimension] returns one of those
+                //
 			}
 		}
-
 		return extremes;
 	}
 
@@ -110,6 +108,7 @@ class KMeans {
 
 			for (const dimension in this.dataExtremes) {
 				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
+                // mean[dimensin] = 1 + Mat.random() * 9  (OR)  1 + Math.random() * 10
 			}
 			this.means.push(mean);
 		}
@@ -220,7 +219,6 @@ repeat that until the centroids stop moving
 		}
 
 		this.means = sums; // update our means
-		console.log(moved);
 		return moved;
 	}
 
@@ -323,6 +321,9 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
+    
+
+
         
         
  
