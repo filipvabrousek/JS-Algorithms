@@ -72,7 +72,7 @@ class KMeans {
 			// 1 [x, y]
 			const point = data[i];
 
-			// 2 extremes[x]
+			// 2 for x and y in mean
 			for (const dimension in point) {
 				if (!extremes[dimension]) {
 					extremes[dimension] = {min: 1000, max: 0};
@@ -88,7 +88,7 @@ class KMeans {
 				} 
 				// Extremes: [{min: 1, max: 10} AND  {min: 1, max: 11}]
                 // extremes[dimension] returns one of those
-                //
+                
 			}
 		}
 		return extremes;
@@ -99,7 +99,7 @@ class KMeans {
 
 	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
     initalize K(3) random clusters - candidates for centroids
-    meannew points with random coordinates within the ranges and dimensions of our data set
+    make new points with random coordinates within the ranges and dimensions of our data set
     */
 	initMeans(k = 3) {
 
@@ -122,7 +122,7 @@ class KMeans {
     
 
 	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
-called by "loop" function and calculate distance between each point and the cluster center
+called by "run" function and calculate distance between each point and the cluster center
 assigning all our data points to the centroid closest to it
 */
 	assignPoints() {
@@ -133,14 +133,14 @@ assigning all our data points to the centroid closest to it
         // this loop exists just because we need to get the every single "point"
 		for (const i in data) {
 			const point = data[i];
-			const distances = [];
+			const distances = []; // create "distances" array
 
             // this loop exists just because we want to get the every single "mean"
 			for (const j in means) {
 				const mean = means[j];
 				let sum = 0;
 
-                // for each dimension get the difference from mean (array with random points)
+                // for each dimension get the difference from mean (from array with random points)
 				for (const dimension in point) {
 					let difference = point[dimension] - mean[dimension];
 					difference *= difference;
@@ -148,13 +148,14 @@ assigning all our data points to the centroid closest to it
 				}
 
                 // we don't want to have negative values, power, than sqrt
-				distances[j] = Math.sqrt(sum); 
+				distances[j] = Math.sqrt(sum);  // eg. [0.69, 6.51, 10.10]
 			}
             
-            // distances[] is eg. [0.69, 6.51, 10.10]
-            console.log("Index of lowest number from distance array " + distances.indexOf(Math.min.apply(null, distances)));
+            // fill in assignments with index of lowest number from distances array (the smallest distance)
 			assignments[i] = distances.indexOf(Math.min.apply(null, distances)); 
-			// assignments // array of 0s 2s and 1s (zeros...) [0,1,0,1] -> [0,0, 1, 1] transformed together
+			// assignments is array of pointIndex, center index
+            //array of 0s 2s and 1s (zeros...) [0,1,0,1] -> [0,0, 1, 1] transformed together
+            console.log(assignments);
 		}
 
 	}
@@ -164,51 +165,52 @@ assigning all our data points to the centroid closest to it
     
     
     
-    
-    
 
 /*------------------------------------------------------MOVE MEANS ------------------------------------------------------
 moving the centroids to the average position of all the data points assigned to it
 repeat that until the centroids stop moving
-1 - "ms" (this.means) is 3 arrays like this: [Array(2), Array(2), Array(2)]
    */
 	moveMeans() {
-		this.assignPoints();
+		this.assignPoints(); // fill in assignments array
 
-        // 1
+        // (3)[Array(2), Array(2), Array(2)]
 		let ms = this.means;
 		const sums = Array(ms.length); // empty, same length as "ms"
-		const counts = Array(ms.length); // also empty
+		const counts = Array(ms.length); // also empty and same length
 		let moved = false;
 
          //-------------------------------------------1st loop
 		for (const j in ms) {
 			counts[j] = 0; 
 			sums[j] = Array(ms[j].length);
-			for (var dimension in ms[j]) {
-				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, than with sums
+			for (const dimension in ms[j]) {
+				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, then with sums
 			}
 		}
         
          //-------------------------------------------3rd loop
-        //"this.assignments" is array with length of 19 and values 0s and 1s and 2s
+        //"this.assignments" length is 19, 0s, 1s, 2s
 		for (const pointIndex in this.assignments) {
 			let meanIndex = this.assignments[pointIndex]; // 0 or 1 or 2 - one of the 3 centroids
-			const point = data[pointIndex];
+			const point = data[pointIndex]; // point assigned to centroid
 			const mean = ms[meanIndex];
 
 			counts[meanIndex]++;
 
-			for (var dimension in mean) {
+            // point is sums[0] 
+            
+			for (const dimension in mean) {
                 sums[meanIndex][dimension] += point[dimension];
 			}
+            
+          // "sums" is (3) [Array(2), Array(2), Array(2)]
 		}
 
 
 		//-------------------------------------------3rd loop GETTING MEAN POSTION FOR EACH CLUSTER CENTER AN MOVING IT
-		for (var meanIndex in sums) {
+		for (const meanIndex in sums) {
             // mean with no points, add...
-			for (var dimension in sums[meanIndex]) {
+			for (const dimension in sums[meanIndex]) {
 				sums[meanIndex][dimension] /= counts[meanIndex];
 			}
 		}
@@ -218,7 +220,7 @@ repeat that until the centroids stop moving
 			moved = true;
 		}
 
-		this.means = sums; // update our means
+		this.means = sums; // update our means and go again to "assignPoints"
 		return moved;
 	}
 
@@ -272,6 +274,7 @@ repeat that until the centroids stop moving
 		for (let i in this.means) {
 			ctx.save();
 
+            // final array
 			let point = this.means[i];
 			let x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
 			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
@@ -321,12 +324,10 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
-    
+           
 
 
-        
-        
- 
+   
 ```
 
 ## Lines
