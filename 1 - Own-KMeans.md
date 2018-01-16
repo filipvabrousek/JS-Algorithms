@@ -13,7 +13,7 @@
 ```js
 class KMeans {
 	constructor(data, selector) {
-		this.data = data; // our input
+		this.data = data; // our input, points we define
 		this.selector = selector || null;
 		this.means = []; // centroids
 		this.assignments = []; // will be array of 0s 1s and 2s
@@ -50,6 +50,7 @@ class KMeans {
 		const ranges = [];
 
 		for (const dimension in extremes) {
+            // extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} 11 - 1 = 10
 			ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
 		}
 		return ranges; // [9, 10]
@@ -72,7 +73,7 @@ class KMeans {
 			// 1 [x, y]
 			const point = data[i];
 
-			// 2 for x and y in mean
+			// 2 for x and y 
 			for (const dimension in point) {
 				if (!extremes[dimension]) {
 					extremes[dimension] = {min: 1000, max: 0};
@@ -108,7 +109,7 @@ class KMeans {
 
 			for (const dimension in this.dataExtremes) {
 				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
-                // mean[dimensin] = 1 + Mat.random() * 9  (OR)  1 + Math.random() * 10
+                // mean[dimension] = 1 + Mat.random() * 9  (OR)  1 + Math.random() * 10
 			}
 			this.means.push(mean);
 		}
@@ -126,8 +127,8 @@ called by "run" function and calculate distance between each point and the clust
 assigning all our data points to the centroid closest to it
 */
 	assignPoints() {
-		let data = this.data;
-		let means = this.means;
+		let data = this.data; // data we define
+		let means = this.means; // random points (candidates)
 		let assignments = this.assignments;
 
         // this loop exists just because we need to get the every single "point"
@@ -151,17 +152,16 @@ assigning all our data points to the centroid closest to it
 				distances[j] = Math.sqrt(sum);  // eg. [0.69, 6.51, 10.10]
 			}
             
-            // fill in assignments with index of lowest number from distances array (the smallest distance)
-			assignments[i] = distances.indexOf(Math.min.apply(null, distances)); 
-			// assignments is array of pointIndex, center index
-            //array of 0s 2s and 1s (zeros...) [0,1,0,1] -> [0,0, 1, 1] transformed together
-            console.log(assignments);
+          
+            let lowest = Math.min.apply(null, distances); 
+            // fill in assignments with indexes of lowest number from distances
+			assignments[i] = distances.indexOf(lowest);
+            // point index -> center index
+			// (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
 		}
 
 	}
 
-    
-    
     
     
     
@@ -182,32 +182,33 @@ repeat that until the centroids stop moving
          //-------------------------------------------1st loop
 		for (const j in ms) {
 			counts[j] = 0; 
-			sums[j] = Array(ms[j].length);
+			sums[j] = Array(ms[j].length); // create nested array in sums (* multidimensional)
 			for (const dimension in ms[j]) {
 				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, then with sums
 			}
+            console.log(sums)
 		}
         
          //-------------------------------------------3rd loop
-        //"this.assignments" length is 19, 0s, 1s, 2s
+        //assignments: (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
 		for (const pointIndex in this.assignments) {
 			let meanIndex = this.assignments[pointIndex]; // 0 or 1 or 2 - one of the 3 centroids
 			const point = data[pointIndex]; // point assigned to centroid
 			const mean = ms[meanIndex];
 
-			counts[meanIndex]++;
+			counts[meanIndex]++; // increment count for each cluster center
 
-            // point is sums[0] 
-            
+            //  "sums" is (3) [Array(2), Array(2), Array(2)]
+            // point is sums[meanIndex] gets point 
+            // add value from point at meanIndex(= 0, 1, 2) (x and y) in one nested array in sums (TO) value from point (x or y)  
 			for (const dimension in mean) {
                 sums[meanIndex][dimension] += point[dimension];
 			}
             
-          // "sums" is (3) [Array(2), Array(2), Array(2)]
 		}
 
 
-		//-------------------------------------------3rd loop GETTING MEAN POSTION FOR EACH CLUSTER CENTER AN MOVING IT
+		//-------------------------------------------3rd loop GETTING AVERAGE POSTION FOR EACH CLUSTER CENTER AN MOVING IT
 		for (const meanIndex in sums) {
             // mean with no points, add...
 			for (const dimension in sums[meanIndex]) {
@@ -324,9 +325,6 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
-           
-
-
    
 ```
 
