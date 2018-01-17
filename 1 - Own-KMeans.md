@@ -14,12 +14,12 @@
 class KMeans {
 	constructor(data, selector) {
 		this.data = data; // our input, points we define
-		this.selector = selector || null;
-		this.means = []; // centroids
+		this.selector = selector || null; // "canvas"
+		this.means = []; // centroids, we will update data in this array
 		this.assignments = []; // will be array of 0s 1s and 2s
 		this.range = null; // [9, 10]
 		this.dataExtremes = null; // array of 2 min and max objects
-		this.element = null; // selected by selector -  <canvas>
+		this.element = null; // selected by selector - <canvas>
 		this.width = 400;
 		this.height = 400;
 	}
@@ -50,7 +50,7 @@ class KMeans {
 		const ranges = [];
 
 		for (const dimension in extremes) {
-            // extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} 11 - 1 = 10
+            // extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} => 11 - 1 = 10
 			ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
 		}
 		return ranges; // [9, 10]
@@ -100,7 +100,7 @@ class KMeans {
 
 	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
     initalize K(3) random clusters - candidates for centroids
-    make new points with random coordinates within the ranges and dimensions of our data set
+    create new points with random coordinates within the ranges and dimensions of our data set
     */
 	initMeans(k = 3) {
 
@@ -109,7 +109,7 @@ class KMeans {
 
 			for (const dimension in this.dataExtremes) {
 				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
-                // mean[dimension] = 1 + Mat.random() * 9  (OR)  1 + Math.random() * 10
+                // mean[dimension] = 1 + Math.random() * 9  (OR)  1 + Math.random() * 10
 			}
 			this.means.push(mean);
 		}
@@ -141,7 +141,8 @@ assigning all our data points to the centroid closest to it
 				const mean = means[j];
 				let sum = 0;
 
-                // for each dimension get the difference from mean (from array with random points)
+                // for each dimension in point, get the difference from each dimension in mean
+                // (from array with random points - candidates for centroids)
 				for (const dimension in point) {
 					let difference = point[dimension] - mean[dimension];
 					difference *= difference;
@@ -154,9 +155,9 @@ assigning all our data points to the centroid closest to it
             
           
             let lowest = Math.min.apply(null, distances); 
-            // fill in assignments with indexes of lowest number from distances
+            // fill in assignments with indexes of lowest number from distances (assigning to centroids)
 			assignments[i] = distances.indexOf(lowest);
-            // point index -> center index
+            // array of center indexes (point index -> center index)
 			// (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
 		}
 
@@ -186,20 +187,17 @@ repeat that until the centroids stop moving
 			for (const dimension in ms[j]) {
 				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, then with sums
 			}
-            console.log(sums)
 		}
         
          //-------------------------------------------3rd loop
-        //assignments: (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
 		for (const pointIndex in this.assignments) {
-			let meanIndex = this.assignments[pointIndex]; // 0 or 1 or 2 - one of the 3 centroids
+			let meanIndex = this.assignments[pointIndex]; // 2 or 1 or 0 - one of the 3 centroids
 			const point = data[pointIndex]; // point assigned to centroid
 			const mean = ms[meanIndex];
 
 			counts[meanIndex]++; // increment count for each cluster center
 
-            //  "sums" is (3) [Array(2), Array(2), Array(2)]
-            // point is sums[meanIndex] gets point 
+            // "sums" is (3) [Array(2), Array(2), Array(2)] and "sums[meanIndex]" gets point 
             // add value from point at meanIndex(= 0, 1, 2) (x and y) in one nested array in sums (TO) value from point (x or y)  
 			for (const dimension in mean) {
                 sums[meanIndex][dimension] += point[dimension];
@@ -221,7 +219,7 @@ repeat that until the centroids stop moving
 			moved = true;
 		}
 
-		this.means = sums; // update our means and go again to "assignPoints"
+		this.means = sums; // update our "means" and go again to "assignPoints"
 		return moved;
 	}
 
@@ -325,7 +323,7 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
-   
+
 ```
 
 ## Lines
