@@ -1,14 +1,13 @@
 # Own KMeans
 1) **points** - array we defined
-2) **getExtremes** - we loop through dimensions and fill "extremes" array - with those objects {min: 1000, max: 0};
-3) **getRanges** - we loop through "extremes" and get the difference (fill in "ranges")  [9, 10]
-4) **initMeans** - we create 3 random candidates for "centroid" within "extremes" and "ranges" (we get means array)
-5) **assignments** - we get the differences between "point[dimension] - mean[dimension]" add them to one sum, fill "distances" array with sums
-5.1) fill in "assignments" with indexes of lowest numbers from distance array
-6) **moveMeans** - fill in sums (get the average position) if "mean" is different from "sums" moved is true
-7) **run** - as long as moved is true, call "moveMeans" again and redraw the scene using "draw" on the canvas 
+2) **getExtremes** - we loop through dimensions and fill "extremes" array - with those objects {min: 1000, max: 0} adjusted for actual values;
+3) **getRanges** - we loop through "extremes" and get the difference between min and max (fill in "ranges")  [9, 10]
+4) **initMeans** - we create 3 random candidates for "centroid" by using "extremes" and "ranges"
+5) **assignments** - we get the positive differences between "point[dimension] - mean[dimension]" add them to one sum, fill "distances" array with sums (getting smallest distance to centroid)
+5.1) fill in "assignments" with indexes of lowest numbers from "distance" array
+6) **moveMeans** - fill in sums, assign "sums" to means (get the average position) if "means" is different from "sums" moved is true
+7) **run** - as long as moved is true, call "*moveMeans*" and "*assignPoints*" again and redraw the scene using "*draw*" on canvas 
 
-* to-do: drawlines, add to Think.js
 
 ```js
 class KMeans {
@@ -99,7 +98,7 @@ class KMeans {
 
 
 	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
-    initalize K(3) random clusters - candidates for centroids
+    initalize K random clusters - candidates for centroids (3), fill in "means"
     create new points with random coordinates within the ranges and dimensions of our data set
     */
 	initMeans(k = 3) {
@@ -136,7 +135,7 @@ assigning all our data points to the centroid closest to it
 			const point = data[i];
 			const distances = []; // create "distances" array
 
-            // this loop exists just because we want to get the every single "mean"
+            // this loop exists just because we want to get the every single "mean" (looping through every centroid)
 			for (const j in means) {
 				const mean = means[j];
 				let sum = 0;
@@ -155,9 +154,9 @@ assigning all our data points to the centroid closest to it
             
           
             let lowest = Math.min.apply(null, distances); 
-            // fill in assignments with indexes of lowest number from distances (assigning to centroids)
+            // fill in assignments with indexes of lowest number from distances (getting the closest centroid)
 			assignments[i] = distances.indexOf(lowest);
-            // array of center indexes (point index -> center index)
+            // array of center indexes 
 			// (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
 		}
 
@@ -169,27 +168,28 @@ assigning all our data points to the centroid closest to it
 
 /*------------------------------------------------------MOVE MEANS ------------------------------------------------------
 moving the centroids to the average position of all the data points assigned to it
-repeat that until the centroids stop moving
-   */
+repeat that until the centroids stop moving (as long as moved = true)
+(this method will change the "mean" array)
+*/
 	moveMeans() {
 		this.assignPoints(); // fill in assignments array
 
-        // (3)[Array(2), Array(2), Array(2)]
+        // (3)[Array(2) - centroid 1, Array(2) - centroid 2, Array(2) - centroid 3]
 		let ms = this.means;
 		const sums = Array(ms.length); // empty, same length as "ms"
 		const counts = Array(ms.length); // also empty and same length
 		let moved = false;
 
-         //-------------------------------------------1st loop
+         //-------------------------------------------1st loop CREATE NEW MULTIDIMENSIONAL SUMS ARRAY
 		for (const j in ms) {
 			counts[j] = 0; 
-			sums[j] = Array(ms[j].length); // create nested array in sums (* multidimensional)
+			sums[j] = Array(ms[j].length); // create nested array in sums (multidimensional)
 			for (const dimension in ms[j]) {
 				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, then with sums
 			}
 		}
         
-         //-------------------------------------------3rd loop
+         //-------------------------------------------2nd loop LOOP THROUGH POINTS
 		for (const pointIndex in this.assignments) {
 			let meanIndex = this.assignments[pointIndex]; // 2 or 1 or 0 - one of the 3 centroids
 			const point = data[pointIndex]; // point assigned to centroid
@@ -219,6 +219,7 @@ repeat that until the centroids stop moving
 			moved = true;
 		}
 
+        console.log(moved);
 		this.means = sums; // update our "means" and go again to "assignPoints"
 		return moved;
 	}
@@ -234,7 +235,6 @@ repeat that until the centroids stop moving
 
 
 
-
 	draw() {
 
 		const width = 400;
@@ -246,9 +246,7 @@ repeat that until the centroids stop moving
 		let ctx = this.element.ctx;
 		ctx.clearRect(0, 0, this.width, this.height);
 
-
 		// to add blue lines insert loop here, globAlpha 0.3?
-
 
 		ctx.globalAlpha = 1;
 		//------------------------------------------------------------ DRAW GREY POINTS
@@ -260,9 +258,9 @@ repeat that until the centroids stop moving
 			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
 
 			ctx.strokeStyle = '#333333';
-			ctx.translate(x, y);
+			ctx.translate(x, y); // set point position
 			ctx.beginPath();
-			ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
+			ctx.arc(0, 0, 5, 0, Math.PI * 2, true); // draws the circle
 			ctx.stroke();
 			ctx.closePath();
 			ctx.restore();
@@ -279,9 +277,9 @@ repeat that until the centroids stop moving
 			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
 
 			ctx.fillStyle = 'green';
-			ctx.translate(x, y);
+			ctx.translate(x, y); 
 			ctx.beginPath();
-			ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
+			ctx.arc(0, 0, 5, 0, Math.PI * 2, true); 
 			ctx.fill();
 			ctx.closePath();
 			ctx.restore();
@@ -323,7 +321,6 @@ const data = [
 let el = new KMeans(data, "canvas");
 el.make();
 // <canvas width="400" height="400"></canvas>
-
 ```
 
 ## Lines
