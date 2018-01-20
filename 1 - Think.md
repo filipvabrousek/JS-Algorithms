@@ -39,24 +39,14 @@ follows "feed-forward" model
 6) **moveMeans** - fill in sums, assign "sums" to means (get the average position) if "means" is different from "sums" moved is true
 7) **run** - as long as moved is true, call "*moveMeans*" and "*assignPoints*" again and redraw the scene using "*draw*" on canvas 
 
+## Crossover 
+* fix spread parameters
+
 ```js
+
 const Think = (() => {
 
-
-	// Regression variables
-	const x = [];
-	const y = [];
-	let m = 2;
-	let b = 2;
-
-	const mouse = {
-		x: 0,
-		y: 0
-	}
-
-
 	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	P([-2, -2], 3) -> 1 "linear classifier" "supervised learning of binary classifiers"
 	*/
 	class Perceptron {
 		constructor(bias, weights) {
@@ -81,6 +71,34 @@ const Think = (() => {
 	}
 
 
+
+    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	*/
+    class Crosover{
+        constructor(mother, father){
+        this.mother = mother;
+        this.father = father;
+        this.dnaSplit = (Math.random() * this.mother.length) | 0;
+        this.daughter = new Array(mother.length);
+        this.son = new Array(mother.length);
+    }
+    
+    
+    make(){
+        
+        for (let i = 0; i < this.mother.length; i++){
+            if (i > this.dnaSplit){
+                this.son[i] = this.mother[i];
+                this.daughter[i] = this.father[i];
+            } else {
+                this.son[i] = this.father[i];
+                this.daughter[i] = this.mother[i];
+            }
+        }
+         return `Daughter: ${this.daughter} Son: ${this.son}`;
+    }
+    
+}
 
 
 
@@ -245,6 +263,11 @@ const Think = (() => {
 		constructor(selector) {
 			this.selector = selector || null;
 			this.element = null;
+            this.x = [];
+            this.y = [];
+            this.m = 2;
+            this.b = 2;
+            this.mouse = {x:0, y:0};
 		}
 
 		make() {
@@ -256,16 +279,16 @@ const Think = (() => {
 		// fill in "x" and "y" arrays, with coordinates of the click
 		addEL() {
 			this.element.addEventListener("click", e => {
-				x.push(e.offsetX);
-				y.push(this.element.height - e.offsetY);
+				this.x.push(e.offsetX);
+				this.y.push(this.element.height - e.offsetY);
 			});
 
 		}
 
 		// draw green points when clicked, called by "setInterval()" every 17ms
 		drawPoints() {
-			for (let i = 0; i < x.length; i++) {
-				this.element.ctx.fillRect(x[i] - 2, this.element.height - y[i] - 2, 4, 4); // x, y, w, h
+			for (let i = 0; i < this.x.length; i++) {
+				this.element.ctx.fillRect(this.x[i] - 2, this.element.height - this.y[i] - 2, 4, 4); // x, y, w, h
 			}
 		}
 
@@ -273,25 +296,25 @@ const Think = (() => {
 
 		// algorithm, which calculates our "b" values, called by "setInterval()" every 17ms
 		learn(alpha) {
-			if (x.length <= 0) return;
+			if (this.x.length <= 0) return;
 
 			let sum1 = 0;
 			let sum2 = 0;
-
+           
 			// eg.: x [100, 200], y: [200, 300] ======> sum1 is 2 * 100 + 2 - 200 = 2
 			// b is 2 - 1000000 * 0.000001 / 2 and we adjust its value in the "line()", same for "m"
-			for (let i = 0; i < x.length; i++) {
-				sum1 += this.line(x[i]) - y[i];
-				sum2 += (this.line(x[i]) - y[i]) * x[i];
+			for (let i = 0; i < this.x.length; i++) {
+				sum1 += this.line(this.x[i]) - this.y[i];
+				sum2 += (this.line(this.x[i]) - this.y[i]) * this.x[i];
 			}
 
-			b = b - 1000000 * alpha * sum1 / (x.length);
-			m = m - alpha * sum2 / (x.length);
+			this.b = this.b - 1000000 * alpha * sum1 / (this.x.length);
+			this.m = this.m - alpha * sum2 / (this.x.length);
 		}
 
 		// 2x + 2
 		line(x) {
-			return m * x + b;
+			return this.m * x + this.b;
 		}
 
 
@@ -632,12 +655,19 @@ repeat that until the centroids stop moving (as long as moved = true)
         const el = new Means(data, selector);
         el.make();
     }
+    
+    /*
+    const Crossover = (...mother, ...father) => {
+        const obj = new Crosover(...mother, ...father);
+        obj.make(); // ERROR: Rest parameter must be last formal parameter
+    }*/
 
 	return {
 		P,
 		Line,
 		Net,
-        KMeans
+        KMeans,
+        //Crossover
 	}
 
 
@@ -645,9 +675,13 @@ repeat that until the centroids stop moving (as long as moved = true)
 
 
 
-    
+
 let res = Think.P([-2, -2], 3);
 console.log(res.run([0, 1]));
+   
+
+
+
 
 ```
 
@@ -671,4 +705,9 @@ Think.Line("canvas");
  const data=[[1,2],[2,1],[2,4],[1,3],[2,2],[3,1],[1,1],[7,3],[8,2],[6,4],[7,4],[8,1],[9,2],[10,8],[9,10],[7,8],[7,9],[8,11],[9,9],]   
  Think.KMeans(data, "canvas");
  // <canvas width="400" height = "400"></canvas>
+```
+
+### Crossover
+```js
+// soon
 ```
