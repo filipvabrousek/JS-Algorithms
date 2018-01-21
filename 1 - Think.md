@@ -95,7 +95,8 @@ const Think = (() => {
                 this.daughter[i] = this.mother[i];
             }
         }
-         return `Daughter: ${this.daughter} Son: ${this.son}`;
+        console.log(`D: ${this.daughter} S: ${this.son}`); // return ?
+        
     }
     
 }
@@ -656,31 +657,26 @@ repeat that until the centroids stop moving (as long as moved = true)
         el.make();
     }
     
-    /*
-    const Crossover = (...mother, ...father) => {
-        const obj = new Crosover(...mother, ...father);
+    
+    const Crossover = (mother, father) => {
+        const obj = new Crosover(mother, father);
         obj.make(); // ERROR: Rest parameter must be last formal parameter
-    }*/
+    }
 
 	return {
 		P,
 		Line,
 		Net,
         KMeans,
-        //Crossover
+        Crossover
 	}
 
 
 })();
 
 
-
-
 let res = Think.P([-2, -2], 3);
 console.log(res.run([0, 1]));
-   
-
-
 
 
 ```
@@ -709,5 +705,8 @@ Think.Line("canvas");
 
 ### Crossover
 ```js
-// soon
+let m = [1, 1, 0, 0, 1, 0];
+let f = [0, 0, 1, 1, 0, 1];
+let cross = Think.Crossover(m, f);
+// D: 1,1,0,1,0,1 S: 0,0,1,0,1,0
 ```
