@@ -44,7 +44,6 @@ class KMeans {
 	/*------------------------------------------------------GET DATA RANGES------------------------------------------------------
     1) pass in "extremes" array returned from "getExtremes"
     2) for each member of "extremes" array get max - min value
-    // extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} => 11 - 1 = 10
     */
 	getDataRanges(extremes) {
 		const ranges = [];
