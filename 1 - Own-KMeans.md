@@ -3,10 +3,10 @@
 2) **getExtremes** - we loop through dimensions and fill "extremes" array - with those objects {min: 1000, max: 0} adjusted for actual values;
 3) **getRanges** - we loop through "extremes" and get the difference between min and max (fill in "ranges")  [9, 10]
 4) **initMeans** - we create 3 random candidates for "centroid" by using "extremes" and "ranges"
-5) **assignments** - we get the positive differences between "point[dimension] - mean[dimension]" add them to one sum, fill "distances" array with sums (getting smallest distance to centroid)
-5.1) fill in "assignments" with indexes of lowest numbers from "distance" array
-6) **moveMeans** - fill in sums, assign "sums" to means (get the average position) if "means" is different from "sums" moved is true
-7) **run** - as long as moved is true, call "*moveMeans*" and "*assignPoints*" again and redraw the scene using "*draw*" on canvas 
+5) **assignments** - we get the positive differences between "point[dimension] - mean[dimension]" add them to one sum, fill "distances" array with sums (getting smallest distance to centroid)  
+6) fill in "assignments" with indexes of lowest numbers from "distance" array
+7) **moveMeans** - fill in sums, assign "sums" to means (get the average position) if "means" is different from "sums" moved is true
+8) **run** - as long as moved is true, call "*moveMeans*" and "*assignPoints*" again and redraw the scene using "*draw*" on canvas 
 
 
 ```js
