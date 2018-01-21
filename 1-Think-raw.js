@@ -32,14 +32,13 @@ const Think = (() => {
         constructor(mother, father){
         this.mother = mother;
         this.father = father;
-        this.dnaSplit = (Math.random() * this.mother.length) | 0;
+        this.dnaSplit = (Math.random() * this.mother.length) | 0; // random number
         this.daughter = new Array(mother.length);
         this.son = new Array(mother.length);
     }
     
     
     make(){
-        
         for (let i = 0; i < this.mother.length; i++){
             if (i > this.dnaSplit){
                 this.son[i] = this.mother[i];
@@ -49,7 +48,8 @@ const Think = (() => {
                 this.daughter[i] = this.mother[i];
             }
         }
-         return `Daughter: ${this.daughter} Son: ${this.son}`;
+        console.log(`D: ${this.daughter} S: ${this.son}`); // return ?
+        
     }
     
 }
@@ -298,11 +298,9 @@ const Think = (() => {
     
     
     
-    
-    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	Kmeans clustering 
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	*/
-    class Means {
+   class Means {
 	constructor(data, selector) {
 		this.data = data; // our input, points we define
 		this.selector = selector || null; // "canvas"
@@ -320,7 +318,7 @@ const Think = (() => {
 	make() {
 		this.element = document.querySelector(this.selector);
 		this.element.ctx = this.element.getContext("2d");
-		this.dataExtremes = this.getDataExtremes(this.data);
+		this.dataExtremes = this.getExtremes(this.data);
 		this.range = this.getDataRanges(this.dataExtremes); // get ranges from extremes 
 		this.means = this.initMeans(3);
 		this.assignPoints();
@@ -334,14 +332,14 @@ const Think = (() => {
 
 
 	/*------------------------------------------------------GET DATA RANGES------------------------------------------------------
-    1) pass in extremes array returned from "getDataExtremes" below
-    2) fill in ranges array with range of each dimension (max - min value) 
+    1) pass in "extremes" array returned from "getExtremes"
+    2) for each member of "extremes" array get max - min value
     */
 	getDataRanges(extremes) {
 		const ranges = [];
 
 		for (const dimension in extremes) {
-            // extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} => 11 - 1 = 10
+			// extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} => 11 - 1 = 10
 			ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
 		}
 		return ranges; // [9, 10]
@@ -354,20 +352,23 @@ const Think = (() => {
 	2) loop through points and get extreme data points (min and max) [x, y] pair
 	3) if point[dimension] is smaller than current min. (extremes[diemnsion].min), make it the minimum
 	*/
-	getDataExtremes(points) {
+	getExtremes(points) {
 		const extremes = [];
 
 		let data = this.data;
 
-        // this loop exists just because we want to get every single "point" [x, y]
+		// we want to work with every single "point" [x, y]
 		for (const i in data) {
 			// 1 [x, y]
 			const point = data[i];
 
-			// 2 for x and y 
+			// 2 for "x" and for "y"
 			for (const dimension in point) {
 				if (!extremes[dimension]) {
-					extremes[dimension] = {min: 1000, max: 0};
+					extremes[dimension] = {
+						min: 1000,
+						max: 0
+					};
 				}
 
 				// 3
@@ -377,10 +378,10 @@ const Think = (() => {
 
 				if (point[dimension] > extremes[dimension].max) {
 					extremes[dimension].max = point[dimension];
-				} 
+				}
 				// Extremes: [{min: 1, max: 10} AND  {min: 1, max: 11}]
-                // extremes[dimension] returns one of those
-                
+				// extremes[dimension] returns one of those
+
 			}
 		}
 		return extremes;
@@ -400,18 +401,18 @@ const Think = (() => {
 
 			for (const dimension in this.dataExtremes) {
 				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
-                // mean[dimension] = 1 + Math.random() * 9  (OR)  1 + Math.random() * 10
+				// mean[dimension] = 1 + Math.random() * 9  (OR)  1 + Math.random() * 10
 			}
 			this.means.push(mean);
 		}
 		return this.means; // (3) [Array(2), Array(2), Array(2)]
 	}
 
-    
-    
-    
-    
-    
+
+
+
+
+
 
 	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
 called by "run" function and calculate distance between each point and the cluster center
@@ -422,102 +423,97 @@ assigning all our data points to the centroid closest to it
 		let means = this.means; // random points (candidates)
 		let assignments = this.assignments;
 
-        // this loop exists just because we need to get the every single "point"
+		// we need to get every single point
 		for (const i in data) {
 			const point = data[i];
-			const distances = []; // create "distances" array
+			const distances = []; // create "distances"
 
-            // this loop exists just because we want to get the every single "mean" (looping through every centroid)
+			// we need to loop through every centroid
 			for (const j in means) {
 				const mean = means[j];
 				let sum = 0;
 
-                // for each dimension in point, get the difference from each dimension in mean
-                // (from array with random points - candidates for centroids)
+				// for each dimension in point, get the the difference from corresponding dimension in mean
 				for (const dimension in point) {
 					let difference = point[dimension] - mean[dimension];
 					difference *= difference;
 					sum += difference;
 				}
 
-                // we don't want to have negative values, power, than sqrt
-				distances[j] = Math.sqrt(sum);  // eg. [0.69, 6.51, 10.10]
+				distances[j] = Math.sqrt(sum); // no neg. values (pow, than sqrt) eg. [0.69, 6.51, 10.10]
 			}
-            
-          
-            let lowest = Math.min.apply(null, distances); 
-            // fill in assignments with indexes of lowest number from distances (getting the closest centroid)
+
+
+			let lowest = Math.min.apply(null, distances);
+			// fill in assignments with indexes of lowest number from distances (getting the closest centroid)
 			assignments[i] = distances.indexOf(lowest);
-            // array of center indexes 
-			// (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
+			// (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0] (center indexes)
 		}
 
 	}
 
-    
-    
-    
 
-/*------------------------------------------------------MOVE MEANS ------------------------------------------------------
-moving the centroids to the average position of all the data points assigned to it
-repeat that until the centroids stop moving (as long as moved = true)
-(this method will change the "mean" array)
-*/
+
+
+
+	/*------------------------------------------------------MOVE MEANS------------------------------------------------------
+	    moving centroids to the avergae position of all dataPoints assigned to it
+	    repeat util centroids stop moving (as long as moved = true)
+	    */
+
 	moveMeans() {
 		this.assignPoints(); // fill in assignments array
 
-        // (3)[Array(2) - centroid 1, Array(2) - centroid 2, Array(2) - centroid 3]
+
 		let ms = this.means;
-		const sums = Array(ms.length); // empty, same length as "ms"
-		const counts = Array(ms.length); // also empty and same length
+		const sums = Array(ms.length);
+		const counts = Array(ms.length);
 		let moved = false;
 
-         //-------------------------------------------1st loop CREATE NEW MULTIDIMENSIONAL SUMS ARRAY
+		//-------------------------------------------1st loop CREATE NEW MULTIDIMENSIONAL SUMS ARRAY
 		for (const j in ms) {
-			counts[j] = 0; 
-			sums[j] = Array(ms[j].length); // create nested array in sums (multidimensional)
+			counts[j] = 0;
+			sums[j] = Array(ms[j].length); // create nested array in sums
 			for (const dimension in ms[j]) {
-				sums[j][dimension] = 0; // zero out the 2nd depth level of "sums", filled with zeros, then with sums
+				sums[j][dimension] = 0; // zero out the 2nd depth level of sums
 			}
 		}
-        
-         //-------------------------------------------2nd loop LOOP THROUGH POINTS
+
+		//-------------------------------------------2nd loop LOOP THROUGH POINTS
 		for (const pointIndex in this.assignments) {
 			let meanIndex = this.assignments[pointIndex]; // 2 or 1 or 0 - one of the 3 centroids
 			const point = data[pointIndex]; // point assigned to centroid
 			const mean = ms[meanIndex];
+			counts[meanIndex] += 1; //increment count for each cluster center
 
-			counts[meanIndex]++; // increment count for each cluster center
-
-            // "sums" is (3) [Array(2), Array(2), Array(2)] and "sums[meanIndex]" gets point 
-            // add value from point at meanIndex(= 0, 1, 2) (x and y) in one nested array in sums (TO) value from point (x or y)  
+			// 2.2 - sums[meanIndex] gets one of the 3 nested arrays in "sums"
 			for (const dimension in mean) {
-                sums[meanIndex][dimension] += point[dimension];
+				sums[meanIndex][dimension] += point[dimension];
 			}
-            
+
 		}
 
 
 		//-------------------------------------------3rd loop GETTING AVERAGE POSTION FOR EACH CLUSTER CENTER AN MOVING IT
 		for (const meanIndex in sums) {
-            
+			// mean with no points, add...
 			for (const dimension in sums[meanIndex]) {
 				sums[meanIndex][dimension] /= counts[meanIndex];
 			}
 		}
 
-        // if mean is different from sums, the center has moved
+		//  // if mean is NOT EQUAL to sums, the center has moved and we are not done yet
 		if (this.means.toString() !== sums.toString()) {
 			moved = true;
 		}
 
-        console.log(moved);
+		console.log(moved);
 		this.means = sums; // update our "means" and go again to "assignPoints"
 		return moved;
 	}
 
 
-    // update and redraw
+	// update and redraw
 	run() {
 		const moved = this.moveMeans();
 		this.draw();
@@ -563,15 +559,15 @@ repeat that until the centroids stop moving (as long as moved = true)
 		for (let i in this.means) {
 			ctx.save();
 
-            // final array
+			// final array
 			let point = this.means[i];
 			let x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
 			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
 
 			ctx.fillStyle = 'green';
-			ctx.translate(x, y); 
+			ctx.translate(x, y);
 			ctx.beginPath();
-			ctx.arc(0, 0, 5, 0, Math.PI * 2, true); 
+			ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
 			ctx.fill();
 			ctx.closePath();
 			ctx.restore();
@@ -610,26 +606,24 @@ repeat that until the centroids stop moving (as long as moved = true)
         el.make();
     }
     
-    /*
-    const Crossover = (...mother, ...father) => {
-        const obj = new Crosover(...mother, ...father);
+    
+    const Crossover = (mother, father) => {
+        const obj = new Crosover(mother, father);
         obj.make(); // ERROR: Rest parameter must be last formal parameter
-    }*/
+    }
 
 	return {
 		P,
 		Line,
 		Net,
         KMeans,
-        //Crossover
+        Crossover
 	}
 
 
 })();
 
 
-
-
 let res = Think.P([-2, -2], 3);
 console.log(res.run([0, 1]));
-   
+    
