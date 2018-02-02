@@ -1,4 +1,4 @@
-<script>
+
 
     
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
@@ -20,22 +20,17 @@
 
 
 		init() {
-
-			
-                // if this.hidden > 0
-				// first hidden l., we define those arguments in the "Network constructor"
+				// push first layer to "layers" data are defined in "Network constructor"
 				const first = new Layer(this.density, this.ni);
 				this.layers.push(first);
 
 				for (let i = 0; i < this.hidden - 1; i++) {
-					const newHiddenLayer = new Layer(this.density, this.density);
-					this.layers.push(newHiddenLayer);
+					const hid = new Layer(this.density, this.density);
+					this.layers.push(hid); // push hidden layers
 				}
 
-				// output layers
-				var outputLayer = new Layer(this.no, this.density);
-				this.layers.push(outputLayer);
-		
+				let output = new Layer(this.no, this.density);
+				this.layers.push(output);
         } 
 
 
@@ -44,11 +39,11 @@
 
 			let outputs = [];
 			let cw = 0; // connection weight
-			// number of inputs is incorrect, so return outputs
-			inputs.length != this.ni ? outputs : 0;
+			inputs.length != this.ni ? outputs : 0; // if incorrect num. of inputs
 			let inputLayer = true;
 
-			// LOOP -------------------------------------------------------------- through each hidden layer...
+            
+			// LOOP -------------------------------------------------------------- loop through each hidden layer...
 			for (let i = 0; i < this.hidden + 1; i++) {
 				const specificLayer = this.layers[i]; // Layer {neurons: Array(6)}  ...(6) and (2) again...
 
@@ -57,17 +52,17 @@
 					inputs = [];
 					inputs = inputs.concat(outputs);
 				} else {
-					inputLayer = false;
+					inputLayer = false; // fired before concat
 				}
 
-				outputs = [];
+				outputs = []; // reste
 				cw = 0;
 
                 // NESTED --------------------- loop through every neuron of every layer.......
 				for (const neuron of specificLayer.neurons) {
 					let sum = 0; 
                     
-                    // NESTED 2 ---------- loop for the length of inputs mutiply each weight with corresponding output inc. con. weight
+                    // NESTED 2 ---------- loop for the length of inputs, mutiply each weight with corresponding output 
 					for (let k = 0; k < neuron.ni - 1; ++k) { //++k increments k and returns new value
 						sum += neuron.weights[k] * inputs[cw];
 						cw++;
@@ -120,8 +115,6 @@
         for (var i = 0; i < this.hidden + 1; ++i){
             // for each neuron
             for(var j = 0; j < this.layers[i].neurons.length; ++j){
-                
-            
             // for each weight
             for (var k = 0; k < this.layers[i].neurons[j].ni; ++k){
                 this.layers[i].neurons[j].weights[k] = weights[cw++];
@@ -185,7 +178,7 @@
 
 
 
-
+/*
 let inputs = [0.12, 0.24];
 const network = new Network(2, 2, 20, 6);
 
@@ -195,22 +188,22 @@ for (let i = 0; i < 1000; i++) {
 	let [a, b] = [outputs[0], outputs[1]];
 	a > b ? console.log(a / b) : console.log(b / a);
 	console.log("inputs ratio " + inputs[0] / inputs[1]);
+}*/
 
-}
 
 
-/*
 const Net = (ni, no, hidden, density, ...inputs) => {
 		const network = new Network(ni, no, hidden, density);
 		const outputs = network.update(...inputs);
 		return outputs;
 	}
 
-for (let i = 0; i < 500; i++) {
-	let w = Net(2, 2, 2, 1000, [0,0]); // should be one
-	console.log(w); // will be bigger than when we do [0, 0] or [1, 1]
+for (let i = 0; i < 1000; i++) {
+	let w = Net(2, 1, 2, 6, [0,0]); // 2 instead of 1 outputs ?
+	console.log(w); 
+    console.log(Math.round(w[0]))
 }
-*/
+
     
     
     
@@ -239,4 +232,3 @@ console.log(get);
 
 
 
-</script>
