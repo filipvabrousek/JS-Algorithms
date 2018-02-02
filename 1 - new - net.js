@@ -1,9 +1,12 @@
+<script>
+
+    
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 	class Network {
 		constructor(ni, no, hidden, density) {
 
 			this.ni = ni; // number of inputs
-			this.no = no;
+			this.no = no; // number of expected outputs
 			this.hidden = hidden;
 			this.density = density;
 
@@ -18,8 +21,8 @@
 
 		init() {
 
-			if (this.hidden > 0) {
-
+			
+                // if this.hidden > 0
 				// first hidden l., we define those arguments in the "Network constructor"
 				const first = new Layer(this.density, this.ni);
 				this.layers.push(first);
@@ -32,7 +35,7 @@
 				// output layers
 				var outputLayer = new Layer(this.no, this.density);
 				this.layers.push(outputLayer);
-		}
+		
         } 
 
 
@@ -84,11 +87,53 @@
 
 
 		// S = Total Input, Sum, AR = Activation Response returns number between 0 and 1
-        // Math.exp(a) -> e^x where "e" is euler number 
+        // Math.exp(x) -> e^x where "e" is euler number 
 		sigmoid(S, AR) {
 			return (1 / (1 + Math.exp(-S / AR)));
 		}
-	}
+        
+        
+        
+        
+    /*---------------------------------------NOT REQUIRED---------------------------*/
+        getWeights(){
+            let weights = [];
+            
+            // for each hidden layer
+            for (var i = 0; i < this.hidden + 1; ++i)
+                // for each neuron
+                for (var j = 0; j < this.layers[i].neurons.length; ++j){
+                    // for each weight
+                    for (var k = 0; k < this.layers[i].neurons[j].ni; ++k){
+                        weights.push(this.layers[i].neurons[j].weights[k]); // add data to weights
+                        
+                    }
+                }
+            return weights;
+            }
+        
+        
+    setWeights(weights){
+         let cw = 0;
+            
+        // for each hidden layer
+        for (var i = 0; i < this.hidden + 1; ++i){
+            // for each neuron
+            for(var j = 0; j < this.layers[i].neurons.length; ++j){
+                
+            
+            // for each weight
+            for (var k = 0; k < this.layers[i].neurons[j].ni; ++k){
+                this.layers[i].neurons[j].weights[k] = weights[cw++];
+            }
+        }
+            
+        
+        }
+        }
+        
+    }
+	
 
 
 
@@ -138,31 +183,60 @@
 
 
 
+
+
+
+let inputs = [0.12, 0.24];
+const network = new Network(2, 2, 20, 6);
+
+for (let i = 0; i < 1000; i++) {
+	let outputs = network.update(inputs);
+
+	let [a, b] = [outputs[0], outputs[1]];
+	a > b ? console.log(a / b) : console.log(b / a);
+	console.log("inputs ratio " + inputs[0] / inputs[1]);
+
+}
+
+
+/*
 const Net = (ni, no, hidden, density, ...inputs) => {
 		const network = new Network(ni, no, hidden, density);
 		const outputs = network.update(...inputs);
 		return outputs;
 	}
 
-
-
-
-// XOR example
-for (let i = 0; i < 1000; i++) {
-	let w = Net(2, 2, 2, 6, [1, 1]);
-	console.log(Math.round(w[0])); // 0 or 1
-    console.log(w) // ? 
-}
-    
-/*
-else to if this.hidden > 0
-   
- else {
-				// if there is NO hidden layers, create output layer
-				var outputLayer = new Layer(this.no, this.ni);
-				this.layers.push(outputLayer);
-                console.log("O")
+for (let i = 0; i < 500; i++) {
+	let w = Net(2, 2, 2, 1000, [0,0]); // should be one
+	console.log(w); // will be bigger than when we do [0, 0] or [1, 1]
 }
 */
     
+    
+    
+    
+   /*
+    
+    
+let weights = network.getWeights();
+let news = []; // new weights
+for (let i = 0; i < weights.len; i++){
+    news.push(weights[i] * 0.5);
+}
 
+network.setWeights(weights);
+
+let get = network.getWeights();
+console.log(get);
+*/
+
+
+
+    
+
+    
+// https://medium.com/the-theory-of-everything/understanding-activation-functions-in-neural-networks-9491262884e0
+
+
+
+</script>
