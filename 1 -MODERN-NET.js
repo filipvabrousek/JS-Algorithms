@@ -1,4 +1,4 @@
- 
+
 
 // Mean squared error
 function mse(errors) {
@@ -15,8 +15,8 @@ const sigmoid = x => 1 / (1 + Math.E ** -x)
 
 
 class Neuron {
-  constructor(numInputs) {
-    this.weights = new Array(numInputs)
+  constructor(ni) { // num inputs
+    this.weights = new Array(ni)
     this.bias = rand()
 
     for (let i = 0; i < this.weights.length; i++) {
@@ -24,6 +24,7 @@ class Neuron {
     }
   }
 
+// on perceptron basis
   process(inputs) {
     this.lastInputs = inputs
 
@@ -42,11 +43,11 @@ class Neuron {
     
     
 class Layer {
-  constructor(numNeurons, numInputs) {
+  constructor(numNeurons, ni) {
     this.neurons = new Array(numNeurons)
 
     for (let i = 0; i < this.neurons.length; i++) {
-      this.neurons[i] = new Neuron(numInputs)
+      this.neurons[i] = new Neuron(ni)
     }
   }
 
@@ -67,6 +68,8 @@ class Network {
     this.layers = []
   }
 
+    
+//-----------------------------------------
   process(inputs) {
     let outputs;
     this.layers.forEach(layer => {
@@ -76,27 +79,34 @@ class Network {
     return outputs
   }
 
-  addLayer(numNeurons, numInputs) {
-    if (numInputs == null) {
+//---------------------------------------
+  addLayer(numNeurons, ni) {
+    if (ni == null) {
       const previousLayer = this.layers[this.layers.length - 1];
-      numInputs = previousLayer.neurons.length
+      ni = previousLayer.neurons.length
     }
 
-    const layer = new Layer(numNeurons, numInputs);
+    const layer = new Layer(numNeurons, ni);
     this.layers.push(layer)
   }
 
+    
+    
+//-------------------------------------------
   train(examples) {
     const outputLayer = this.layers[this.layers.length - 1];
 
-    for (let it = 0; it < this.trainingIterations; it++) {
+      //--------------------------------------------- biggest loop
+      for (let it = 0; it < this.trainingIterations; it++) {
       
+          //--------------------------------------------- NESTED 1
       for (let e = 0; e < examples.length; e++) {
         const inputs = examples[e][0];
         const targets = examples[e][1];
 
         const outputs = this.process(inputs);
 
+        //--------------------------------------------- NESTED 2
         for (var i = 0; i < outputLayer.neurons.length; i++) {
           const neuron = outputLayer.neurons[i];
 
@@ -109,17 +119,20 @@ class Network {
           neuron.delta = neuron.lastOutput * (1 - neuron.lastOutput) * neuron.error
         }
 
+          //--------------------------------------------- NESTED 3
         for (let l = this.layers.length - 2; l >= 0; l--) {
+            //--------------------------------------------- NESTED 4
           for (var j = 0; j < this.layers[l].neurons.length; j++) {
           var neuronJ = this.layers[l].neurons[j]
 
-          neuronJ.error = sum(this.layers[l + 1].neurons.
-                                   map(function(n) { return n.weights[j] * n.delta }))
+          neuronJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) //
           neuronJ.delta = neuronJ.lastOutput * (1 - neuronJ.lastOutput) * neuronJ.error
 
+            //--------------------------------------------- NESTED 5
           for (var i = 0; i < this.layers[l + 1].neurons.length; i++) {
             var neuronI = this.layers[l + 1].neurons[i]
 
+            //--------------------------------------------- NESTED 6
             for (var w = 0; w < neuronI.weights.length; w++) {
               neuronI.weights[w] += this.learningRate * neuronI.lastInputs[w] * neuronI.delta
             }
@@ -130,8 +143,7 @@ class Network {
       }
 
       // Compute the mean squared error for all examples.
-      const error = mse(outputLayer.neurons.
-                           reduce((errors, n) => errors.concat(n.errors), []));
+      const error = mse(outputLayer.neurons.reduce((errors, n) => errors.concat(n.errors), []));
 
       if (it % 10000 === 0) {
         console.log({ iteration: it, mse: error })
@@ -216,8 +228,7 @@ const outputs = network.process([
   1, 0, 0, 1,
   1, 0, 0, 1,
   1, 1, 1, 0
-]);
-// outputs === [~0, ~0]
+]); // outputs === [~0, ~0]
 
 // Convert the output to binary (base 2) and then to decimal (base 10).
 const binary  = outputs.map(v => Math.round(v)).join("");
