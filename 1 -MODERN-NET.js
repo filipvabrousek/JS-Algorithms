@@ -1,4 +1,4 @@
-
+   
 
 // Mean squared error
 function mse(errors) {
@@ -7,33 +7,37 @@ function mse(errors) {
 }
 
 const rand = () => Math.random() * 0.4 - 0.2; // Random weight between -0.2 and 0.2
-const sum = arr => arr.reduce((prev, cur) => prev + cur, 0);
+const sum = arr => arr.reduce((prev, cur) => prev + cur, 0); // sum all elements in the array
 const sigmoid = x => 1 / (1 + Math.E ** -x)
 
 
 
 
-
+/*----------------------------------------------------------NEURON----------------------------------------------------------
+1 - fill - in weights array with random numbers
+2 - multiply each weight with corresponding input, 
+3 - add bias to the sum, pass the value to the sigmoid function and save returned value in "this.lastOutput"
+*/
 class Neuron {
   constructor(ni) { // num inputs
     this.weights = new Array(ni)
     this.bias = rand()
 
+// 1
     for (let i = 0; i < this.weights.length; i++) {
       this.weights[i] = rand()
     }
   }
 
-// on perceptron basis
   process(inputs) {
     this.lastInputs = inputs
-
     let sum = 0;
+    // 2
     for (let i = 0; i < inputs.length; i++) {
       sum += inputs[i] * this.weights[i]
     }
-    sum += this.bias
-
+    // 3
+    sum += this.bias;
     return this.lastOutput = sigmoid(sum)
   }
 }
@@ -41,7 +45,10 @@ class Neuron {
     
 
     
-    
+/*----------------------------------------------------------LAYER----------------------------------------------------------
+fill - in neuron array using neuron class
+for each neuron call procces function with inputs passed
+*/
 class Layer {
   constructor(numNeurons, ni) {
     this.neurons = new Array(numNeurons)
@@ -62,24 +69,25 @@ class Layer {
     
     
     
-
+    
+/*----------------------------------------------------------NETWORK----------------------------------------------------------*/
 class Network {
   constructor() {
     this.layers = []
   }
 
-    
-//-----------------------------------------
+// call "proccess" for each layer 
   process(inputs) {
     let outputs;
     this.layers.forEach(layer => {
-      outputs = layer.process(inputs)
+      outputs = layer.process(inputs) // recursive call
       inputs = outputs
-    })
+    });
     return outputs
   }
 
-//---------------------------------------
+
+// get "number of inputs" from prev layer, create new one and push it to "layers"
   addLayer(numNeurons, ni) {
     if (ni == null) {
       const previousLayer = this.layers[this.layers.length - 1];
@@ -92,7 +100,9 @@ class Network {
 
     
     
-//-------------------------------------------
+    
+    
+
   train(examples) {
     const outputLayer = this.layers[this.layers.length - 1];
 
@@ -172,7 +182,11 @@ Network.prototype.trainingIterations = 500000
 Network.prototype.learningRate = 0.3
 
 
-
+    
+    
+    
+    
+/*----------------------------------------------------------USAGE----------------------------------------------------------*/
 const network = new Network();
 
 network.addLayer(10, 20) // Hidden layer, 10 neurons, 20 inputs
