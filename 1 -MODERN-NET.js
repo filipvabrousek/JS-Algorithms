@@ -1,4 +1,5 @@
-   
+
+    
 
 // Mean squared error
 function mse(errors) {
@@ -20,13 +21,13 @@ const sigmoid = x => 1 / (1 + Math.E ** -x)
 */
 class Neuron {
   constructor(ni) { // num inputs
-    this.weights = new Array(ni)
+    this.weights = new Array(ni) // array of 19 random weights
     this.bias = rand()
 
 // 1
     for (let i = 0; i < this.weights.length; i++) {
       this.weights[i] = rand()
-    }
+    }   
   }
 
   process(inputs) {
@@ -47,7 +48,7 @@ class Neuron {
     
 /*----------------------------------------------------------LAYER----------------------------------------------------------
 fill - in neuron array using neuron class
-for each neuron call procces function with inputs passed
+for each neuron call its procces method with inputs passed
 */
 class Layer {
   constructor(numNeurons, ni) {
@@ -76,11 +77,11 @@ class Network {
     this.layers = []
   }
 
-// call "proccess" for each layer 
+// call "proccess" (calls "proccess" for each neuron)  for each layer 
   process(inputs) {
     let outputs;
     this.layers.forEach(layer => {
-      outputs = layer.process(inputs) // recursive call
+      outputs = layer.process(inputs) 
       inputs = outputs
     });
     return outputs
@@ -104,38 +105,41 @@ class Network {
     
 
   train(examples) {
-    const outputLayer = this.layers[this.layers.length - 1];
+    const outputLayer = this.layers[this.layers.length - 1]; // get top layer
 
-      //--------------------------------------------- biggest loop
+      //--------------------------------------------- biggest LOOP through training itterations
+      // "it" used at the bottom
       for (let it = 0; it < this.trainingIterations; it++) {
       
-          //--------------------------------------------- NESTED 1
+          /*--------------------------------------------- NESTED 1
+          train([ [zero, [0,0]] ...])
+          examples[e][0] gets first member one of the nested arrays
+          */
       for (let e = 0; e < examples.length; e++) {
-        const inputs = examples[e][0];
-        const targets = examples[e][1];
+        const inputs = examples[e][0]; // 1st member of nested array (the pattern)
+        const targets = examples[e][1]; // 2nd member of nested array
+        const outputs = this.process(inputs); // pass 1st member of nested array to procces f. in neuron class
 
-        const outputs = this.process(inputs);
-
-        //--------------------------------------------- NESTED 2
+        /*---------------------------------------------------------------------- NESTED 2 
+        get information about how wrong the prediction was */
         for (var i = 0; i < outputLayer.neurons.length; i++) {
           const neuron = outputLayer.neurons[i];
-
-          neuron.error = targets[i] - outputs[i]
+          neuron.error = targets[i] - outputs[i] // how wrong it was ?
 
           // Keep track of the error of each examples to determine when to stop training.
           neuron.errors = neuron.errors || []
           neuron.errors[e] = neuron.error
-
           neuron.delta = neuron.lastOutput * (1 - neuron.lastOutput) * neuron.error
         }
 
-          //--------------------------------------------- NESTED 3
+          //-------------------------------------------------------------------- NESTED 3
         for (let l = this.layers.length - 2; l >= 0; l--) {
-            //--------------------------------------------- NESTED 4
+            /*--------------------------------------------- NESTED 4*
+            use the sum function on mutpilied weigth with delta */
           for (var j = 0; j < this.layers[l].neurons.length; j++) {
+         
           var neuronJ = this.layers[l].neurons[j]
-
-          neuronJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) //
+          neuronJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) 
           neuronJ.delta = neuronJ.lastOutput * (1 - neuronJ.lastOutput) * neuronJ.error
 
             //--------------------------------------------- NESTED 5
@@ -143,25 +147,20 @@ class Network {
             var neuronI = this.layers[l + 1].neurons[i]
 
             //--------------------------------------------- NESTED 6
-            for (var w = 0; w < neuronI.weights.length; w++) {
-              neuronI.weights[w] += this.learningRate * neuronI.lastInputs[w] * neuronI.delta
-            }
+            for (var w = 0; w < neuronI.weights.length; w++) { 
+                neuronI.weights[w] += this.learningRate * neuronI.lastInputs[w] * neuronI.delta
+            } // 6
             neuronI.bias += this.learningRate * neuronI.delta
-          }
-        }
+          } // 5
+        } // 4
       }
       }
 
       // Compute the mean squared error for all examples.
       const error = mse(outputLayer.neurons.reduce((errors, n) => errors.concat(n.errors), []));
-
-      if (it % 10000 === 0) {
-        console.log({ iteration: it, mse: error })
-      }
-
-      if (error <= this.errorThreshold) {
-        return
-      }
+      
+      if (it % 10000 === 0) { console.log({ iteration: it, mse: error }) }
+      if (error <= this.errorThreshold) {return}
       
     }
 
@@ -174,10 +173,8 @@ class Network {
 
 // Stop training when mean squared error of all output neurons reach this threshold
 Network.prototype.errorThreshold = 0.00001
-
 // Number of iterations on each training
 Network.prototype.trainingIterations = 500000
-
 // Rate at which the network learns in each iteration
 Network.prototype.learningRate = 0.3
 
@@ -189,7 +186,7 @@ Network.prototype.learningRate = 0.3
 /*----------------------------------------------------------USAGE----------------------------------------------------------*/
 const network = new Network();
 
-network.addLayer(10, 20) // Hidden layer, 10 neurons, 20 inputs
+network.addLayer(10, 20) // Hidden layer, 10 neurons, 20 inputs (members of the array)
 network.addLayer(2)      // Output layer, 2 neurons
 
 // Our character "images". Imagine `1`s as black pixels.
@@ -235,6 +232,7 @@ network.train([
 ])
 
 
+
 // Querying the network (recognized, even if pixels in left corners aren't zero)
 const outputs = network.process([
   1, 1, 1, 1,
@@ -251,3 +249,4 @@ const decimal = parseInt(binary, 2);
 console.log("Recognized", decimal, outputs);
     
 // SOURCE:  https://github.com/greatcodeclub/neural/blob/master/lib/neural.js
+
