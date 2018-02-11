@@ -6,7 +6,9 @@ function mse(errors) {
 
 const rand = () => Math.random() * 0.4 - 0.2; // Random weight between -0.2 and 0.2
 const sum = arr => arr.reduce((prev, cur) => prev + cur, 0); // sum all elements in the array
-const sigmoid = x => 1 / (1 + Math.exp(Math.E, x)); // mine: 1 / (1 + e^x) we pass in "x"
+
+/*whatever the x is it gets converted into range between 0 and 1*/
+const sigmoid = x => 1 / (1 + Math.exp(Math.E, x)); //  y = 1 / (1 + e^x); x is passed in
 
 
 
@@ -102,7 +104,7 @@ class Network {
     const outputLayer = this.layers[this.layers.length - 1]; // get top layer
 
       //------------------------------------------------------------------ biggest LOOP through training itterations
-      for (let it = 0; it < this.iters; it++) { // we want to get n. of "its" IT
+      for (let it = 0; it < this.iters; it++) { // we want to get n. of "its" down in the code
           
           /*                                         ----- NESTED 1 "e"
           train([ [zero, [0,0]] ...]) looping through ex. arr. */
@@ -112,14 +114,13 @@ class Network {
         const outputs = this.process(inputs); // pass 1st member of nested array to procces f. in "network" class (-> neuron class)
 
         /*                                                      -----NESTED 2 "i"
-        get information about how wrong the prediction was, get each neuron from the output layer
-        keep track of the error of each examples to determine when to stop training.r */
-        for (var i = 0; i < outputLayer.neurons.length; i++) {
+        get information about how wrong the prediction was, get each neuron from the output layer*/
+        for (let i = 0; i < outputLayer.neurons.length; i++) {
           const neuron = outputLayer.neurons[i];
           neuron.error = targets[i] - outputs[i] // get diff "2nd member of nested array - neurons guess (proccess f.)"
-          neuron.errors = neuron.errors || []
+          neuron.errors = neuron.errors || [] //  keep track of the error of each examples to determine when to stop training.r
           neuron.errors[e] = neuron.error
-          neuron.delta = neuron.lastOutput * (1 - neuron.lastOutput) * neuron.error // get delta ()
+          neuron.delta = neuron.lastOutput * (1 - neuron.lastOutput) * neuron.error // delta: (value returned from sigm. * (1 - that value) * error)
         }
 
         /*                                                              -----NESTED 3 "l" */
