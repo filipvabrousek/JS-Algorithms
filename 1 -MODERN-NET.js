@@ -21,11 +21,7 @@ class Neuron {
   constructor(ni) { // num inputs
     this.weights = new Array(ni) // array of 19 random weights
     this.bias = rand()
-
-// 1
-    for (let i = 0; i < this.weights.length; i++) {
-      this.weights[i] = rand()
-    }   
+    this.weights.fill(rand()); // FOR LOOP t.weights[i] = rand() is 3 times faster
   }
 
   process(inputs) {
@@ -33,8 +29,9 @@ class Neuron {
     let sum = 0;
     // 2
     for (let i = 0; i < inputs.length; i++) {
-      sum += inputs[i] * this.weights[i]
+        sum += inputs[i] * this.weights[i] 
     }
+      
     // 3
     sum += this.bias;
     return this.lastOutput = sigmoid(sum)
@@ -51,15 +48,14 @@ for each neuron call its procces method with inputs passed
 class Layer {
   constructor(numNeurons, ni) {
     this.neurons = new Array(numNeurons)
-
-    for (let i = 0; i < this.neurons.length; i++) {
-      this.neurons[i] = new Neuron(ni)
-    }
+    this.neurons.fill(new Neuron(ni)); // FOR LOOP t.weights[i] = new N(ni) for is 3 times faster
   }
 
   process(inputs) {
     return this.neurons.map(neuron => neuron.process(inputs))
   }
+    
+
 }
     
     
@@ -86,7 +82,7 @@ class Network {
   }
 
 
-/* if "ni" is NULL, get "number of inputs" (length of array) from prev layer, create new one and push it to "layers" usd in usage*/
+/* if "ni" is NULL, get "number of inputs" (length of array) from prev layer, create new one and push it to "layers" used in usage*/
   addLayer(numNeurons, ni) {
     if (ni == null) {
       const previousLayer = this.layers[this.layers.length - 1];
@@ -111,7 +107,7 @@ class Network {
       for (let e = 0; e < examples.length; e++) {
         const inputs = examples[e][0]; // get 1st member of nested array (the pattern)
         const targets = examples[e][1]; // get 2nd member of nested array
-        const outputs = this.process(inputs); // pass 1st member of nested array to procces f. in "network" class (-> neuron class)
+        const outputs = this.process(inputs); // pass 1st member of nested array to procces f. in this "network" class (-> neuron class)
 
         /*                                                      -----NESTED 2 "i"
         get information about how wrong the prediction was, get each neuron from the output layer*/
