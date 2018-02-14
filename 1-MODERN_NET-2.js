@@ -13,27 +13,23 @@ const sigmoid = x => 1 / (1 + Math.exp(Math.E, x)); //  y = 1 / (1 + e^x); x is 
 
 
 /*----------------------------------------------------------NEURON----------------------------------------------------------
-1 - fill - in weights array with random numbers
-2 - multiply each weight with corresponding input
-3 - add bias to the sum, pass the value to the sigmoid function and save returned value in "this.lastOutput"
+1 - fill weights array with random numbers
+2 - multiply sum of all weights with sum of all inputs
+and add bias to the sum, pass the value to the sigmoid function and save returned value in "this.lastOutput"
+(Faster  FOR inputs.length,  sum += inputs[i] * this.weights[i]) 
 */
+
 class Neuron {
   constructor(ni) { // num inputs
     this.weights = new Array(ni) // array of 19 random weights
     this.bias = rand()
     this.weights.fill(rand()); // FOR LOOP t.weights[i] = rand() is 3 times faster
   }
-
+// 2
   process(inputs) {
     this.lastInputs = inputs;
     let sum = 0;
-    // 2
-      /* Faster  FOR inputs.length,  sum += inputs[i] * this.weights[i] */
-      let inps = inputs.reduce((a, b) => a + b);
-      let weights = this.weights.reduce((a, b) => a + b);
-      sum += inps * weights;
-      
-    // 3
+    sum += inputs.reduce((a, b) => a + b) * this.weights.reduce((a, b) => a + b);
     sum += this.bias;
     return this.lastOutput = sigmoid(sum)
   }
@@ -55,15 +51,12 @@ class Layer {
   process(inputs) {
     return this.neurons.map(neuron => neuron.process(inputs))
   }
-    
-
 }
     
     
     
     
-    
-    
+
     
     
 /*----------------------------------------------------------NETWORK----------------------------------------------------------*/
@@ -72,7 +65,7 @@ class Network {
     this.layers = []
   }
 
-// call "proccess" (calls "proccess" for each neuron)  for each layer 
+// call "process" (calls "process" for each neuron)  for each layer 
   process(inputs) {
     let outputs;
     this.layers.forEach(layer => {
@@ -98,44 +91,51 @@ class Network {
     
 /*----------------------------------------------------------------------------------------------------------------*/
   train(examples) {
+      
     const outputLayer = this.layers[this.layers.length - 1]; // get top layer
 
-      //------------------------------------------------------------------ biggest LOOP through training itterations
-      for (let it = 0; it < this.iters; it++) { // we want to get n. of "its" down in the code
+      //------------------------------------------------------------------ KEEP TRACK OF NUMBER OF EACH ITERATION
+      for (let it = 0; it < this.iters; it++) { 
           
-          /*                                         ----- NESTED 1 "e"
+          /*                                         ----- GET DATA FROM EXAMPLES ARRAY 1 "e"
           train([ [zero, [0,0]] ...]) looping through ex. arr. */
       for (let e = 0; e < examples.length; e++) {
         const inputs = examples[e][0]; // get 1st member of nested array (the pattern)
         const targets = examples[e][1]; // get 2nd member of nested array
-        const outputs = this.process(inputs); // pass 1st member of nested array to procces f. in this "network" class (-> neuron class)
+        const outputs = this.process(inputs); // pass 1st m. into procces f. in this "network" class (-> neuron class)
 
-        /*                                                      -----NESTED 2 "i"
-        get information about how wrong the prediction was, get each neuron from the output layer*/
+        /*                                                      ----- COMPARE TARGETS WITH OUTPUTS 2 "i"
+        get information about how wrong the prediction was,
+        get each neuron from the output layer (top layer at the top of this method) */
         for (let i = 0; i < outputLayer.neurons.length; i++) {
           const neuron = outputLayer.neurons[i];
           neuron.error = targets[i] - outputs[i] // get diff "2nd member of nested array - neurons guess (proccess f.)"
           neuron.errors = neuron.errors || [] //  keep track of the error of each examples to determine when to stop training.r
-          neuron.errors[e] = neuron.error
-          neuron.delta = neuron.lastOutput * (1 - neuron.lastOutput) * neuron.error // delta: (value returned from sigm. * (1 - that value) * error)
+          neuron.errors[e] = neuron.error // fill in error array
+          neuron.delta = neuron.lastOutput * (1 - neuron.lastOutput) * neuron.error // learning
         }
 
-        /*                                                              -----NESTED 3 "l" */
+        /*                                                              ----- GET EACH LAYER 3 "l" 
+        0:Layer {neurons: Array(10)}
+        1:Layer {neurons: Array(2)}
+        */
         for (let l = this.layers.length - 2; l >= 0; l--) {
-            /*                                                                     ---NESTED 4 "j"
-            use the sum function on multiplied weigth with delta */
+            /*                                                                     ---GET EACH NEURON 4 "j"
+             */
           for (let j = 0; j < this.layers[l].neurons.length; j++) {
-          let NJ = this.layers[l].neurons[j]
-          NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) 
-          NJ.delta = NJ.lastOutput * (1 - NJ.lastOutput) * NJ.error
+          let NJ = this.layers[l].neurons[j] // get each neuron and set it props
+          NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) // for each n. weight * delta and pass it to sum f.
+          NJ.delta = NJ.lastOutput * (1 - NJ.lastOutput) * NJ.error // set neuron delta
 
-            //                                                                          ---NESTED 5 "i"
+            //                                                                          ---GET EACH NEURON AND SET BIAS 5 "i"
           for (let i = 0; i < this.layers[l + 1].neurons.length; i++) {
-            let NI = this.layers[l + 1].neurons[i]
-            //                                                                               ---NESTED 6 "w"
+            let NI = this.layers[l + 1].neurons[i] 
+            
+            //                                                                           ---SET WEIGHTS IN EACH NEURON 6 "w"
             for (let w = 0; w < NI.weights.length; w++) { 
-                NI.weights[w] += this.learningRate * NI.lastInputs[w] * NI.delta
+                NI.weights[w] += this.learningRate * NI.lastInputs[w] * NI.delta // set weight based on delta, how wrong it was and multiply last inp. with delta
             } 
+    
             NI.bias += this.learningRate * NI.delta // use delta
           } 
         } 
@@ -148,9 +148,8 @@ class Network {
       if (it % 10000 === 0) { console.log({ iteration: it, mse: error }) }
       if (error <= this.errorThreshold) {return} // if error is acceptable, stop the training
       
-    }
-
-  }
+    } // end of biggest loop
+  } 
 }
     
     
