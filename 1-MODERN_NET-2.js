@@ -119,17 +119,17 @@ class Network {
         layers[l].neuron[j] is "Neuron {weights: Array(20), bias: -0.1, lastInputs: Array(20), lastOutput: 0.06, error: -0.013, …}"
         */
         for (let l = this.layers.length - 2; l >= 0; l--) {
-            /*                                                                     ---GET EACH NEURON 4 "j"*/
+            /*                                                                     ---GET EACH NEURON (1st layer) 4 "j"*/
           for (let j = 0; j < this.layers[l].neurons.length; j++) {
          
           let NJ = this.layers[l].neurons[j] // -> Layer {neurons: Array(10)} .neurons[j] 
           NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) // fro 2nd layer for each n. weight * delta and pass it to sum f.
           NJ.delta = NJ.lastOutput * (1 - NJ.lastOutput) * NJ.error // set neuron delta
-            //                                                                          ---GET EACH NEURON AND SET BIAS 5 "i"
+            //                                                                          ---GET EACH NEURON (2nd layer) AND SET BIAS 5 "i"
           for (let i = 0; i < this.layers[l + 1].neurons.length; i++) {
             let NI = this.layers[l + 1].neurons[i]  // -> Layer {neurons: Array(2)} .neurons[i]
             
-            //                                                                           ---SET WEIGHTS IN EACH NEURON 6 "w"
+            //                                                                           ---SET WEIGHTS IN EACH NEURON (2nd layer) 6 "w"
             for (let w = 0; w < NI.weights.length; w++) { 
                 NI.weights[w] += this.learningRate * NI.lastInputs[w] * NI.delta // set weight based on delta, how wrong it was and multiply last inp. with delta
             } 
