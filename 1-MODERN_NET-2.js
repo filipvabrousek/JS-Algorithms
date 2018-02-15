@@ -7,10 +7,8 @@ function mse(errors) {
 const rand = () => Math.random() * 0.4 - 0.2; // Random weight between -0.2 and 0.2
 const sum = arr => arr.reduce((prev, cur) => prev + cur, 0); // sum all elements in the array
 
-/*whatever the x is it gets converted into range between 0 and 1*/
+/* whatever the x is it gets converted into range between 0 and 1 */
 const sigmoid = x => 1 / (1 + Math.exp(Math.E, x)); //  y = 1 / (1 + e^x); x is passed in
-
-
 
 /*----------------------------------------------------------NEURON----------------------------------------------------------
 1 - fill weights array with random numbers
@@ -116,20 +114,20 @@ class Network {
         }
 
         /*                                                              ----- GET EACH LAYER 3 "l" 
-        0:Layer {neurons: Array(10)}
-        1:Layer {neurons: Array(2)}
+        0:Layer {neurons: Array(10)} "this.layers.length - 2" -  means that last layer won't be included
+        1:Layer {neurons: Array(2)} 
+        layers[l].neuron[j] is "Neuron {weights: Array(20), bias: -0.1, lastInputs: Array(20), lastOutput: 0.06, error: -0.013, …}"
         */
         for (let l = this.layers.length - 2; l >= 0; l--) {
-            /*                                                                     ---GET EACH NEURON 4 "j"
-             */
+            /*                                                                     ---GET EACH NEURON 4 "j"*/
           for (let j = 0; j < this.layers[l].neurons.length; j++) {
-          let NJ = this.layers[l].neurons[j] // get each neuron and set it props
-          NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) // for each n. weight * delta and pass it to sum f.
+         
+          let NJ = this.layers[l].neurons[j] // -> Layer {neurons: Array(10)} .neurons[j] 
+          NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)) // fro 2nd layer for each n. weight * delta and pass it to sum f.
           NJ.delta = NJ.lastOutput * (1 - NJ.lastOutput) * NJ.error // set neuron delta
-
             //                                                                          ---GET EACH NEURON AND SET BIAS 5 "i"
           for (let i = 0; i < this.layers[l + 1].neurons.length; i++) {
-            let NI = this.layers[l + 1].neurons[i] 
+            let NI = this.layers[l + 1].neurons[i]  // -> Layer {neurons: Array(2)} .neurons[i]
             
             //                                                                           ---SET WEIGHTS IN EACH NEURON 6 "w"
             for (let w = 0; w < NI.weights.length; w++) { 
@@ -144,7 +142,6 @@ class Network {
 
       // Compute the mean squared error using "mse" for all examples.
       const error = mse(outputLayer.neurons.reduce((errors, n) => errors.concat(n.errors), []));
-      
       if (it % 10000 === 0) { console.log({ iteration: it, mse: error }) }
       if (error <= this.errorThreshold) {return} // if error is acceptable, stop the training
       
@@ -159,7 +156,7 @@ class Network {
 // Stop training when mean squared error of all output neurons reach this threshold
 Network.prototype.errorThreshold = 0.00001
 // Number of iterations on each training
-Network.prototype.iters = 500000
+Network.prototype.iters = 50000 
 // Rate at which the network learns in each iteration
 Network.prototype.learningRate = 0.3
 
