@@ -98,11 +98,8 @@ class Network{
                                 // target every third layer ?????
                                 for (let i = 0; i < this.layers[l + 1].neurons.length; i++){  
                                     let NI = this.layers[l + 1].neurons[i]; // -> Layer {neurons: Array(2)} .neurons[i]
-                                    
-                                    for (let w = 0; w < NI.weights.length; w++){
-                                        NI.weights[w] += this.learningRate * NI.lastInput[w] * NI.delta;
-                                    }
-                                    NI.bias += this.learningRate * NI.delta; // rate defined at bottom
+                                    NI.weights.forEach((val, index) => NI.weights[index] += NI.lastInput[index] * NI.delta); // old loop :D <-
+                                    NI.bias += this.learningRate * NI.delta; 
                                 }
                         }
                     }   
@@ -203,3 +200,7 @@ console.log("Recognized", decimal, outputs);
     
 // SOURCE:  https://github.com/greatcodeclub/neural/blob/master/lib/neural.js
 
+/*
+for (let w = 0; w < NI.weights.length; w++){
+NI.weights[w] += this.learningRate * NI.lastInput[w] * NI.delta;
+}*/
