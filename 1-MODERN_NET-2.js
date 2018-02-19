@@ -80,18 +80,20 @@ class Network{
                 const outputs = this.process(inputs); // pass "pattern" into process f. -> in neurons proccess f.
             
                 
-                for (let i = 0; i < top.neurons.length; i++){ // --------------- COMPARE TARGETS WITH OUTPUTS, add props to n.
-                    const n = top.neurons[i]; 
-                    n.error = targets[i] - outputs[i]; // get diff (2nd nested arr member - neurons guess - process)
-                    n.errors = n.errors || []; // keep track of errors 
-                    n.errors[e] = n.error; 
-                    n.delta = n.lo * (1 - n.lo) * n.error; // mistake ????
-                
-                    // last layer won't be included -> layers: 0:Layer {neurons: Array(10)}  1:Layer {neurons: Array(2)}  
+               // --------------- COMPARE TARGETS WITH OUTPUTS, add props to n.
+                    top.neurons.forEach((n, index) => {
+                        n.error = targets[index] - outputs[index]; // get diff (2nd nested arr member - neurons guess - process)
+                        n.errors = n.errors || []; // keep track of errors 
+                        n.errors[e] = n.error;
+                        n.delta = n.lo * (1 - n.lo) * n.error; // mistake ????
+    
+                    }); 
+                   
+                    // last layer won't be included 
                     for (let l = this.layers.length - 2; l >= 0; l--){ // -------------- GET EACH LAYER without first and last ???????
                         
                         for (let j = 0; j < this.layers[l].neurons.length; j++){ 
-
+                            
                             let NJ = this.layers[l].neurons[j]; // -> Layer {neurons: Array(10)} .neurons[j] "Neuron {weights: Array(20)..
                             NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)); // for 2nd layer for each n. weight * delta)
                             NJ.delta = NJ.lo * (1 - NJ.lo) * NJ.error; // update neuron delta
@@ -99,9 +101,8 @@ class Network{
                             let NI = this.layers[l + 1].neurons[l]; // -> Layer {neurons: Array(2)} .neurons[j] "Neuron {weights: Array(20)...
                             NI.weights.forEach((val, index) => NI.weights[index] += NI.lastInput[index] * NI.delta); 
                             NI.bias += this.learningRate * NI.delta; 
-                        }
+                       }
                     }   
-        }
                 
                  const error = mse(top.neurons.reduce((errors, n) => errors.concat(n.errors), []));
                  (it % 10000 === 0) ? console.log({iteration: it, mse: error}) : 0;
