@@ -90,17 +90,15 @@ class Network{
                     // last layer won't be included -> layers: 0:Layer {neurons: Array(10)}  1:Layer {neurons: Array(2)}  
                     for (let l = this.layers.length - 2; l >= 0; l--){ // -------------- GET EACH LAYER without first and last ???????
                         
-                        for (let j = 0; j < this.layers[l].neurons.length; j++){
-                            let NJ = this.layers[l].neurons[j]; // -> Layer {neurons: Array(10)} .neurons[j] "Neuron {weights: Array(20), bias ...}
+                        for (let j = 0; j < this.layers[l].neurons.length; j++){ 
+
+                            let NJ = this.layers[l].neurons[j]; // -> Layer {neurons: Array(10)} .neurons[j] "Neuron {weights: Array(20)..
                             NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)); // for 2nd layer for each n. weight * delta)
                             NJ.delta = NJ.lo * (1 - NJ.lo) * NJ.error; // update neuron delta
                             
-                                // target every third layer ?????
-                                for (let i = 0; i < this.layers[l + 1].neurons.length; i++){  
-                                    let NI = this.layers[l + 1].neurons[i]; // -> Layer {neurons: Array(2)} .neurons[i]
-                                    NI.weights.forEach((val, index) => NI.weights[index] += NI.lastInput[index] * NI.delta); // old loop :D <-
-                                    NI.bias += this.learningRate * NI.delta; 
-                                }
+                            let NI = this.layers[l + 1].neurons[l]; // -> Layer {neurons: Array(2)} .neurons[j] "Neuron {weights: Array(20)...
+                            NI.weights.forEach((val, index) => NI.weights[index] += NI.lastInput[index] * NI.delta); 
+                            NI.bias += this.learningRate * NI.delta; 
                         }
                     }   
         }
