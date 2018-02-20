@@ -68,49 +68,51 @@ class Network{
     
     
     
-    // data instead of examples
     train(data) {
+        /*Layer {neurons: Array(10)} - weights have length of 20
+        Layer {neurons: Array(2)} - weights have length of 10 */
         const top = this.layers[this.layers.length - 1]; // output layer (top layer)
-        
-        for (let it = 0; it < this.iters; it++){ // --------------------- KEEP TRACK OF THE NUMBER OF EACH ITERATION
-          
-            for (let e = 0; e < data.length; e++){ // ----------------------- GET DATA FROM ARR
-                const inputs = data[e][0]; // 1st member of nested array (pattern)  train([ [zero, [0,0]] ...])
-                const targets = data[e][1]; // 2nd member
-                const outputs = this.process(inputs); // pass "pattern" into process f. -> in neurons proccess f.
-            
-                
-               // --------------- COMPARE TARGETS WITH OUTPUTS, add props to n.
-                    top.neurons.forEach((n, index) => {
+
+         for (let it = 0; it < this.iters; it++){ // --------------------- KEEP TRACK OF THE NUMBER OF EACH ITERATION
+
+        // ------------------------------------ GET DATA FROM ARR, COMPARE AND SET PROPERTIES OF THE TOP LAYER        
+                  top.neurons.forEach((n, index) => {
+                       const inputs = data[index][0]; // 1st member of nested array (pattern)  train([ [zero, [0,0]] ...])
+                       const targets = data[index][1];  // 2nd member
+                       const outputs = this.process(inputs); // pass "pattern" into process f. -> in neurons proccess f.
+                      
                         n.error = targets[index] - outputs[index]; // get diff (2nd nested arr member - neurons guess - process)
                         n.errors = n.errors || []; // keep track of errors 
-                        n.errors[e] = n.error;
+                        n.errors[index] = n.error;
                         n.delta = n.lo * (1 - n.lo) * n.error; // mistake ????
-    
                     }); 
-                   
-                    // last layer won't be included 
-                    for (let l = this.layers.length - 2; l >= 0; l--){ // -------------- GET EACH LAYER without first and last ???????
+       
+
+            // ------------------------------------ GET EACH LAYER without first and last ???????
+            for (let l = this.layers.length - 2; l >= 0; l--){ 
                         
-                        for (let j = 0; j < this.layers[l].neurons.length; j++){ 
+                
+          
+                   // -------------- DO THE MATH
+                this.layers.forEach((val, j) => {
+                    let NJ = this.layers[l].neurons[j]; // -> Layer {neurons: Array(10)} .neurons[j] "Neuron {weights: Array(20)..
+                    NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)); // for each n. in 2nd l. weight * delta)
+                    NJ.delta = NJ.lo * (1 - NJ.lo) * NJ.error; // update neuron delta
                             
-                            let NJ = this.layers[l].neurons[j]; // -> Layer {neurons: Array(10)} .neurons[j] "Neuron {weights: Array(20)..
-                            NJ.error = sum(this.layers[l + 1].neurons.map(n => n.weights[j] * n.delta)); // for 2nd layer for each n. weight * delta)
-                            NJ.delta = NJ.lo * (1 - NJ.lo) * NJ.error; // update neuron delta
-                            
-                            let NI = this.layers[l + 1].neurons[l]; // -> Layer {neurons: Array(2)} .neurons[j] "Neuron {weights: Array(20)...
-                            NI.weights.forEach((val, index) => NI.weights[index] += NI.lastInput[index] * NI.delta); 
-                            NI.bias += this.learningRate * NI.delta; 
-                       }
-                    }   
+                    let NI = this.layers[l + 1].neurons[l]; // -> Layer {neurons: Array(2)} .neurons[j] "Neuron {weights: Array(20)...
+                    NI.weights.forEach((val, index) => NI.weights[index] += NI.lastInput[index] * NI.delta); 
+                    NI.bias += this.learningRate * NI.delta; 
+                    });
+                   }   
                 
                  const error = mse(top.neurons.reduce((errors, n) => errors.concat(n.errors), []));
                  (it % 10000 === 0) ? console.log({iteration: it, mse: error}) : 0;
                  if (error <= this.errorThreshold) {return}
-                
-    } 
+               
+     }//end of the biggest loop
         
-    } // end of the biggest loop
+        
+     
 }
                 
 }
