@@ -1,3 +1,5 @@
+
+/*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
 function arrayAdd(array1, array2) {
   const l1 = array1.length;
   const l2 = array2.length;
@@ -12,6 +14,7 @@ function arrayAdd(array1, array2) {
   return result;
 }
 
+//----------------------------------------
 function arraySubtract(array1, array2) {
   const l1 = array1.length;
   const l2 = array2.length;
@@ -26,6 +29,8 @@ function arraySubtract(array1, array2) {
   return result;
 }
 
+    
+//----------------------------------------
 function arrayMultiply(array1, array2) {
   const l1 = array1.length;
   const l2 = array2.length;
@@ -40,15 +45,45 @@ function arrayMultiply(array1, array2) {
   return result;
 }
 
-function sigmoid(z) {
-  return 1 / (1 + Math.exp(z * -1));
+
+//----------------------------------------
+const sigmoid = z => 1 / (1 + Math.exp(z * -1));
+const sigmoidGradient = z =>  sigmoid(z) * (1 - sigmoid(z));
+
+
+
+/*------------------------------------------------------NEURON----------------------------------------------------------*/
+class Neuron {
+
+  constructor(ni) {
+    this.weights = [];
+    this.weights.length = ni;
+    this.weights.fill(Math.random() - 0.5)
+  }
+
+ 
+  forward(inputs) {
+    this.inputs = inputs;
+    this.z = arrayMultiply(inputs, this.weights); // each input * corresponding weight
+    return sigmoid(this.z);
+  }
+
+  backward(error) {
+    this.error = error;
+    var backErrors = this.weights.map(w => w * error);
+
+    // Don't return bias error.
+    return backErrors.slice(1);
+  }
+
+  updateWeights() {
+    const deltas = this.inputs.map(input =>
+      input * sigmoidGradient(this.z) * this.error * .5 // STEP_SIZE
+    );
+    this.weights = arraySubtract(this.weights, deltas);
+  }
+
 }
-
-function sigmoidGradient(z) {
-  return sigmoid(z) * (1 - sigmoid(z));
-}
-
-
 
     
     
@@ -83,53 +118,20 @@ class Layer {
     
     
     
-
-/*------------------------------------------------------NEURON----------------------------------------------------------*/
-class Neuron {
-// numberofinputs
-  constructor(n) {
-    this.weights = [];
-    this.weights.length = n;
-    this.weights.fill(Math.random() - 0.5)
-  }
-
- 
-  forward(inputs) {
-    this.inputs = inputs;
-    this.z = arrayMultiply(inputs, this.weights);
-    return sigmoid(this.z);
-  }
-
-  backward(error) {
-    this.error = error;
-    var backErrors = this.weights.map(w => w * error);
-
-    // Don't return bias error.
-    return backErrors.slice(1);
-  }
-
-  updateWeights() {
-    const deltas = this.inputs.map(input =>
-      input * sigmoidGradient(this.z) * this.error * .5// STEP_SIZE
-    );
-    this.weights = arraySubtract(this.weights, deltas);
-  }
-
-}
-    
-    
-    
-    
-/*------------------------------------------------------NETWORK----------------------------------------------------------*/
+/*------------------------------------------------------NETWORK----------------------------------------------------------
+Layer {neurons: Array(3)} Layer {neurons: Array(1)}
+*/
 class Network {
 
   constructor(/* layer sizes */) {
     const sizes = [...arguments];
     this.layers = [];
+    
     for (let i = 0; i < sizes.length-1; i++) {
       const layer = new Layer(sizes[i+1], sizes[i]+1);
       this.layers.push(layer);
     }
+     
   }
 
   forward(inputs) {
@@ -152,6 +154,22 @@ class Network {
   updateWeights() {
     this.layers.forEach(layer => layer.updateWeights());
   }
+    
+    
+learn(data){
+    for (let iter = 0; iter < 40000; iter++) {
+    const i = Math.floor(Math.random() * data.length);
+
+    const input = data[i].input;
+    const output = data[i].output;
+
+    const h = this.forward(input);
+    const error = arraySubtract(h, output);
+
+    this.backward(error);
+    this.updateWeights();
+}
+}
 }
     
     
@@ -172,30 +190,17 @@ const data = [{
 }];
 
 
-
 const network = new Network(2, 3, 1);
-
-for (let iter = 0; iter < 40000; iter++) {
-  const i = Math.floor(Math.random() * data.length);
-
-  const input = data[i].input;
-  const output = data[i].output;
-
-  const h = network.forward(input);
-  const error = arraySubtract(h, output);
-
-  network.backward(error);
-  network.updateWeights();
-}
-
+network.learn(data); // wrong results without this
+    
 for (let i = 0; i < data.length; i++) {
   const input = data[i].input;
-  const output = network.forward(input); //h ?
-  console.log( input, output[0]);
+  const output = network.forward(input); // h ?
+  console.log(input, output);
 }
 
     
     
 /*
-https://github.com/jedborovik/simple-neural-network
+SOURCE: https://github.com/jedborovik/simple-neural-network
 */
