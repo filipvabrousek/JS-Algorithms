@@ -1,47 +1,24 @@
 
 /*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
-function arrayAdd(array1, array2) {
-  const l1 = array1.length;
-  const l2 = array2.length;
-  if (l1 !== l2) {
-    throw Error('Can\'t add arrays of length '+l1 +' and '+l2);
-  }
-
+function arrayAdd(arr1, arr2) {  
   const result = [];
-  for (let i = 0; i < l1; i++) {
-    result.push(array1[i] + array2[i]);
-  }
+  arr1.forEach((val, index) => result.push(arr1[index] + arr2[index]));
   return result;
+    
 }
 
 //----------------------------------------
-function arraySubtract(array1, array2) {
-  const l1 = array1.length;
-  const l2 = array2.length;
-  if (l1 !== l2) {
-    throw Error('Can\'t subtract arrays of length '+l1 +' and '+l2);
-  }
-
+function arraySubtract(arr1, arr2) {
   const result = [];
-  for (let i = 0; i < l1; i++) {
-    result.push(array1[i] - array2[i]);
-  }
+  arr1.forEach((val, index) => result.push(arr1[index] - arr2[index]));
   return result;
 }
 
     
 //----------------------------------------
-function arrayMultiply(array1, array2) {
-  const l1 = array1.length;
-  const l2 = array2.length;
-  if (l1 !== l2) {
-    throw Error('Can\'t multiply arrays of length '+l1 +' and '+l2);
-  }
-
+function arrayMultiply(arr1, arr2) {
   let result = 0;
-  for (let i = 0; i < l1; i++) {
-    result += array1[i] * array2[i];
-  }
+  arr1.forEach((val, index) => result += arr1[index] * arr2[index]);
   return result;
 }
 
@@ -71,7 +48,6 @@ class Neuron {
   backward(error) {
     this.error = error;
     var backErrors = this.weights.map(w => w * error);
-
     // Don't return bias error.
     return backErrors.slice(1);
   }
@@ -93,32 +69,30 @@ class Layer {
 
   constructor(size, inputs) {
     this.neurons = [];
-    
+
     for (let i = 0; i < size; i++) {
       this.neurons.push(new Neuron(inputs));
     }
+      
+    
   }
 
   forward(inputs) {
-    return this.neurons.map(neuron => neuron.forward(inputs));
+    return this.neurons.map(n => n.forward(inputs));
   }
 
   backward(errors) {
-    var backErrors = this.neurons.map((neuron, i) =>
-      neuron.backward(errors[i])
-    );
-    return backErrors.reduce(arrayAdd);
+  return this.neurons.map((n, i) => n.backward(errors[i])).reduce(arrayAdd);
   }
 
   updateWeights() {
-    this.neurons.forEach(neuron => neuron.updateWeights());
+    this.neurons.forEach(n => n.updateWeights());
   }
 }
     
     
     
-    
-/*------------------------------------------------------NETWORK----------------------------------------------------------
+/*------------------------------------------------------NETWORK---------------------------------------------------------
 Layer {neurons: Array(3)} Layer {neurons: Array(1)}
 */
 class Network {
@@ -126,12 +100,12 @@ class Network {
   constructor(/* layer sizes */) {
     const sizes = [...arguments];
     this.layers = [];
-    
+      
     for (let i = 0; i < sizes.length-1; i++) {
       const layer = new Layer(sizes[i+1], sizes[i]+1);
       this.layers.push(layer);
     }
-     
+
   }
 
   forward(inputs) {
@@ -157,7 +131,7 @@ class Network {
     
     
 learn(data){
-    for (let iter = 0; iter < 40000; iter++) {
+    for (let it = 0; it < 40000; it++) {
     const i = Math.floor(Math.random() * data.length);
 
     const input = data[i].input;
@@ -189,7 +163,7 @@ const data = [{
   output: [0],
 }];
 
-
+ 
 const network = new Network(2, 3, 1);
 network.learn(data); // wrong results without this
     
