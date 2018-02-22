@@ -1,3 +1,21 @@
+# Neural networks
+* interconected group of nodes, similiar to the neurons in human brain
+
+## Phase 1
+* input -> hidden units -> outputs (feedforward network)
+* each unit receives input from the unit to its left, inputs are multiplied by the weight of the connections they travle along
+* every unit adds the total sum
+* if this sum is bigger than the treshold, the ubit fires and triggers units on the right
+
+## Phase 2
+* learn using going backwards (backpropagation)
+* comparing output desired one
+* using the difference to modify weight of the connections between units  
+
+![neural network](https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
+
+                  
+```js
 /*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
 function arrayAdd(arr1, arr2) {  
   const result = [];
@@ -170,3 +188,4 @@ for (let i = 0; i < data.length; i++) {
 /*
 SOURCE: https://github.com/jedborovik/simple-neural-network
 */
+```js
