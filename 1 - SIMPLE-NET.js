@@ -1,5 +1,3 @@
-<script>
-
 /*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
 function arrayAdd(arr1, arr2) {  
   const result = [];
@@ -172,4 +170,3 @@ for (let i = 0; i < data.length; i++) {
 /*
 SOURCE: https://github.com/jedborovik/simple-neural-network
 */
-</script>
