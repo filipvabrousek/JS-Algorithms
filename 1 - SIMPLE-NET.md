@@ -193,5 +193,5 @@ for (let i = 0; i < data.length; i++) {
 
     
     
-/* SOURCE: https://github.com/jedborovik/simple-neural-network */
-```js
+// SOURCE: https://github.com/jedborovik/simple-neural-network
+```
