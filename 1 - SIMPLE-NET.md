@@ -14,6 +14,9 @@
 
 ![neural network](https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
 
+## Simgoid 
+* activation function which maps any value into value between 0 and 1
+* if returns value < 0.5, unit fires
                   
 ```js
 /*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
