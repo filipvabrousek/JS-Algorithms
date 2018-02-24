@@ -20,7 +20,7 @@
 
 
 ```js
-const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
+const sigmoid = x => 1 / (1 + Math.exp(-x));
 const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x));
 /*
 s(-1) -> 0.26
