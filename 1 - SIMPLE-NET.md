@@ -32,6 +32,7 @@ s(-1) -> 0.73 */
                   
 ## The code
 ```js
+
 /*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
 function add(arr1, arr2) {  
   const result = [];
@@ -53,8 +54,8 @@ function multiply(arr1, arr2) {
 }
 
 
-const sigmoid = z => 1 / (1 + Math.exp(z * -1)); // maps any input into value between 0 and 1
-const sigmoidGradient = z =>  sigmoid(z) * (1 - sigmoid(z));
+const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
+const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x));
 
 
 
@@ -68,20 +69,19 @@ class Neuron {
   }
 
   forward(inputs) {
-    this.inputs = inputs; // we need to access "inputs" later
+    this.inputs = inputs; // we need to access "inputs" below
     this.z = multiply(inputs, this.weights); // each input * corresponding weight
     return sigmoid(this.z);
   }
 
   backward(error) {
-    this.error = error; // we need to access error later
-    let back = this.weights.map(w => w * error); // each w. * error
-    return back.slice(1);  // Don't return bias error.
+    this.error = error; // we need to access error below
+    return this.weights.map(w => w * error).slice(1); // each w. * error and  Don't return bias error.
   }
 
     // pass "z" from "forward()" into sigmoid gradient, * input and error
   updateWeights() {
-    const deltas = this.inputs.map(input => input * sigmoidGradient(this.z) * this.error * .5); // Step size
+    const deltas = this.inputs.map(input => input * sigmoidGradient(this.z) * this.error * .5); // .5 set Step size
     this.weights = subtract(this.weights, deltas); // subtract delta from this.weights
   }
 
@@ -204,9 +204,5 @@ for (let i = 0; i < data.length; i++) {
   console.log(input, output);
 }
 
-    
-    
-
-// SOURCE: https://github.com/jedborovik/simple-neural-network
 
 ```
