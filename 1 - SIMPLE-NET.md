@@ -17,11 +17,15 @@
 ## Simgoid 
 * activation function which maps any value into value between 0 and 1
 * if returns value < 0.5, unit fires
-* -1 -> 0, 0 -> 0.5, 1200 -> 1
+
 
 ```js
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
 const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x));
+/*
+s(-1) -> 0.26
+s(0) -> 0.5,
+s(-1) -> 0.73 */
 ```
 
 
