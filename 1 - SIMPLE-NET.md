@@ -25,7 +25,7 @@ const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x));
 /*
 s(-1) -> 0.26
 s(0) -> 0.5,
-s(-1) -> 0.73 */
+s(1) -> 0.73 */
 ```
 
 
@@ -34,12 +34,6 @@ s(-1) -> 0.73 */
 ```js
 
 /*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
-function add(arr1, arr2) {  
-  const result = [];
-  arr1.forEach((val, index) => result.push(arr1[index] + arr2[index]));
-  return result;
-}
-
 function subtract(arr1, arr2) {
   const result = [];
   arr1.forEach((val, index) => result.push(arr1[index] - arr2[index]));
@@ -53,10 +47,8 @@ function multiply(arr1, arr2) {
   return result;
 }
 
-
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
-const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x));
-
+const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
 
 /*------------------------------------------------------NEURON----------------------------------------------------------*/
@@ -70,13 +62,13 @@ class Neuron {
 
   forward(inputs) {
     this.inputs = inputs; // we need to access "inputs" below
-    this.z = multiply(inputs, this.weights); // each input * corresponding weight
+    this.z = multiply(inputs, this.weights); // each input * weight
     return sigmoid(this.z);
   }
 
   backward(error) {
-    this.error = error; // we need to access error below
-    return this.weights.map(w => w * error).slice(1); // each w. * error and  Don't return bias error.
+    this.error = error; // we need to access error below (what forward returned - desired output)
+    return this.weights.map(w => w * error).slice(1); // each w. * error "slice : don't return bias error" (remove 1st el.)
   }
 
     // pass "z" from "forward()" into sigmoid gradient, * input and error
@@ -95,9 +87,11 @@ class Layer {
 
   constructor(size, inputs) {
     this.neurons = [];
+    
     for (let i = 0; i < size; i++) {
-      this.neurons.push(new Neuron(inputs));
+      this.neurons.push(new Neuron(inputs)); 
     } 
+      
   }
 
   forward(inputs) {
@@ -105,8 +99,7 @@ class Layer {
   }
 
   backward(errors) {
- // get sum of errors and pass it backwards
-  return this.neurons.map((n, i) => n.backward(errors[i])).reduce(add);
+  return this.neurons.map((n, i) => n.backward(errors[i])).reduce((a, b) =>  a + b); // pass sum of errors backwards
   }
 
   updateWeights() {
@@ -117,39 +110,33 @@ class Layer {
     
     
 /*------------------------------------------------------NETWORK---------------------------------------------------------
-Layer {neurons: Array(3)} Layer {neurons: Array(1)}
-*/
+Layer {neurons: Array(3)} Layer {neurons: Array(1)} */
 class Network {
 
   constructor(/* layer sizes */) {
     const sizes = [...arguments];
     this.layers = [];
       
-    // dont take into account last member of sizes, create layer using sizes args and push it to "layers"  
+    // don't loop over last member of sizes [2, 3, 1], create layer using sizes args and push it to "layers"  
     for (let i = 0; i < sizes.length-1; i++) {
       const layer = new Layer(sizes[i+1], sizes[i]+1); // (2) [Layer, Layer] -> Layer {neurons: Array(3)} and ...(1)
       this.layers.push(layer);
     }
-
-  }
-
-/* calls forward in neurons class, each input * corresponding weight -> sum passed into sigmoid
- (2) [Layer, Layer] -> Layer {neurons: Array(3)} and 1 -> [n, n, n] -> N {weights, input, z, error} */
-  forward(inputs) { // [0, 1] etc.
-    return this.layers.reduce((input, layer) => {
-      input = [1].concat(input); // input: (4) [1, 0.005, 0.004, 0.99] (3) [1, 0, 0] (add bias to it)
-      return layer.forward(input);
-    }, inputs); // initial value arg. passed in: "input: [0, 0]..."
-  }
-
-
-// reverse layers, call backward in each layer and each neuron
-  backward(errors) { // error - we get it from "learn()" difference between desired output and our output
-    this.layers.reverse().reduce((error, layer) => {
-      return layer.backward(error);
-    }, errors)
       
-    this.layers.reverse(); // reverse back.
+  }
+
+/* calls forward in neurons class and add bias
+ (2) [Layer, Layer] -> Layer {neurons: Array(3)} and 1 ([1].concat ...ads bias) */
+  forward(inputs) {
+    return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), inputs); // concat to add bias a is Lr. {neurons: Array(3)}, b: ...(1)   [1].concat add bias
+  }
+
+
+/* reverse layers, call backward in each layer and each neuron
+ error - we get it from "learn()" - difference between desired output and our output */
+  backward(errors) { 
+    this.layers.reverse().reduce((error, layer) => layer.backward(error), errors);
+    this.layers.reverse(); // reverse back
   }
 
     
@@ -159,22 +146,34 @@ class Network {
     
     
 learn(data){
-    for (let it = 0; it < 40000; it++) {
+     
+    let filled = []; // result array
+    
+    for (let it = 0; it < 40000; it++) { 
     const i = Math.floor(Math.random() * data.length);
 
     // data from our array
     const input = data[i].input;
     const output = data[i].output;
-
-    // result from network - desired output
-    const h = this.forward(input);
-    const error = subtract(h, output);
-
-    // send error back and update the weights between nodes
+  
+    // result from network - desired output send it back, and update the connection weights between nodes
+    const res = this.forward(input);
+    const error = subtract(res, output);
     this.backward(error);
     this.updateWeights();
+    }
+    
+
+    // get result
+    data.forEach((val, i) => {
+    const input = data[i].input;
+    const output = this.forward(input);
+    filled.push(output);
+    });
+    
+    return filled;
 }
-}
+    
 }
     
     
@@ -196,13 +195,11 @@ const data = [{
 
  
 const network = new Network(2, 3, 1);
-network.learn(data); // wrong results without this
-    
-for (let i = 0; i < data.length; i++) {
-  const input = data[i].input;
-  const output = network.forward(input); // h ?
-  console.log(input, output);
-}
+
+const res = network.learn(data);
+console.log(res);
+
+// SOURCE: https://github.com/jedborovik/simple-neural-network
 
 
 ```
