@@ -2,15 +2,15 @@
 * interconected group of nodes, similiar to the neurons in human brain
 
 ## Phase 1
-* input -> hidden units -> outputs (feedforward network)
-* each unit receives input from the unit to its left, inputs are multiplied by the weight of the connections they travle along
-* every unit adds the total sum
-* if this sum is bigger than the treshold, the ubit fires and triggers units on the right
+* neuron takes the value of a connected neuron and multiples  it with connection weight
+* sum of all connected neurons + bias gets passed into sigmoid function which transforms the value to number between 0 and 1
+* passed into next neuron
 
 ## Phase 2
 * learn using going backwards (backpropagation)
-* comparing output desired one
-* using the difference to modify weight of the connections between units  
+* comparing output with the desired one
+* using the difference (error) to multiply it with the weights of the connections between units  
+* repeat for a desired number of iterations
 
 ![neural network](https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/296px-Colored_neural_network.svg.png)
 
@@ -126,16 +126,17 @@ class Network {
   }
 
 /* calls forward in neurons class and add bias
- (2) [Layer, Layer] -> Layer {neurons: Array(3)} and 1 ([1].concat ...ads bias) */
+ (2) [Layer, Layer] -> a... Layer {neurons: Array(3)} b... (1) */
   forward(inputs) {
     return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), inputs); // concat to add bias a is Lr. {neurons: Array(3)}, b: ...(1)   [1].concat add bias
   }
+    
 
 
 /* reverse layers, call backward in each layer and each neuron
  error - we get it from "learn()" - difference between desired output and our output */
   backward(errors) { 
-    this.layers.reverse().reduce((error, layer) => layer.backward(error), errors);
+    this.layers.reverse().reduce((error, layer) => layer.backward(0), errors);
     this.layers.reverse(); // reverse back
   }
 
@@ -200,6 +201,7 @@ const res = network.learn(data);
 console.log(res);
 
 // SOURCE: https://github.com/jedborovik/simple-neural-network
+
 
 
 ```
