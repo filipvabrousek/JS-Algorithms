@@ -33,21 +33,11 @@ s(1) -> 0.73 */
 ## The code
 ```js
 
-/*------------------------------------------------------HELPER METHODS----------------------------------------------------------*/
-function subtract(arr1, arr2) {
-  const result = [];
-  arr1.forEach((val, index) => result.push(arr1[index] - arr2[index]));
-  return result;
-}
-
-
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
 const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
-
 /*------------------------------------------------------NEURON----------------------------------------------------------*/
 class N {
-
   constructor(ni) {
     this.weights = [];
     this.weights.length = ni;
@@ -68,9 +58,11 @@ class N {
 
     /* delta -> "twiggle" with value 
        pass "z" from "forward()" into sigmoid gradient, * input and error */
-  update() {  
+  update() {
     const deltas = this.inputs.map(input => input * sigmoidGradient(this.sum) * this.error * .5); // .5 set Step size
-    this.weights = subtract(this.weights, deltas); // subtract delta from this.weights
+    this.diff = [];
+    this.weights.forEach((el, index) => this.diff.push(this.weights[index] - deltas[index]));
+    this.weights = this.diff;
   }
 
 }
@@ -80,12 +72,10 @@ class N {
     
 /*------------------------------------------------------LAYER----------------------------------------------------------*/
 class Layer {
-
   constructor(len, inputs) {
     this.neurons = [];
     this.neurons.length = len;
-    this.neurons.fill(new N(inputs));
-      
+    this.neurons.fill(new N(inputs));   
   }
 
   forward(inputs) {
@@ -106,16 +96,15 @@ class Layer {
 /*------------------------------------------------------NETWORK---------------------------------------------------------
 Layer {neurons: Array(3)} Layer {neurons: Array(1)} */
 class Network {
-
   constructor(/* layer sizes */) {
     const sizes = [...arguments];
     this.layers = [];
       
     // don't loop over last member of sizes [2, 3, 1], create layer using sizes args and push it to "layers"  
-        const helper = [];
+     const helper = [];
         helper.length = sizes.length - 1; // dont loop ever last member of sizes
         helper
-       .fill(Math.random())
+       .fill(0)
        .forEach((val, index) => {
             const layer = new Layer(sizes[index + 1], sizes[index] + 1);
             this.layers.push(layer);
@@ -131,20 +120,20 @@ class Network {
 
 /* reverse layers, call backward in each layer and each neuron
  error - we get it from "learn()" - difference between desired output and our output */
-  backward(errors) { 
+    backward(errors) { 
     this.layers.reverse().reduce((error, layer) => layer.backward(error), errors);
     this.layers.reverse(); // reverse back
   }
     
-
   update() { // for each layer and for each neuron
     this.layers.forEach(layer => layer.update());
   }
     
     
+    
 learn(data){
      
-    let filled = []; 
+    let filled = []; // result array
     
     for (let it = 0; it < 40000; it++) { 
     const i = Math.floor(Math.random() * data.length);
@@ -161,14 +150,14 @@ learn(data){
     this.update();
     }
     
-    
+
     // get result
      data.forEach((val, i) => {
         const input = data[i].input;
         const output = this.forward(input)
         const n = Number(output)
         filled.push(n);
-        });
+      });
     
     return filled;
 }
