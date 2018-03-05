@@ -32,7 +32,6 @@ s(1) -> 0.73 */
                   
 ## The code
 ```js
- 
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
 const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
@@ -54,20 +53,19 @@ class N {
 
   backward(error) {
     this.error = error; // we need to access error below (what forward returned - desired output)
-    return this.weights.map(w => w * error).slice(1); // each w. * error "slice : don't return bias error" (remove 1st el.)
+    return this.weights.map(w => w * error).slice(1); // each w. * error and remove 1st el. (bias)
   }
 
-    /* adjusting weights: make adjustment proportional to the size of error
-    "sigmoidGradient" ensures the we adjust just a little bit
-       pass "this.sum" from "forward()" into: sigmoidGradient, * input (0 = no adjustment or 1) * error * .5
-       adjust weights by substracting deltas*/
+    /* adjusting weights: make adjustment proportional to the size of error "sigmoidGradient" ensures the we adjust just a little bit
+    pass "this.sum" from "forward()" into sigmoidGradient,
+    input (0 = no adjustment or 1) * sigmoidGradient * error -> creates "deltas array" 
+    adjust weights by substracting deltas*/
   update() {
-    const deltas = this.inputs.map(input => input * sigmoidGradient(this.sum) * this.error * .5); // .5 set Step size
+    const deltas = this.inputs.map(input => input * sigmoidGradient(this.sum) * this.error);
     this.diff = [];
     this.weights.forEach((el, index) => this.diff.push(this.weights[index] - deltas[index]));
     this.weights = this.diff;
   }
-
 }
 
     
@@ -103,9 +101,9 @@ class Network {
     const sizes = [...arguments];
     this.layers = [];
       
-    // don't loop over last member of sizes [2, 3, 1], create layer using sizes args and push it to "layers"  
+    // create layer using sizes args and push it to "layers"  
      const helper = [];
-        helper.length = sizes.length - 1; // dont loop ever last member of sizes
+        helper.length = sizes.length - 1; // dont loop ever last member of sizes [2, 3, 1]
         helper
        .fill(0)
        .forEach((val, index) => {
@@ -114,14 +112,14 @@ class Network {
         });
   }
 
-/* calls forward in neurons class and add bias
+/* calls forward in neurons class, add bias add bias and pass the result into reduce
  (2) [Layer, Layer] -> a... Layer {neurons: Array(3)} b... (1) */
   forward(inputs) {
     return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), inputs); // concat to add bias a is Lr. {neurons: Array(3)}, b: ...(1)   [1].concat add bias
   }
 
 
-/* reverse layers, call backward in each layer and each neuron
+/* reverse layers, call backward in each layer and each neuron and pass the result into "reduce"
  error - we get it from "learn()" - difference between desired output and our output */
     backward(errors) { 
     this.layers.reverse().reduce((error, layer) => layer.backward(error), errors);
@@ -184,5 +182,6 @@ const res = network.learn(data);
 console.log(res);
 
 // SOURCE: https://github.com/jedborovik/simple-neural-network
+
 
 ```
