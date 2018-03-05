@@ -1,3 +1,4 @@
+ 
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
 const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
@@ -9,11 +10,12 @@ class N {
     this.weights.fill(Math.random() - 0.5) // fill weights with random numbers
   }
 
+// we get weighed sum of neuron inputs and normalize it to value between 0 and 1 using sigmoid
   forward(inputs) {
     this.inputs = inputs;
     this.sum = 0;
     this.weights.forEach((el, index) => this.sum += this.inputs[index] * this.weights[index])
-    return sigmoid(this.sum);
+    return sigmoid(this.sum); // returns (1 / 1 + e^-this.sum)
   }
 
   backward(error) {
@@ -21,8 +23,10 @@ class N {
     return this.weights.map(w => w * error).slice(1); // each w. * error "slice : don't return bias error" (remove 1st el.)
   }
 
-    /* delta -> "twiggle" with value 
-       pass "z" from "forward()" into sigmoid gradient, * input and error */
+    /* adjusting weights: make adjustment proportional to the size of error
+    "sigmoidGradient" ensures the we adjust just a little bit
+       pass "this.sum" from "forward()" into: sigmoidGradient, * input (0 = no adjustment or 1) * error * .5
+       adjust weights by substracting deltas*/
   update() {
     const deltas = this.inputs.map(input => input * sigmoidGradient(this.sum) * this.error * .5); // .5 set Step size
     this.diff = [];
@@ -48,7 +52,7 @@ class Layer {
   }
 
   backward(errors) {
-  return this.neurons.map((n, i) => n.backward(errors[i])).reduce((a, b) =>  a + b); // pass sum of errors backwards
+  return this.neurons.map((n, i) => n.backward(errors[i])).reduce((a, b) => a + b); // pass each error backwards and get weighted sum
   }
 
   update() {
@@ -146,3 +150,5 @@ const res = network.learn(data);
 console.log(res);
 
 // SOURCE: https://github.com/jedborovik/simple-neural-network
+
+    
