@@ -1,7 +1,4 @@
-
 class Perceptron {
-
-
 	constructor() {
 		this.weights = [];
 		this.treshold = 1;
@@ -10,7 +7,6 @@ class Perceptron {
 		this.threshold = 1;
 		this.data = [];
 	}
-
 
 
 	retrain() {
@@ -34,11 +30,7 @@ class Perceptron {
 		}
 
 		const result = this.perceive(inputs);
-		this.data.push({
-			input: inputs,
-			target: expected,
-			prev: result
-		})
+		this.data.push({input: inputs, target: expected, prev: result});
 
 
 		if (result == expected) {
@@ -64,10 +56,9 @@ class Perceptron {
 
 	perceive(inputs, net, activationFunc) {
 		let result = 0;
-
 		inputs.forEach((el, index) => result += inputs[index] *  this.weights[index]);
 		result += this.threshold * this.weights[this.weights.length - 1];
-		return this.sigmoid(result) // determine if neuron fires
+		return this.sigmoid(result); // determine if neuron fires
 	}
 
 	sigmoid(t) {
@@ -79,7 +70,6 @@ class Perceptron {
 const p = new Perceptron();
 p.train([0, 0], 0);
 p.train([0, 1], 1);
-
 
 // practice makes perfect (we hope...)
 var i = 0;
