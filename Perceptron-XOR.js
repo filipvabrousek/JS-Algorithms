@@ -1,4 +1,3 @@
-
 class Perceptron {
 	constructor() {
 		this.weights = [];
@@ -84,4 +83,5 @@ while (i++ < 10000 && !p.retrain()) {}
 
 let res = p.perceive([0, 1]);
 console.log(res);
-
+ 
+// SOURCE: https://gist.github.com/primaryobjects/dfb8927f9f0ca21b6a24647168cead41
