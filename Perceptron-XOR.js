@@ -9,39 +9,45 @@ class Perceptron {
 	}
 
 
-// called first
+	// called first
 	train(inputs, expected) { // [0, 1], 1
-	    		while (this.weights.length < inputs.length) {
+		while (this.weights.length < inputs.length) {
 			this.weights.push(Math.random())
 		}
 
-		
 
-        // get result and push it to data ("use percieve")
+
+		// get result and push it to data ("use percieve")
 		const result = this.perceive(inputs); // result from sigmoid (weights are passed in), used to calculate delta
-		this.data.push({input: inputs, target: expected, prev: result});
-		if (result == expected) {return true} 
+		this.data.push({
+			input: inputs,
+			target: expected,
+			prev: result
+		});
+		if (result == expected) {
+			return true
+		}
 
-        // adjust weights id result is not expected using "adjust"
-        this.weights.forEach((el, index) => {
-            const input = (index == inputs.length) ? this.treshold : inputs[index];
-            this.adjust(result, expected, input, index)
-			});
-        return false
+		// adjust weights id result is not expected using "adjust"
+		this.weights.forEach((el, index) => {
+			const input = (index == inputs.length) ? this.treshold : inputs[index];
+			this.adjust(result, expected, input, index)
+		});
+		return false
 	}
-    
-    // uses delta, adds delta to weights
+
+	// uses delta, adds delta to weights
 	adjust(result, expected, input, index) {
-    const d = (expected - result) * input * this.learningrate;
+		const d = (expected - result) * input * this.learningrate;
 		this.weights[index] += d;
 	}
 
-	
-/*
-called 2nd, use "train" function, this.data:
-{input: [0,0], target: 1, prev: 0.97} 
-{input: [0,1], target: 0, prev: 0.049} periodically swaps
-*/
+
+	/*
+	called 2nd, use "train" function, this.data:
+	{input: [0,0], target: 1, prev: 0.97} 
+	{input: [0,1], target: 0, prev: 0.049} periodically swaps
+	*/
 	retrain() {
 		let success = true;
 		this.data.forEach(a => {
@@ -50,12 +56,12 @@ called 2nd, use "train" function, this.data:
 		});
 		return success
 	}
-    
 
-    // called 3rd, get sum of weighed inputs and pass them into sigmoid
+
+	// called 3rd, get sum of weighed inputs and pass them into sigmoid
 	perceive(inputs) {
 		let result = 0;
-		inputs.forEach((el, index) => result += inputs[index] *  this.weights[index]);
+		inputs.forEach((el, index) => result += inputs[index] * this.weights[index]);
 		result += this.threshold * this.weights[this.weights.length - 1];
 		return this.sigmoid(result); // determine if neuron fires
 	}
