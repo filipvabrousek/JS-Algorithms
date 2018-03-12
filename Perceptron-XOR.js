@@ -1,3 +1,4 @@
+
 class Perceptron {
 	constructor() {
 		this.weights = [];
@@ -11,14 +12,11 @@ class Perceptron {
 
 // called first
 	train(inputs, expected) { // [0, 1], 1
-		while (this.weights.length < inputs.length) {
+	    		while (this.weights.length < inputs.length) {
 			this.weights.push(Math.random())
 		}
 
-		// add the bias
-		if (this.weights.length == inputs.length) {
-			this.weights.push(1);
-		}
+		
 
         // get result and push it to data ("use percieve")
 		const result = this.perceive(inputs); // result from sigmoid (weights are passed in), used to calculate delta
@@ -61,7 +59,7 @@ called 2nd, use "train" function, this.data:
     // called 3rd, get sum of weighed inputs and pass them into sigmoid
 	perceive(inputs) {
 		let result = 0;
-		inputs.forEach((el, index) => result += inputs[index] *  this.weights[index]);
+		inputs.forEach((el, index) => result += inputs[index] *  this.weights[index]);
 		result += this.threshold * this.weights[this.weights.length - 1];
 		return this.sigmoid(result); // determine if neuron fires
 	}
@@ -83,5 +81,3 @@ while (i++ < 10000 && !p.retrain()) {}
 
 let res = p.perceive([0, 1]);
 console.log(res);
- 
-// SOURCE: https://gist.github.com/primaryobjects/dfb8927f9f0ca21b6a24647168cead41
