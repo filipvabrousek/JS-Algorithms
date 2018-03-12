@@ -1,4 +1,3 @@
-
 class Perceptron {
 	constructor() {
 		this.weights = [];
@@ -33,14 +32,11 @@ class Perceptron {
     
     // uses delta, adds delta to weights
 	adjust(result, expected, input, index) {
-		const d = this.delta(result, expected, input, this.learningrate);
+    const d = (expected - result) * input * this.learningrate;
 		this.weights[index] += d;
 	}
 
-	delta(actual, expected, input, learnrate) {
-		return (expected - actual) * learnrate * input
-	}
-    
+	
 /*
 called 2nd, use "train" function, this.data:
 {input: [0,0], target: 1, prev: 0.97} 
