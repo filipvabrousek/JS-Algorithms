@@ -1,5 +1,3 @@
-
-
 class Perceptrona {
 	constructor() {
 		this.weights = [];
