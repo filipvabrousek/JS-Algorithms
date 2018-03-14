@@ -1,3 +1,4 @@
+
 class Perceptrona {
 	constructor() {
 		this.weights = [];
@@ -18,7 +19,7 @@ class Perceptrona {
 		}
 
         // get result and push it to data ("use percieve")
-		const result = this.perceive(inputs); // result from sigmoid (weights are passed in), used to calculate delta
+		const result = this.calc(inputs); // result from sigmoid (weights are passed in), used to calculate delta
 		this.data.push({input: inputs, target: expected, prev: result});
 		
 
@@ -53,9 +54,9 @@ called 2nd, use "train" function, this.data:
     
 
     // called 3rd, get sum of weighed inputs and pass them into sigmoid
-	perceive(inputs) {
+	calc(inputs) {
 		let result = 0;
-		inputs.forEach((el, index) => result += inputs[index] *  this.weights[index]);
+		inputs.forEach((el, index) => result += inputs[index] * this.weights[index]);
 		result += 1 * this.weights[this.weights.length - 1];
 		return this.sigmoid(result); // determine if neuron fires
 	}
@@ -66,15 +67,15 @@ called 2nd, use "train" function, this.data:
 }
 
 
-const pa = new Perceptrona();
-pa.train([0, 0], 0);
-pa.train([0, 1], 1);
+const p = new Perceptrona();
+p.train([0, 0], 0);
+p.train([0, 1], 1);
 
 // practice....
 for (let i = 0; i < 10000; i++){
-    pa.retrain();
+    p.retrain();
 }
 
-let small = pa.perceive([0, 0]);
-let big = pa.perceive([0, 1]); 
+let small = p.calc([0, 0]);
+let big = p.calc([0, 1]); 
 console.log(small, big);
