@@ -1,5 +1,5 @@
 
-class Perceptrona {
+class Perceptron {
 	constructor() {
 		this.weights = [];
 		this.data = [];
@@ -25,7 +25,7 @@ class Perceptrona {
 
         // adjust weights id result is not expected using "adjust"
         this.weights.forEach((el, index) => {
-            const input = (index == inputs.length) ? 1 : inputs[index];
+            const input = (index == inputs.length) ? 1 : inputs[index]; // treshold or input
             this.adjust(result, expected, input, index)
 			});
    
@@ -57,7 +57,7 @@ called 2nd, use "train" function, this.data:
 	calc(inputs) {
 		let result = 0;
 		inputs.forEach((el, index) => result += inputs[index] * this.weights[index]);
-		result += 1 * this.weights[this.weights.length - 1];
+		result += 1 * this.weights[this.weights.length - 1]; // 1... treshold
 		return this.sigmoid(result); // determine if neuron fires
 	}
 
@@ -67,7 +67,7 @@ called 2nd, use "train" function, this.data:
 }
 
 
-const p = new Perceptrona();
+const p = new Perceptron();
 p.train([0, 0], 0);
 p.train([0, 1], 1);
 
@@ -79,3 +79,15 @@ for (let i = 0; i < 10000; i++){
 let small = p.calc([0, 0]);
 let big = p.calc([0, 1]); 
 console.log(small, big);
+
+    
+
+/*
+1) inside "train", we fill weights array with random numbers, add bias and calls "calc"
+2) "calc": we get the sum of each input * corresponding weight and pass into sigmoid (to get val. between 0 and 1)
+3) "train": pushes oject {input, target, prev (result)} into "this.data" array
+4) inside "train" we adjust each weight in "forEach" using "adjust"
+4.1) adjust uses the learningrate and formula to calculate how wrong it was
+5) we call "retrain" which uses "data" to get previous guess, and calls "train" 10000 times
+*/
+
