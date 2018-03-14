@@ -3,7 +3,6 @@ class Perceptron {
 		this.weights = [];
 		this.treshold = 1;
 		this.learningrate = 0.1; // used in adjust
-		this.debug = false;
 		this.threshold = 1;
 		this.data = [];
 	}
