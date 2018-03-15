@@ -37,18 +37,15 @@ class Perceptron {
 		this.weights[index] += d;
 	}
     
-/*
-called 2nd, use "train" function, this.data:
+/* called 2nd, use "train" function, this.data:
 {input: [0,0], target: 1, prev: 0.97}
-{input: [0,1], target: 0, prev: 0.049} periodically swaps
-*/
+{input: [0,1], target: 0, prev: 0.049} periodically swaps */
 	retrain() {
-		let scs = true;
 		this.data.forEach(a => {
 			const training = this.data.shift(); // 1st el during 1st repeatition, then 2nd, 3rd ---
-			scs = this.train(training.input, training.target) && scs;
+            this.train(training.input, training.target);    
 		});
-		return scs
+
 	}
     
 
@@ -56,7 +53,7 @@ called 2nd, use "train" function, this.data:
 	calc(inputs) {
 		let result = 0;
 		inputs.forEach((el, index) => result += inputs[index] * this.weights[index]);
-		result += 1 * this.weights[this.weights.length - 1]; // 1... treshold
+		result += this.weights[this.weights.length - 1];
 		return this.sigmoid(result); // determine if neuron fires
 	}
 
@@ -80,13 +77,3 @@ let big = p.calc([0, 1]);
 console.log(small, big);
 
     
-
-/*
-1) inside "train", we fill weights array with random numbers, add bias and calls "calc"
-2) "calc": we get the sum of each input * corresponding weight and pass into sigmoid (to get val. between 0 and 1)
-3) "train": pushes oject {input, target, prev (result)} into "this.data" array
-4) inside "train" we adjust each weight in "forEach" using "adjust"
-4.1) adjust uses the learningrate and formula to calculate how wrong it was
-5) we call "retrain" which uses "data" to get previous guess, and calls "train" 10000 times
-*/
-
