@@ -1,4 +1,3 @@
-
 class Point {
 	constructor(x, y) {
 		this.x = x;
@@ -161,3 +160,4 @@ const points = [
 let m = new Means("canvas");
 m.init(points);
 m.process();
+// <canvas width = "400" height="400"></canvas>
