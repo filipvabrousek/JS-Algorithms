@@ -71,7 +71,6 @@ class Means {
 
 	assign() {
 
-
 		let APoints = [],
 			BPoints = [];
 		let centroids = this.initMeans();
@@ -91,7 +90,18 @@ class Means {
 	}
 
 	moveMeans() {
-		//...
+
+		this.assign();
+
+		let a = this.assign();
+		let mn = this.getMean();
+
+		this.points.forEach((el, i) => {
+			this.points[i].x = mn.x * Math.random();
+			this.points[i].y = mn.y * Math.random();
+		});
+		// ms = sums;
+
 	}
 
 	draw() {
@@ -99,6 +109,7 @@ class Means {
 			ctx = this.ctx;
 		this.ctx.fillStyle = "#000";
 
+		ctx.clearRect(0, 0, this.el.width, this.el.height);
 		points.forEach((el, i) => {
 			ctx.beginPath();
 			ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
@@ -115,14 +126,14 @@ class Means {
 
 		// 2 random candidates for cluster centers
 		let ms = this.initMeans();
-        
-        // the same four lines for "red" but with ms[0]
+
+		// the same four lines for "red" but with ms[0]
 		ctx.fillStyle = "blue";
 		ctx.beginPath();
-		ctx.arc(ms[1].x, ms[1].y, 4, 0, Math.PI * 2);
+		ctx.arc(ms[1].x, ms[1].y, 6, 0, Math.PI * 2);
 		ctx.fill();
 
-		// clear and recolor points according to centroids
+		// recolor points according to centroids
 		let as = this.assign();
 		this.ctx.fillStyle = "blue";
 		as.forEach((el, i) => {
@@ -132,32 +143,42 @@ class Means {
 		});
 	}
 
+
 	process() {
 		this.getMean();
 		this.getExtremes();
-		this.assign();
-		this.draw();
-
 	}
 }
 
 const points = [
 	new Point(10, 70),
 	new Point(20, 50),
+	new Point(20, 10),
 	new Point(200, 90),
 	new Point(100, 120),
-	new Point(20, 10),
+	new Point(20, 300),
 	new Point(90, 300),
 	new Point(200, 300),
 	new Point(80, 230),
 	new Point(79, 220),
 	new Point(200, 100),
 	new Point(100, 190),
-	new Point(100, 245)
+	new Point(100, 245),
+	new Point(70, 100),
+	new Point(300, 90),
+	new Point(200, 180),
+	new Point(40, 260),
+	new Point(80, 10),
+	new Point(300, 90),
+	new Point(290, 80),
+	new Point(40, 60)
 ];
 
 
 let m = new Means("canvas");
 m.init(points);
 m.process();
+m.draw();
+m.moveMeans();
+//m.draw(); // call to change change position
 // <canvas width = "400" height="400"></canvas>
