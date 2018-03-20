@@ -55,8 +55,8 @@ class Means {
 
 	initMeans() {
 		const ranges = this.getExtremes();
-		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
-		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
+		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
+		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
 		this.means.push(cand1);
 		this.means.push(cand2);
 		//console.log(this.means);
@@ -93,8 +93,8 @@ class Means {
 			let sqoney = Math.sqrt(powyo);
 
 
-			(sqzerox && sqzeroy) < 30 ? APoints.push(points[i]) : 0;
-			(sqonex && sqoney) < 30 ? BPoints.push(points[i]) : 0;
+			(sqzerox && sqzeroy) < 50 ? APoints.push(points[i]) : 0;
+			(sqonex && sqoney) < 50 ? BPoints.push(points[i]) : 0;
 		});
 
 
@@ -112,6 +112,7 @@ class Means {
 
 
 	assignedPointsMean(arr, len) {
+        if (arr.length === 0){return "Mean with no points"}
 		const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
 		const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
 		return {
@@ -207,18 +208,18 @@ const points = [
 	new Point(40, 30),
 
 	//  x and y higher than 50 (bottom right corner)
-	new Point(79, 220),
-	new Point(200, 100),
-	new Point(210, 190),
-	new Point(100, 245),
-	new Point(70, 100),
-	new Point(300, 90),
-	new Point(200, 180),
-	new Point(40, 260),
-	new Point(80, 10),
+	new Point(270, 230),
+	new Point(280, 320),
+	new Point(300, 320),
+	new Point(310, 300),
+	new Point(300, 300),
+	new Point(300, 290),
+	new Point(270, 380),
+	new Point(270, 360),
+	new Point(280, 370), // THIS
 	new Point(300, 90),
 	new Point(290, 80),
-	new Point(40, 60)
+	new Point(220, 200)
 ];
 
 
@@ -227,4 +228,3 @@ m.init(points);
 m.process();
 m.draw();
 m.moveMeans();
-// <canvas width = "400" height="400"></canvas>
