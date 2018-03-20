@@ -41,8 +41,8 @@ class Means {
 
 	initMeans() {
 		const ranges = this.getExtremes();
-		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
-		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
+		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
+		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
 		this.means.push(cand1);
 		this.means.push(cand2);
 
@@ -91,7 +91,9 @@ class Means {
 
 
 	assignedPointsMean(arr, len) {
-        if (arr.length === 0){return "Mean with no points"}
+		if (arr.length === 0) {
+			return "Mean with no points"
+		}
 		const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
 		const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
 		return {
@@ -101,9 +103,9 @@ class Means {
 	}
 
 	draw() {
-        
-        this.ctx.clearRect(0, 0, 400, 400)
-        
+
+		this.ctx.clearRect(0, 0, 400, 400)
+
 		let points = this.points,
 			ctx = this.ctx;
 		this.ctx.fillStyle = "#000";
@@ -134,24 +136,25 @@ class Means {
 			ctx.fill();
 		});
 	}
-    
-    drawRandomMean(){
-      
-        // 2 random candidates for cluster centers
-        let meana = this.initMeans(), ctx = this.ctx;
-        this.ctx.fillStyle = "orange";
-        meana.forEach((el, i) => {
-            ctx.beginPath();
-            ctx.arc(meana[0].x, meana[0].y, 4, 0, Math.PI * 2);
-            ctx.arc(meana[1].x, meana[1].y, 4, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        
-    }
-    
-    drawMean(){
-        let ctx = this.ctx;
-        let a = this.assign();
+
+	drawRandomMean() {
+
+		// 2 random candidates for cluster centers
+		let meana = this.initMeans(),
+			ctx = this.ctx;
+		this.ctx.fillStyle = "orange";
+		meana.forEach((el, i) => {
+			ctx.beginPath();
+			ctx.arc(meana[0].x, meana[0].y, 4, 0, Math.PI * 2);
+			ctx.arc(meana[1].x, meana[1].y, 4, 0, Math.PI * 2);
+			ctx.fill();
+		});
+
+	}
+
+	drawMean() {
+		let ctx = this.ctx;
+		let a = this.assign();
 		let ap = a.AP; // red points
 		let bp = a.BP // blue points
 
@@ -171,7 +174,7 @@ class Means {
 		ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
 		ctx.fill();
 
-    }
+	}
 
 
 }
@@ -200,7 +203,7 @@ const points = [
 	new Point(280, 370), // THIS
 	new Point(300, 90),
 	new Point(290, 80),
-    new Point(210, 190)
+	new Point(210, 190)
 ];
 
 
