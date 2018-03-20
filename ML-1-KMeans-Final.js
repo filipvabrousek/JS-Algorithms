@@ -53,9 +53,7 @@ class Means {
 
 
 
-	initMeans(k = 2) {
-
-
+	initMeans() {
 		const ranges = this.getExtremes();
 		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
 		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange *  Math.random());
@@ -77,31 +75,49 @@ class Means {
 
 
 		points.forEach((val, i) => {
-			let resx = points[i].x - centroids[1].x; // working only with first centroid
-			let resy = points[i].y - centroids[1].y;
-			let powx = Math.pow(resx, 2);
-			let powy = Math.pow(resy, 2)
-			let sqrtx = Math.sqrt(powx);
-			let sqrty = Math.sqrt(powy);
+			let onex = points[i].x - centroids[1].x; // first centroid
+			let oney = points[i].y - centroids[1].y;
+			let zerox = points[i].x - centroids[0].x; // 2nd centroid
+			let zeroy = points[i].y - centroids[0].y;
 
-			(sqrtx && sqrty) < 30 ? APoints.push(points[i]) : BPoints.push(points[i])
+			let powx = Math.pow(zerox, 2);
+			let powy = Math.pow(zeroy, 2)
+			let sqzerox = Math.sqrt(powx);
+			let sqzeroy = Math.sqrt(powy);
+
+
+
+			let powxo = Math.pow(onex, 2);
+			let powyo = Math.pow(oney, 2);
+			let sqonex = Math.sqrt(powxo);
+			let sqoney = Math.sqrt(powyo);
+
+
+			(sqzerox && sqzeroy) < 30 ? APoints.push(points[i]) : 0;
+			(sqonex && sqoney) < 30 ? BPoints.push(points[i]) : 0;
 		});
-		return APoints;
+
+
+		return {
+			AP: APoints,
+			BP: BPoints
+		};
 	}
 
 	moveMeans() {
 
-		this.assign();
+		//this.assign();
 
-		let a = this.assign();
-		let mn = this.getMean();
+	}
 
-		this.points.forEach((el, i) => {
-			this.points[i].x = mn.x * Math.random();
-			this.points[i].y = mn.y * Math.random();
-		});
-		// ms = sums;
 
+	assignedPointsMean(arr, len) {
+		const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
+		const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
+		return {
+			x: meanX,
+			y: meanY
+		}
 	}
 
 	draw() {
@@ -125,20 +141,47 @@ class Means {
 		ctx.fill();
 
 		// 2 random candidates for cluster centers
-		let ms = this.initMeans();
+		//let ms = this.initMeans();
+
+
+		let a = this.assign();
+		let ap = a.AP; // red points
+		let bp = a.BP // blue points
+
+		let redmean = this.assignedPointsMean(ap, ap.length);
+		let bluemean = this.assignedPointsMean(bp, bp.length);
+		console.log(redmean, bluemean); // move the centroid to this position
+
 
 		// the same four lines for "red" but with ms[0]
 		ctx.fillStyle = "blue";
 		ctx.beginPath();
-		ctx.arc(ms[1].x, ms[1].y, 6, 0, Math.PI * 2);
+		ctx.arc(bluemean.x, bluemean.y, 6, 0, Math.PI * 2);
 		ctx.fill();
 
+		ctx.fillStyle = "red";
+		ctx.beginPath();
+		ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
+		ctx.fill();
+
+
+
 		// recolor points according to centroids
-		let as = this.assign();
-		this.ctx.fillStyle = "blue";
+		let aq = this.assign();
+		let as = aq.AP;
+		this.ctx.fillStyle = "red";
 		as.forEach((el, i) => {
 			ctx.beginPath();
 			ctx.arc(as[i].x, as[i].y, 4, 0, Math.PI * 2);
+			ctx.fill();
+		});
+
+
+		let am = aq.BP;
+		this.ctx.fillStyle = "blue";
+		am.forEach((el, i) => {
+			ctx.beginPath();
+			ctx.arc(am[i].x, am[i].y, 4, 0, Math.PI * 2);
 			ctx.fill();
 		});
 	}
@@ -151,18 +194,22 @@ class Means {
 }
 
 const points = [
-	new Point(10, 70),
-	new Point(20, 50),
+	//  x a y less 50 (top left corner)
+	new Point(30, 40),
+	new Point(60, 50),
 	new Point(20, 10),
-	new Point(200, 90),
-	new Point(100, 120),
-	new Point(20, 300),
-	new Point(90, 300),
-	new Point(200, 300),
-	new Point(80, 230),
+
+	new Point(70, 30),
+	new Point(20, 50),
+	new Point(10, 30),
+	new Point(20, 50),
+	new Point(10, 20),
+	new Point(40, 30),
+
+	//  x and y higher than 50 (bottom right corner)
 	new Point(79, 220),
 	new Point(200, 100),
-	new Point(100, 190),
+	new Point(210, 190),
 	new Point(100, 245),
 	new Point(70, 100),
 	new Point(300, 90),
@@ -180,5 +227,4 @@ m.init(points);
 m.process();
 m.draw();
 m.moveMeans();
-//m.draw(); // call to change change position
 // <canvas width = "400" height="400"></canvas>
