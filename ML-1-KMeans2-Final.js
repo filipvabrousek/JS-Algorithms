@@ -52,9 +52,9 @@ class Means {
 
 
 
-	assign() { // pushing points either into APoints / B points due to distance from each centroid
+	assign() { // pushing points either into RPoints / B points due to distance from each centroid
 
-		let APoints = [],
+		let RPoints = [],
 			BPoints = [];
 		let centroids = this.initMeans();
 
@@ -65,24 +65,20 @@ class Means {
 			let zerox = points[i].x - centroids[0].x; // distance to 2nd centroid
 			let zeroy = points[i].y - centroids[0].y;
 
-			let powx = Math.pow(zerox, 2);
-			let powy = Math.pow(zeroy, 2)
-			let sqzerox = Math.sqrt(powx);
-			let sqzeroy = Math.sqrt(powy);
-
-			let powxo = Math.pow(onex, 2);
-			let powyo = Math.pow(oney, 2);
-			let sqonex = Math.sqrt(powxo);
-			let sqoney = Math.sqrt(powyo);
+			
+			let sqzerox = Math.sqrt(zerox * zerox);
+			let sqzeroy = Math.sqrt(zeroy * zeroy);
+			
+			let sqonex = Math.sqrt(onex * onex);
+			let sqoney = Math.sqrt(oney * oney);
 
             // 100 ... influence treshold
-			(sqzerox && sqzeroy) < 80 ? APoints.push(points[i]) : 0;
+			(sqzerox && sqzeroy) < 80 ? RPoints.push(points[i]) : 0;
 			(sqonex && sqoney) < 80 ? BPoints.push(points[i]) : 0;
 		});
-console.log(APoints.length, BPoints.length)
 
 		return {
-			AP: APoints,
+			RP: RPoints,
 			BP: BPoints
 		};
 	}
@@ -118,7 +114,7 @@ console.log(APoints.length, BPoints.length)
 		// recolor points according to centroids
         this.assigned = this.assign();
 		let aq = this.assigned;
-		let as = aq.AP;
+		let as = aq.RP;
 		this.ctx.fillStyle = "red";
 		as.forEach((el, i) => {
 			ctx.beginPath();
@@ -156,19 +152,17 @@ console.log(APoints.length, BPoints.length)
        
         let ctx = this.ctx;
 		let a = this.assigned;
-		let ap = a.AP; // red points
+		let ap = a.RP; // red points
 		let bp = a.BP // blue points
 
 		let redmean = this.assignedPointsMean(ap, ap.length);
 		let bluemean = this.assignedPointsMean(bp, bp.length);
 		//console.log("Red", redmean, "Blue", bluemean); // move the centroid to this position
 
-        if (ap.length == bp.length && ap.length === 10) { console.log("Clustering done!");}
-        else { console.log("Clustering not done")}
-
-   
-        
-window.setTimeout(() => {
+        if (ap.length + bp.length === points.length) { 
+        console.log(ap.length, bp.length);
+            
+           window.setTimeout(() => {
     	// the same four lines for "red" but with ms[0]
 		ctx.fillStyle = "blue";
 		ctx.beginPath();
@@ -179,7 +173,16 @@ window.setTimeout(() => {
 		ctx.beginPath();
 		ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
 		ctx.fill();
-}, 2000)
+}, 2000) 
+            
+            console.log("Clustering done!");
+            console.log("Red", redmean, "Blue", bluemean)
+        }
+        else { console.log("Clustering not done")}
+
+   
+        
+
         
         
    
@@ -224,12 +227,6 @@ m.init(points);
 m.getRanges();
 m.draw();
 m.drawRandomMean();
-m.drawMean();
+//m.drawMean();
 //setTimeout(m.drawMean.bind(m), 2000); // old points are orange, new are red and green
 // <canvas width="400" height = "400"></canvas>
-
-    
-    
-
-
-
