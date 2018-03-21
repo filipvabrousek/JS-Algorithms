@@ -8,7 +8,6 @@ class Point {
 class Means {
 	constructor(selector) {
 		this.selector = selector;
-		this.el = null;
 		this.points = []; // filled with our input
 		this.means = [];
 		this.assigned = {};
@@ -21,7 +20,9 @@ class Means {
 		this.points = points;
 	}
 
-	getRanges() { // get point ranges, to create random centroids within ranges of our dataset
+    
+    // get point ranges, to create random centroids within ranges of our dataset
+	getRanges() { 
 		let xm = 0,
 			ym = 0,
 			xn = 0,
@@ -32,15 +33,16 @@ class Means {
 			xn = this.points.map(e => e.x).reduce((a, b) => Math.min(a, b));
 			yn = this.points.map(e => e.y).reduce((a, b) => Math.min(a, b));
 		});
-		let xdiff = xm - xn,
-			ydiff = ym - yn;
+		let xdiff = xm - xn, 
+            ydiff = ym - yn;
 		return {
 			xrange: xdiff,
 			yrange: ydiff
-		} // return as array
+		} 
 	}
 
-	initMeans() { // k is 2 in this case
+    //init k means (2 in this case) within range using "getRanges()"
+	initMeans() { 
 		const ranges = this.getRanges();
 		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
 		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
@@ -51,8 +53,8 @@ class Means {
 
 
 
-
-	assign() { // pushing points either into RPoints / B points due to distance from each centroid
+    // pushing points either into RPoints / BPoints according to distance from each centroid use "initMeans"
+	assign() { 
 
 		let RPoints = [],
 			BPoints = [];
@@ -83,6 +85,7 @@ class Means {
 	}
 
 
+// get mean of all assigned points (mean point of RPoints and BPoints array)
 	assignedPointsMean(arr, len) {
 		if (arr.length === 0) {
 			return "Mean with no points"
@@ -96,15 +99,15 @@ class Means {
 	}
 
 
-
+// 
 	draw() {
 
 		this.ctx.clearRect(0, 0, 400, 400)
 
-		let points = this.points,
-			ctx = this.ctx;
+		let points = this.points, ctx = this.ctx;
 		this.ctx.fillStyle = "#000";
 
+        // draw black points from our array
 		ctx.clearRect(0, 0, this.el.width, this.el.height);
 		points.forEach((el, i) => {
 			ctx.beginPath();
@@ -114,28 +117,28 @@ class Means {
 
 		// recolor points according to centroids
 		this.assigned = this.assign();
-		let aq = this.assigned;
-		let as = aq.RP;
+		let ass = this.assigned;
+		
+        let redpoints = ass.RP;
 		this.ctx.fillStyle = "red";
-		as.forEach((el, i) => {
+		redpoints.forEach((el, i) => {
 			ctx.beginPath();
-			ctx.arc(as[i].x, as[i].y, 4, 0, Math.PI * 2);
+			ctx.arc(redpoints[i].x, redpoints[i].y, 4, 0, Math.PI * 2);
 			ctx.fill();
 		});
 
 
-		let am = aq.BP;
+		let bluepoints = ass.BP;
 		this.ctx.fillStyle = "blue";
-		am.forEach((el, i) => {
+		bluepoints.forEach((el, i) => {
 			ctx.beginPath();
-			ctx.arc(am[i].x, am[i].y, 4, 0, Math.PI * 2);
+			ctx.arc(bluepoints[i].x, bluepoints[i].y, 4, 0, Math.PI * 2);
 			ctx.fill();
 		});
 	}
 
+    // 2 random candidates for cluster centers
 	drawRandomMean() {
-
-		// 2 random candidates for cluster centers
 		let meana = this.initMeans(),
 			ctx = this.ctx;
 		this.ctx.fillStyle = "orange";
@@ -146,9 +149,10 @@ class Means {
 			ctx.fill();
 		});
 	}
+    
 
-	drawMean() { // calculate mean point with assigned points
-
+    // calculate mean point with assigned points and draw each cluster centroid
+	drawMean() { 
 		let ctx = this.ctx;
 		let a = this.assigned;
 		let ap = a.RP; // red points
@@ -156,8 +160,6 @@ class Means {
 
 		let redmean = this.assignedPointsMean(ap, ap.length);
 		let bluemean = this.assignedPointsMean(bp, bp.length);
-		//console.log("Red", redmean, "Blue", bluemean); // move the centroid to this position
-
 
 		// if we have all the points and ap and bp arent equal we found the mean :D
 		if (ap.length + bp.length === points.length && ap[0].x !== bp[0].x) {
