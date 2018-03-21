@@ -11,7 +11,7 @@ class Means {
 		this.el = null;
 		this.points = []; // filled with our input
 		this.means = [];
-        this.assigned = {};
+		this.assigned = {};
 	}
 
 
@@ -65,14 +65,13 @@ class Means {
 			let zerox = points[i].x - centroids[0].x; // distance to 2nd centroid
 			let zeroy = points[i].y - centroids[0].y;
 
-			
 			let sqzerox = Math.sqrt(zerox * zerox);
 			let sqzeroy = Math.sqrt(zeroy * zeroy);
-			
-			let sqonex = Math.sqrt(onex * onex);
-			let sqoney = Math.sqrt(oney * oney);
 
-            // 100 ... influence treshold
+			let sqonex = Math.sqrt(onex * onex);
+			let sqoney = Math.sqrt(oney *  oney);
+
+			// 80 ... influence treshold
 			(sqzerox && sqzeroy) < 80 ? RPoints.push(points[i]) : 0;
 			(sqonex && sqoney) < 80 ? BPoints.push(points[i]) : 0;
 		});
@@ -96,6 +95,8 @@ class Means {
 		}
 	}
 
+
+
 	draw() {
 
 		this.ctx.clearRect(0, 0, 400, 400)
@@ -112,7 +113,7 @@ class Means {
 		});
 
 		// recolor points according to centroids
-        this.assigned = this.assign();
+		this.assigned = this.assign();
 		let aq = this.assigned;
 		let as = aq.RP;
 		this.ctx.fillStyle = "red";
@@ -144,13 +145,11 @@ class Means {
 			ctx.arc(meana[1].x, meana[1].y, 4, 0, Math.PI * 2);
 			ctx.fill();
 		});
-         this.drawMean();
-
 	}
 
 	drawMean() { // calculate mean point with assigned points
-       
-        let ctx = this.ctx;
+
+		let ctx = this.ctx;
 		let a = this.assigned;
 		let ap = a.RP; // red points
 		let bp = a.BP // blue points
@@ -159,37 +158,36 @@ class Means {
 		let bluemean = this.assignedPointsMean(bp, bp.length);
 		//console.log("Red", redmean, "Blue", bluemean); // move the centroid to this position
 
-        if (ap.length + bp.length === points.length) { 
-        console.log(ap.length, bp.length);
-            
-           window.setTimeout(() => {
-    	// the same four lines for "red" but with ms[0]
-		ctx.fillStyle = "blue";
-		ctx.beginPath();
-		ctx.arc(bluemean.x, bluemean.y, 6, 0, Math.PI * 2);
-		ctx.fill();
 
-		ctx.fillStyle = "red";
-		ctx.beginPath();
-		ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
-		ctx.fill();
-}, 2000) 
-            
-            console.log("Clustering done!");
-            console.log("Red", redmean, "Blue", bluemean)
-        }
-        else { console.log("Clustering not done")}
+		// if we have all the points and ap and bp arent equal we found the mean :D
+		if (ap.length + bp.length === points.length && ap[0].x !== bp[0].x) {
+			console.log(ap.length, bp.length);
 
-   
-        
+			// the same four lines for "red" but with ms[0]
+			ctx.fillStyle = "blue";
+			ctx.beginPath();
+			ctx.arc(bluemean.x, bluemean.y, 6, 0, Math.PI * 2);
+			ctx.fill();
 
-        
-        
-   
-    
-// type: m.drawMean()
+			ctx.fillStyle = "red";
+			ctx.beginPath();
+			ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
+			ctx.fill();
+			console.log("Clustering done!", "Red", redmean, "Blue", bluemean);
+
+		} else {
+			console.log("Clustering not done");
+		}
+
 	}
-    
+
+	try () {
+		this.getRanges();
+		this.draw();
+		this.drawRandomMean();
+		this.drawMean();
+
+	}
 
 
 }
@@ -204,8 +202,8 @@ const points = [
 	new Point(20, 50),
 	new Point(10, 20),
 	new Point(40, 30),
-    new Point(20, 60),
-    new Point(20, 40),
+	new Point(20, 60),
+	new Point(20, 40),
 
 	//  x and y higher than 50 (bottom right corner)
 	new Point(270, 230),
@@ -218,15 +216,11 @@ const points = [
 	new Point(260, 320),
 	new Point(280, 270), // THIS
 	new Point(260, 290)
-	
+
 ];
 
 
 let m = new Means("canvas");
 m.init(points);
-m.getRanges();
-m.draw();
-m.drawRandomMean();
-//m.drawMean();
-//setTimeout(m.drawMean.bind(m), 2000); // old points are orange, new are red and green
+m.try();
 // <canvas width="400" height = "400"></canvas>
