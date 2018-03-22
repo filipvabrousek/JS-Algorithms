@@ -23,32 +23,36 @@ class Means {
     
     // get point ranges, to create random centroids within ranges of our dataset
 	getRanges() { 
-		let xm = 0,
-			ym = 0,
-			xn = 0,
-			yn = 0;
+		let xm = 0, ym = 0, xn = 0, yn = 0;
 		this.points.forEach((el, i) => {
 			xm = this.points.map(e => e.x).reduce((a, b) => Math.max(a, b));
 			ym = this.points.map(e => e.y).reduce((a, b) => Math.max(a, b));
 			xn = this.points.map(e => e.x).reduce((a, b) => Math.min(a, b));
 			yn = this.points.map(e => e.y).reduce((a, b) => Math.min(a, b));
 		});
-		let xdiff = xm - xn, 
-            ydiff = ym - yn;
-		return {
-			xrange: xdiff,
+        
+		let xdiff = xm - xn, ydiff = ym - yn;
+		
+        return {
+            xrange: xdiff,
 			yrange: ydiff
 		} 
 	}
 
     //init k means (2 in this case) within range using "getRanges()"
-	initMeans() { 
+	initMeans(k = 2) { 
 		const ranges = this.getRanges();
-		let cand1 = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
-		let cand2 = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
-		this.means.push(cand1);
-		this.means.push(cand2);
-		return this.means; // candidates for our center;
+        this.means.length = k;
+        this.means.fill(0)
+        this.k = k;
+        
+        this.means.forEach((el, i) => {
+            let cand = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
+            this.means.push(cand);
+        })
+		
+        this.means = this.means.slice(k); // [0, 0, Point, Point] remove 2 zeros
+		return this.means; 
 	}
 
 
@@ -58,24 +62,27 @@ class Means {
 
 		let RPoints = [],
 			BPoints = [];
-		let centroids = this.initMeans();
+		let centroids = this.initMeans(); // k
 
 
 		points.forEach((val, i) => {
-			let onex = points[i].x - centroids[1].x; // distance to first centroid
-			let oney = points[i].y - centroids[1].y;
-			let zerox = points[i].x - centroids[0].x; // distance to 2nd centroid
+			
+            let zerox = points[i].x - centroids[0].x; // distance to 1st centroid
 			let zeroy = points[i].y - centroids[0].y;
+            let onex = points[i].x - centroids[1].x; // distance to 2nd centroid
+			let oney = points[i].y - centroids[1].y;
+			
 
-			let sqzerox = Math.sqrt(zerox * zerox);
+            // get posititive of each point from each centroid
+			let sqzerox = Math.sqrt(zerox * zerox); 
 			let sqzeroy = Math.sqrt(zeroy * zeroy);
-
 			let sqonex = Math.sqrt(onex * onex);
 			let sqoney = Math.sqrt(oney *  oney);
 
-			// 80 ... influence treshold
-			(sqzerox && sqzeroy) < 80 ? RPoints.push(points[i]) : 0;
-			(sqonex && sqoney) < 80 ? BPoints.push(points[i]) : 0;
+            // if the point is within the range, push it to according array
+            let ranges = this.getRanges(), k = this.k;
+            (sqzerox || sqzeroy) < ranges.xrange / k ? RPoints.push(points[i]) : 0;
+            (sqonex || sqoney) < ranges.xrange / k ? BPoints.push(points[i]) : 0;
 		});
 
 		return {
@@ -99,10 +106,8 @@ class Means {
 	}
 
 
-// 
+// plot the points we define in our array on the canvas and recolor them according to assigned points
 	draw() {
-
-		this.ctx.clearRect(0, 0, 400, 400)
 
 		let points = this.points, ctx = this.ctx;
 		this.ctx.fillStyle = "#000";
@@ -118,8 +123,9 @@ class Means {
 		// recolor points according to centroids
 		this.assigned = this.assign();
 		let ass = this.assigned;
-		
-        let redpoints = ass.RP;
+        let redpoints = ass.RP; // points assigned to the red centroid
+        let bluepoints = ass.BP;
+        
 		this.ctx.fillStyle = "red";
 		redpoints.forEach((el, i) => {
 			ctx.beginPath();
@@ -127,8 +133,6 @@ class Means {
 			ctx.fill();
 		});
 
-
-		let bluepoints = ass.BP;
 		this.ctx.fillStyle = "blue";
 		bluepoints.forEach((el, i) => {
 			ctx.beginPath();
@@ -137,10 +141,9 @@ class Means {
 		});
 	}
 
-    // 2 random candidates for cluster centers
+    // draw 2 random candidates for cluster centers
 	drawRandomMean() {
-		let meana = this.initMeans(),
-			ctx = this.ctx;
+		let meana = this.initMeans(), ctx = this.ctx;
 		this.ctx.fillStyle = "orange";
 		meana.forEach((el, i) => {
 			ctx.beginPath();
@@ -151,21 +154,19 @@ class Means {
 	}
     
 
-    // calculate mean point with assigned points and draw each cluster centroid
+    /* calculate mean point with assigned points and draw each cluster centroid
+    if we have classified all the points */
 	drawMean() { 
 		let ctx = this.ctx;
 		let a = this.assigned;
-		let ap = a.RP; // red points
-		let bp = a.BP // blue points
+		let ap = a.RP; // points assigned to the red cluster
+		let bp = a.BP // points assigned to the blue cluster
 
 		let redmean = this.assignedPointsMean(ap, ap.length);
 		let bluemean = this.assignedPointsMean(bp, bp.length);
 
-		// if we have all the points and ap and bp arent equal we found the mean :D
-		if (ap.length + bp.length === points.length && ap[0].x !== bp[0].x) {
-			console.log(ap.length, bp.length);
-
-			// the same four lines for "red" but with ms[0]
+		// if we have all the points and ap and bp arent equal we found the means :D
+		if (ap.length + bp.length === points.length && redmean.x !== bluemean.x) {
 			ctx.fillStyle = "blue";
 			ctx.beginPath();
 			ctx.arc(bluemean.x, bluemean.y, 6, 0, Math.PI * 2);
@@ -183,19 +184,18 @@ class Means {
 
 	}
 
+    // try to cluster the points, called above
 	try () {
 		this.getRanges();
 		this.draw();
 		this.drawRandomMean();
 		this.drawMean();
-
 	}
-
-
 }
 
 const points = [
-	//  x a y less 50 (top left corner)
+	
+    // x a y less 50 (top left corner)
 	new Point(30, 40),
 	new Point(20, 10),
 	new Point(70, 30),
@@ -207,7 +207,7 @@ const points = [
 	new Point(20, 60),
 	new Point(20, 40),
 
-	//  x and y higher than 50 (bottom right corner)
+	// x and y higher than 50 (bottom right corner)
 	new Point(270, 230),
 	new Point(280, 320),
 	new Point(300, 310),
@@ -216,13 +216,12 @@ const points = [
 	new Point(300, 290),
 	new Point(270, 280),
 	new Point(260, 320),
-	new Point(280, 270), // THIS
+	new Point(280, 270), 
 	new Point(260, 290)
-
 ];
 
 
 let m = new Means("canvas");
 m.init(points);
-m.try();
+m.try(); // will try to cluster the points into 2 clusters
 // <canvas width="400" height = "400"></canvas>
