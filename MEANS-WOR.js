@@ -179,7 +179,8 @@ class Means {
 			ctx.beginPath();
 			ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
 			ctx.fill();
-			console.log(`Clustering done! Red: ${redmean} Blue: ${bluemean}`);
+			console.log("Clustering done ", "Redmean: ", redmean, "Blueman ", bluemean);
+            console.log(redmean)
 
             done = true;
 		} else {
@@ -207,8 +208,7 @@ class Means {
 }
 
 const points = [
-	
-    // x a y less 50 (top left corner)
+ // x a y less 50 (top left corner)
 	new Point(30, 40),
 	new Point(20, 10),
 	new Point(70, 30),
@@ -232,3 +232,9 @@ const points = [
 	new Point(280, 270), 
 	new Point(260, 290)
 ];
+
+
+let m = new Means("canvas");
+m.init(points);
+m.try(); // will try to cluster the points into 2 clusters
+// <canvas width="400" height = "400"></canvas>
