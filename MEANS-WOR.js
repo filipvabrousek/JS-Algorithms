@@ -105,7 +105,7 @@ class Means {
 
 
 // plot the points we define in our array on the canvas and recolor them according to assigned points
-	color() {
+	plot() {
 
 		let points = this.points, ctx = this.ctx;
 		this.ctx.fillStyle = "#000";
@@ -119,24 +119,11 @@ class Means {
 		});
 
 		// recolor points according to centroids
-		this.assigned = this.assign();
+        this.assigned = this.assign();
 		let ass = this.assigned;
         let redpoints = ass.RP; // points assigned to the red centroid
         let bluepoints = ass.BP;
-        
-		this.ctx.fillStyle = "red";
-		redpoints.forEach((el, i) => {
-			ctx.beginPath();
-			ctx.arc(redpoints[i].x, redpoints[i].y, 4, 0, Math.PI * 2);
-			ctx.fill();
-		});
-
-		this.ctx.fillStyle = "blue";
-		bluepoints.forEach((el, i) => {
-			ctx.beginPath();
-			ctx.arc(bluepoints[i].x, bluepoints[i].y, 4, 0, Math.PI * 2);
-			ctx.fill();
-		});
+    
 	}
 
 
@@ -196,7 +183,7 @@ class Means {
     // try to cluster the points, call function above
 	try () {
 		this.getRanges();
-		this.color();
+		this.plot();
         
          let r = this.drawMean();
         if(!r){
