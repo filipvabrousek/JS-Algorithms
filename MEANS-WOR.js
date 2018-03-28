@@ -1,233 +1,234 @@
-class KMeans {
-	constructor(data, selector) {
-		this.data = data;
-		this.selector = selector || null;
-		this.means = [];
-		this.assignments = [];
-		this.range = null; // change
-		this.dataExtremes = null;
-		this.element = null;
-		this.width = 400;
-		this.heigth = 400;
+class Point {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
 	}
-
-
-	// w, h 400
-	make() {
-		this.element = document.querySelector(this.selector);
-		this.element.ctx = this.element.getContext("2d");
-		this.dataExtremes = this.getDataExtremes(this.data);
-
-		this.range = this.getDataRanges(this.dataExtremes); // get ranges from extremes 
-		this.means = this.initMeans(3);
-		this.assignPoints();
-		this.draw();
-
-        
-		this.run = this.run.bind(this);
-		setTimeout(this.run, 2000);
-
-
-	}
-
-    getDataRanges(extremes){
-     const ranges = [];
-
-    for (const dimension in extremes){
-        ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
-    }
-    return ranges;  // [9, 10]
-    }
-    
-    
-    
-    getDataExtremes(points){
-        const extremes = [];
-
-        let data = this.data;
-        
-    for (const i in data)
-    {
-        // 1
-        const point = data[i];
-
-        // 2
-        for (const dimension in point)
-        {
-            if ( ! extremes[dimension] ){
-                extremes[dimension] = {min: 1000, max: 0};
-            }
-
-            // 3
-            if (point[dimension] < extremes[dimension].min){
-                extremes[dimension].min = point[dimension];
-            }
-
-            if (point[dimension] > extremes[dimension].max){
-                extremes[dimension].max = point[dimension];
-            }
-        }
-    }
-console.log(extremes);
-    return extremes;
-    }
-    
-    initMeans(k = 3){
-         // 1
-    while (k--) {
-        const mean = [];
-
-        for (const dimension in this.dataExtremes){
-            mean[dimension] = this.dataExtremes[dimension].min + ( Math.random() * this.range[dimension] );
-        }
-
-        this.means.push(mean);
-    }
-   // console.log(this.means);
-    return this.means; 
-    }
-    
-    
-    
-    assignPoints(){
-        let data = this.data;
-        let means = this.means;
-        let assignments = this.assignments;
-        
-    for (const i in data)
-    {
-        const point = data[i];
-        const distances = [];
-
-        for (const j in means)
-        {
-            const mean = means[j];
-            let sum = 0;
-
-            for (const dimension in point)
-            {
-                let difference = point[dimension] - mean[dimension];
-                difference *= difference;
-                sum += difference;
-            }
-
-            distances[j] = Math.sqrt(sum);
-        }
-
-        assignments[i] = distances.indexOf( Math.min.apply(null, distances) );
-        
-          console.log(assignments[i]); // 13 x 2 16 x 1
-        //console.log("---------------------------")
-    }
-    
-    }
-    
-    moveMeans(){
-         this.assignPoints();
-
-        
-    let ms = this.means;
-        
-    const sums = Array( ms.length );
-    const counts = Array( ms.length );
-    let moved = false;
-
-    for (const j in ms){
-        counts[j] = 0;
-        sums[j] = Array( ms[j].length );
-        for (var dimension in ms[j]) {
-            sums[j][dimension] = 0;
-        }
-    }
-
-    
-    for (const pointIndex in this.assignments){
-        var meanIndex = this.assignments[pointIndex];
-        const point = data[pointIndex];
-        const mean = ms[meanIndex];
-
-        counts[meanIndex]++;
-
-        for (var dimension in mean){
-            sums[meanIndex][dimension] += point[dimension];
-        }
-    }
-
-    
-//-------------------------------------------3rd loop
-    for (var meanIndex in sums) {
-        //console.log(counts[meanIndex]);
-        
-        if ( 0 === counts[meanIndex] ) {
-            sums[meanIndex] = ms[meanIndex];
-            //console.log("Mean with no points");
-           // console.log(sums[meanIndex]);
-
-            for (var dimension in this.dataExtremes) {
-                sums[meanIndex][dimension] = this.dataExtremes[dimension].min + ( Math.random() * this.range[dimension] );
-            }
-            continue;
-        }
-
-        for (var dimension in sums[meanIndex]){
-            sums[meanIndex][dimension] /= counts[meanIndex];
-        }
-    } // FOR meanIndex end
-
-    if (this.means.toString() !== sums.toString()){
-        moved = true;
-    }
-
-    this.means = sums;
-    console.log(moved);
-    return moved;
-    }
-    
-    run(){
-        const moved = this.moveMeans();
-    this.draw();
-    moved ? setTimeout(this.run, 2000) :0;
-    }
-    
-    draw(){
-     // moved 2 times false once true   
-    // works :D
-    }
-
-
-
-
 }
 
+    
+class Means {
+	constructor(selector) {
+		this.selector = selector;
+		this.points = []; // filled with our input
+		this.means = [];
+		this.assigned = {};
+	}
 
 
-const data = [
-	[1, 2],
-	[2, 1],
-	[2, 4],
-	[1, 3],
-	[2, 2],
-	[3, 1],
-	[1, 1],
+	init(points) {
+		this.el = document.querySelector(this.selector);
+		this.ctx = this.el.getContext("2d");
+		this.points = points;
+	}
 
-	[7, 3],
-	[8, 2],
-	[6, 4],
-	[7, 4],
-	[8, 1],
-	[9, 2],
+    
+    // get point ranges, to create random centroids within ranges of our dataset
+	getRanges() { 
+		let xm = 0, ym = 0, xn = 0, yn = 0;
+		this.points.forEach((el, i) => {
+			xm = this.points.map(e => e.x).reduce((a, b) => Math.max(a, b));
+			ym = this.points.map(e => e.y).reduce((a, b) => Math.max(a, b));
+			xn = this.points.map(e => e.x).reduce((a, b) => Math.min(a, b));
+			yn = this.points.map(e => e.y).reduce((a, b) => Math.min(a, b));
+		});
+        
+		let xdiff = xm - xn, ydiff = ym - yn;
+		
+        return {
+            xrange: xdiff,
+			yrange: ydiff
+		} 
+	}
 
-	[10, 8],
-	[9, 10],
-	[7, 8],
-	[7, 9],
-	[8, 11],
-	[9, 9],
+    //init k means (2 in this case) within range using "getRanges()"
+	initMeans(k = 2) { 
+		const ranges = this.getRanges();
+        this.means.length = k;
+        this.means.fill(0)
+        this.k = k;
+        
+        this.means.forEach((el, i) => {
+            let cand = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
+            this.means.push(cand);
+        })
+		
+        this.means = this.means.slice(k); // [0, 0, Point, Point] remove 2 zeros
+		return this.means; 
+	}
+
+
+    // pushing points either into RPoints / BPoints according to distance from each centroid use "initMeans"
+	assign() { 
+
+		let RPoints = [], BPoints = [];
+		let centroids = this.initMeans(); // k
+
+		points.forEach((val, i) => {
+			
+            let zerox = points[i].x - centroids[0].x; // distance to 1st centroid
+			let zeroy = points[i].y - centroids[0].y;
+            let onex = points[i].x - centroids[1].x; // distance to 2nd centroid
+			let oney = points[i].y - centroids[1].y;
+			
+
+            // get posititive of each point from each centroid
+			let sqzerox = Math.sqrt(zerox * zerox); 
+			let sqzeroy = Math.sqrt(zeroy * zeroy);
+			let sqonex = Math.sqrt(onex * onex);
+			let sqoney = Math.sqrt(oney *  oney);
+
+            // if the point is within the range, push it to according array
+            let ranges = this.getRanges(), k = this.k;
+            (sqzerox || sqzeroy) < ranges.xrange / k ? RPoints.push(points[i]) : 0;
+            (sqonex || sqoney) < ranges.xrange / k ? BPoints.push(points[i]) : 0;
+		});
+
+		return {
+			RP: RPoints,
+			BP: BPoints
+		};
+	}
+
+
+// get mean of all assigned points (mean point of RPoints and BPoints array)
+	assignedPointsMean(arr, len) {
+		if (arr.length === 0) {
+			return "Mean with no points"
+		}
+		const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
+		const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
+		return {
+			x: meanX,
+			y: meanY
+		}
+	}
+
+
+// plot the points we define in our array on the canvas and recolor them according to assigned points
+	color() {
+
+		let points = this.points, ctx = this.ctx;
+		this.ctx.fillStyle = "#000";
+
+        // draw black points from our array
+		ctx.clearRect(0, 0, this.el.width, this.el.height);
+		points.forEach((el, i) => {
+			ctx.beginPath();
+			ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
+			ctx.fill();
+		});
+
+		// recolor points according to centroids
+		this.assigned = this.assign();
+		let ass = this.assigned;
+        let redpoints = ass.RP; // points assigned to the red centroid
+        let bluepoints = ass.BP;
+        
+		this.ctx.fillStyle = "red";
+		redpoints.forEach((el, i) => {
+			ctx.beginPath();
+			ctx.arc(redpoints[i].x, redpoints[i].y, 4, 0, Math.PI * 2);
+			ctx.fill();
+		});
+
+		this.ctx.fillStyle = "blue";
+		bluepoints.forEach((el, i) => {
+			ctx.beginPath();
+			ctx.arc(bluepoints[i].x, bluepoints[i].y, 4, 0, Math.PI * 2);
+			ctx.fill();
+		});
+	}
+
+
+    /* calculate mean point with assigned points and draw each cluster centroid
+    if we have classified all the points */
+	drawMean() { 
+		let ctx = this.ctx;
+		let a = this.assigned;
+		let ap = a.RP; // points assigned to the red cluster
+		let bp = a.BP // points assigned to the blue cluster
+
+		let redmean = this.assignedPointsMean(ap, ap.length);
+		let bluemean = this.assignedPointsMean(bp, bp.length);
+
+        
+        let done = false;
+        
+        
+        if (ap.length + bp.length !== points.length){
+            let meana = this.initMeans()
+		    this.ctx.fillStyle = "orange";
+		meana.forEach((el, i) => {
+			ctx.beginPath();
+			ctx.arc(meana[0].x, meana[0].y, 6, 0, Math.PI * 2);
+			ctx.arc(meana[1].x, meana[1].y, 6, 0, Math.PI * 2);
+			ctx.fill();
+		});
+            
+        }
+        
+        
+		// if we have all the points and ap and bp arent equal we found the means :D
+		if (ap.length + bp.length === points.length && redmean.x !== bluemean.x) {
+			ctx.fillStyle = "blue";
+			ctx.beginPath();
+			ctx.arc(bluemean.x, bluemean.y, 6, 0, Math.PI * 2);
+			ctx.fill();
+
+			ctx.fillStyle = "red";
+			ctx.beginPath();
+			ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
+			ctx.fill();
+			console.log(`Clustering done! Red: ${redmean} Blue: ${bluemean}`);
+
+            done = true;
+		} else {
+			console.log("Clustering not done");
+		}
+        
+        return done;
+
+	}
+    
+
+
+    // try to cluster the points, call function above
+	try () {
+		this.getRanges();
+		this.color();
+        
+         let r = this.drawMean();
+        if(!r){
+            setTimeout(this.drawMean.bind(this), 2000);
+            setTimeout(this.try.bind(this), 2000);
+            
+        }
+	}
+}
+
+const points = [
+	
+    // x a y less 50 (top left corner)
+	new Point(30, 40),
+	new Point(20, 10),
+	new Point(70, 30),
+	new Point(20, 50),
+	new Point(10, 30),
+	new Point(20, 50),
+	new Point(10, 20),
+	new Point(40, 30),
+	new Point(20, 60),
+	new Point(20, 40),
+
+	// x and y higher than 50 (bottom right corner)
+	new Point(270, 230),
+	new Point(280, 320),
+	new Point(300, 310),
+	new Point(310, 300),
+	new Point(300, 300),
+	new Point(300, 290),
+	new Point(270, 280),
+	new Point(260, 320),
+	new Point(280, 270), 
+	new Point(260, 290)
 ];
-
-
-
-let el = new KMeans(data, "canvas");
-el.make();
-
-// <canvas width="400" height="400"></canvas>
