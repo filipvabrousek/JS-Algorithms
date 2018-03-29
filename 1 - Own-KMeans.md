@@ -49,7 +49,7 @@ class Means {
         this.k = k;
         
         this.means.forEach((el, i) => {
-        let cand = new Point(ranges.xrange * Math.random(), ranges.yrange * Math.random());
+        let cand = new Point(400 * Math.random(), 400 * Math.random()); // this.el.width
         this.means.push(cand);
         });
 		
@@ -58,10 +58,10 @@ class Means {
 	}
 
 
-    // pushing points either into RPoints / BPoints according to distance from each centroid use "initMeans"
+    // pushing points either into APoints / BPoints according to distance from each centroid use "initMeans"
 	assign() { 
 
-		let RPoints = [], BPoints = [];
+		let APoints = [], BPoints = [];
 		let centroids = this.initMeans(); // k
 
 		points.forEach((val, i) => {
@@ -80,18 +80,18 @@ class Means {
 
             // if the point is within the range, push it to according array
             let ranges = this.getRanges(), k = this.k;
-            (sqzerox || sqzeroy) < ranges.xrange / k ? RPoints.push(points[i]) : 0;
+            (sqzerox || sqzeroy) < ranges.xrange / k ? APoints.push(points[i]) : 0;
             (sqonex || sqoney) < ranges.xrange / k ? BPoints.push(points[i]) : 0;
 		});
 
 		return {
-			RP: RPoints,
+			AP: APoints,
 			BP: BPoints
 		};
 	}
 
 
-// get mean of all assigned points (mean point of RPoints and BPoints array), do: if len === 0 condition
+// get mean of all assigned points (mean point of APoints and BPoints array), do: if len === 0 condition
 	assignedPointsMean(arr, len) {
 		const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
 		const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
@@ -116,34 +116,31 @@ class Means {
 			ctx.fill();
 		});
 
-		// recolor points according to centroids
-        
         this.assigned = this.assign();
-		let ass = this.assigned;
-        let redpoints = ass.RP; // points assigned to the red centroid
-        let bluepoints = ass.BP;
-    
+       
 	}
 
+    
 
     /* calculate mean point with assigned points and draw each cluster centroid
     if we have classified all the points */
 	drawMean() { 
 		let ctx = this.ctx;
-		let a = this.assigned;
-		let ap = a.RP; // points assigned to the red cluster
-		let bp = a.BP // points assigned to the blue cluster
+		//let a = this.assigned;
+        let a = this.assign(); // CHANGE BACK !!!!!!
+		let ap = a.AP; // points assigned to the A cluster
+		let bp = a.BP // points assigned to the B cluster
 
-		let redmean = this.assignedPointsMean(ap, ap.length);
-		let bluemean = this.assignedPointsMean(bp, bp.length);
+		let amean = this.assignedPointsMean(ap, ap.length);
+		let bmean = this.assignedPointsMean(bp, bp.length);
 
         
         let done = false;
         
-        
         if (ap.length + bp.length !== points.length){
             let meana = this.initMeans()
 		    this.ctx.fillStyle = "#1abc9c";
+            
 		meana.forEach((el, i) => {
 			ctx.beginPath();
 			ctx.arc(meana[0].x, meana[0].y, 6, 0, Math.PI * 2);
@@ -155,17 +152,17 @@ class Means {
         
         
 		// if we have all the points and ap and bp arent equal we found the means :D
-		if (ap.length + bp.length === points.length && redmean.x !== bluemean.x) {
+		if (ap.length + bp.length === points.length && amean.x !== bmean.x) {
 			ctx.fillStyle = "blue";
 			ctx.beginPath();
-			ctx.arc(bluemean.x, bluemean.y, 6, 0, Math.PI * 2);
+			ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
 			ctx.fill();
 
 			ctx.fillStyle = "red";
 			ctx.beginPath();
-			ctx.arc(redmean.x, redmean.y, 6, 0, Math.PI * 2);
+			ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
 			ctx.fill();
-			console.log("Clustering done. ", "Redmean: ", redmean, "Blueman ", bluemean);
+			console.log("Clustering done. ", "Mean A: ", amean, "Mean B:", bmean);
 
             done = true;
 		} else {
@@ -183,9 +180,8 @@ class Means {
 		this.getRanges();
 		this.plot();
         
-         let r = this.drawMean();
-         if(!r){
-            setTimeout(this.drawMean.bind(this), 2000);
+         let finished = this.drawMean();
+         if(!finished){
             setTimeout(this.try.bind(this), 2000);  
         }
 	}
