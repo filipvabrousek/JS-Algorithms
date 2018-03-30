@@ -25,19 +25,17 @@ class Means {
     
     // get point ranges, to create random centroids within ranges of our dataset
 	getRanges() { 
-		let xm = 0, ym = 0, xn = 0, yn = 0;
-		this.points.forEach((el, i) => {
-			xm = this.points.map(e => e.x).reduce((a, b) => Math.max(a, b));
-			ym = this.points.map(e => e.y).reduce((a, b) => Math.max(a, b));
-			xn = this.points.map(e => e.x).reduce((a, b) => Math.min(a, b));
-			yn = this.points.map(e => e.y).reduce((a, b) => Math.min(a, b));
+		let xm = 0, ym = 0, xn = 0, yn = 0, points = this.points;
+		points.forEach((el, i) => {
+	          xm = Math.max(...points.map(e => e.x));
+              ym = Math.max(...points.map(e => e.y));
+              xn = Math.min(...points.map(e => e.x));
+              yn = Math.min(...points.map(e => e.y));
 		});
 		
         return {
             xrange: xm - xn,
-			yrange: ym - yn,
-            xmin: xn,
-            ymin: yn
+			yrange: ym - yn
 		} 
 	}
 
@@ -49,7 +47,7 @@ class Means {
         this.k = k;
         
         this.means.forEach((el, i) => {
-        let cand = new Point(400 * Math.random(), 400 * Math.random()); // this.el.width
+        let cand = new Point(400 * Math.random(), 400 * Math.random()); // this.el.width
         this.means.push(cand);
         });
 		
@@ -76,12 +74,12 @@ class Means {
 			let sqzerox = Math.sqrt(zerox * zerox); 
 			let sqzeroy = Math.sqrt(zeroy * zeroy);
 			let sqonex = Math.sqrt(onex * onex);
-			let sqoney = Math.sqrt(oney *  oney);
+			let sqoney = Math.sqrt(oney *  oney);
 
-            // if the point is within the range, push it to according array
-            let ranges = this.getRanges(), k = this.k;
-            (sqzerox || sqzeroy) < ranges.xrange / k ? APoints.push(points[i]) : 0;
-            (sqonex || sqoney) < ranges.xrange / k ? BPoints.push(points[i]) : 0;
+            // if the point is within the range (all points have less distance than 110 px to all points) push it to according array
+            let ranges = this.getRanges();
+            (sqzerox || sqzeroy) < ranges.xrange / 3 ? APoints.push(points[i]) : 0;
+            (sqonex || sqoney) < ranges.xrange / 3 ? BPoints.push(points[i]) : 0;
 		});
 
 		return {
@@ -126,25 +124,22 @@ class Means {
     if we have classified all the points */
 	drawMean() { 
 		let ctx = this.ctx;
-		//let a = this.assigned;
-        let a = this.assign(); // CHANGE BACK !!!!!!
+        let a = this.assign(); 
 		let ap = a.AP; // points assigned to the A cluster
 		let bp = a.BP // points assigned to the B cluster
 
 		let amean = this.assignedPointsMean(ap, ap.length);
 		let bmean = this.assignedPointsMean(bp, bp.length);
-
+        let centroids = this.initMeans()
         
         let done = false;
         
         if (ap.length + bp.length !== points.length){
-            let meana = this.initMeans()
-		    this.ctx.fillStyle = "#1abc9c";
-            
-		meana.forEach((el, i) => {
+           
+		  centroids.forEach((el, i) => {
+            ctx.fillStyle = "#1abc9c";
 			ctx.beginPath();
-			ctx.arc(meana[0].x, meana[0].y, 6, 0, Math.PI * 2);
-			ctx.arc(meana[1].x, meana[1].y, 6, 0, Math.PI * 2);
+			ctx.arc(centroids[i].x, centroids[i].y, 6, 0, Math.PI * 2);
 			ctx.fill();
 		});
             
@@ -153,15 +148,13 @@ class Means {
         
 		// if we have all the points and ap and bp arent equal we found the means :D
 		if (ap.length + bp.length === points.length && amean.x !== bmean.x) {
-			ctx.fillStyle = "blue";
-			ctx.beginPath();
-			ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
-			ctx.fill();
-
-			ctx.fillStyle = "red";
-			ctx.beginPath();
-			ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
-			ctx.fill();
+		
+            ctx.beginPath();
+            ctx.fillStyle = "red";
+            ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
+            ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
+            ctx.fill();            
+            
 			console.log("Clustering done. ", "Mean A: ", amean, "Mean B:", bmean);
 
             done = true;
@@ -175,13 +168,13 @@ class Means {
     
 
 
-    // try to cluster the points 
+    // try to cluster the points, if "done" in findMeans is false, try again
 	try () {
 		this.getRanges();
 		this.plot();
         
          let finished = this.drawMean();
-         if(!finished){
+         if(!finished){ 
             setTimeout(this.try.bind(this), 2000);  
         }
 	}
@@ -201,12 +194,12 @@ const points = [
 	new Point(20, 40),
 
 	// x and y higher than 50 (bottom right corner)
-	new Point(270, 230),
+	new Point(270, 210),
 	new Point(280, 320),
 	new Point(300, 310),
 	new Point(310, 300),
-	new Point(300, 300),
-	new Point(300, 290),
+	new Point(330, 300),
+	new Point(340, 290),
 	new Point(270, 280),
 	new Point(260, 320),
 	new Point(280, 270), 
@@ -218,5 +211,4 @@ let m = new Means("canvas");
 m.init(points);
 m.try(); // will try to cluster the points into 2 clusters
 // <canvas width="400" height = "400"></canvas>
-
 ```
