@@ -56,18 +56,19 @@ class Means {
 	}
 
 
-    // pushing points either into APoints / BPoints according to distance from each centroid use "initMeans"
-	assign() { 
+    /* pushing points either into APoints / BPoints according to distance from each centroid use "getRanges"
+    used in "drawMeans()"*/
+	assign(centrs) { 
 
 		let APoints = [], BPoints = [];
-		let centroids = this.initMeans(); // k
+		
 
 		points.forEach((val, i) => {
 			
-            let zerox = points[i].x - centroids[0].x; // distance to 1st centroid
-			let zeroy = points[i].y - centroids[0].y;
-            let onex = points[i].x - centroids[1].x; // distance to 2nd centroid
-			let oney = points[i].y - centroids[1].y;
+            let zerox = points[i].x - centrs[0].x; // distance to 1st centroid
+			let zeroy = points[i].y - centrs[0].y;
+            let onex = points[i].x - centrs[1].x; // distance to 2nd centroid
+			let oney = points[i].y - centrs[1].y;
 			
 
             // get posititive of each point from each centroid
@@ -113,9 +114,6 @@ class Means {
 			ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
 			ctx.fill();
 		});
-
-        this.assigned = this.assign();
-       
 	}
 
     
@@ -124,27 +122,24 @@ class Means {
     if we have classified all the points */
 	drawMean() { 
 		let ctx = this.ctx;
-        let a = this.assign(); 
-		let ap = a.AP; // points assigned to the A cluster
-		let bp = a.BP // points assigned to the B cluster
+        let means = this.initMeans(); // init ranodm means
+        let a = this.assign(means); // assign points to means
+		let ap = a.AP; // A cluster points
+		let bp = a.BP // B cluster points
 
 		let amean = this.assignedPointsMean(ap, ap.length);
 		let bmean = this.assignedPointsMean(bp, bp.length);
-        let centroids = this.initMeans()
-        
         let done = false;
         
+        
         if (ap.length + bp.length !== points.length){
-           
-		  centroids.forEach((el, i) => {
             ctx.fillStyle = "#1abc9c";
 			ctx.beginPath();
-			ctx.arc(centroids[i].x, centroids[i].y, 6, 0, Math.PI * 2);
-			ctx.fill();
-		});
-            
+			ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
+            ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
+	        ctx.fill();
+            console.log("Not done")
         }
-        
         
 		// if we have all the points and ap and bp arent equal we found the means :D
 		if (ap.length + bp.length === points.length && amean.x !== bmean.x) {
@@ -156,11 +151,8 @@ class Means {
             ctx.fill();            
             
 			console.log("Clustering done. ", "Mean A: ", amean, "Mean B:", bmean);
-
             done = true;
-		} else {
-			console.log("Clustering not done");
-		}
+		} 
         
         return done;
 
