@@ -67,14 +67,16 @@ class Network {
 	}
 
 	learn(data) {
-		let filled = []; // result array
+		//let filled = []; // result array
 
+        let n = 0;
+        
 		for (let it = 0; it < 40000; it++) {
-			const i = Math.floor(Math.random() * data.length);
+			//const i = Math.floor(Math.random() * data.length);
 
-			// data from our array
-			const input = data[i].input;
-			const output = data[i].output;
+            // data from our array (change to data[1] to see results for 1)
+			const input = data[0].input;
+			const output = data[0].output;
 
 			// result from network - desired output send it back, and update the connection weights between nodes
 			const res = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input);
@@ -83,7 +85,6 @@ class Network {
 			// call backward for each layer
 			this.layers.reverse().reduce((error, layer) => layer.backward(error), err);
 			this.layers.reverse(); // reverse back
-
 			this.layers.forEach(l => l.update())
 		}
 
@@ -92,11 +93,11 @@ class Network {
 		data.forEach((val, i) => {
 			const input = data[i].input;
 			const output = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input);
-			const n = Number(output)
-			filled.push(n);
+			n = Number(output);
+            
 		});
 
-		return filled;
+		return n;
 	}
 
 }
@@ -111,6 +112,7 @@ const data = [{
 	input: [1, 0],
 	output: [1],
 }];
+    
 
 
 const network = new Network();
