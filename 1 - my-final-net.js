@@ -6,7 +6,7 @@ class N {
 	constructor(ni) {
 		this.weights = [];
 		this.weights.length = ni;
-		this.weights.fill(Math.random() - 0.5) // fill weights with random numbers
+		this.weights.fill(Math.random()) // fill weights with random numbers
 	}
 
 	// we get weighed sum of neuron inputs and normalize it to value between 0 and 1 using sigmoid
@@ -69,20 +69,20 @@ class Network {
 	learn(data) {
 
 		for (let it = 0; it < 1000; it++) {
-			const input = data[0];
-			const output = data[1];
+			const first = data[0]; // [0, 1]
+			const second = data[1]; // [1]
 
 			// result from network - desired output send it back, and update the connection weights between nodes
-			const res = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input);
+			const res = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), first);
 			let err = [];
-			res.forEach((el, index) => err.push(res[index] - output));
+			res.forEach((el, index) => err.push(res[index] - second));
             
             // backpropagation (call backwards for each layer)
 			this.layers.reverse().reduce((error, layer) => layer.backward(error), err);
 			this.layers.reverse(); // reverse back
 			this.layers.forEach(l => l.update())
 		}
-            // add bias
+            // add bias, and get our result
             const output = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), data[0]);
 		    return output;
 	}
