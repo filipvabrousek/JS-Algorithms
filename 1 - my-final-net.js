@@ -25,7 +25,7 @@ class N {
 	/* adjusting weights: make adjustment proportional to the size of error "sigmoidGradient" ensures the we adjust just a little bit
 	pass "this.sum" from "forward()" into sigmoidGradient,
 	input (0 = no adjustment or 1) * sigmoidGradient * error -> creates "deltas array" 
-	adjust weights by substracting deltas*/
+	adjust weights by substracting deltas */
 	update() {
 		const deltas = this.inputs.map(input => input * sigmoidGradient(this.sum) * this.error);
 		this.diff = [];
@@ -67,37 +67,24 @@ class Network {
 	}
 
 	learn(data) {
-		//let filled = []; // result array
 
-        let n = 0;
-        
-		for (let it = 0; it < 40000; it++) {
-			//const i = Math.floor(Math.random() * data.length);
-
-            // data from our array (change to data[1] to see results for 1)
-			const input = data[0].input;
-			const output = data[0].output;
+		for (let it = 0; it < 1000; it++) {
+			const input = data[0];
+			const output = data[1];
 
 			// result from network - desired output send it back, and update the connection weights between nodes
 			const res = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input);
 			let err = [];
-			res.forEach((el, index) => err.push(res[index] - output[index]));
-			// call backward for each layer
+			res.forEach((el, index) => err.push(res[index] - output));
+            
+            // backpropagation (call backwards for each layer)
 			this.layers.reverse().reduce((error, layer) => layer.backward(error), err);
 			this.layers.reverse(); // reverse back
 			this.layers.forEach(l => l.update())
 		}
-
-
-		// get result
-		data.forEach((val, i) => {
-			const input = data[i].input;
-			const output = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input);
-			n = Number(output);
-            
-		});
-
-		return n;
+            // add bias
+            const output = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), data[0]);
+		    return output;
 	}
 
 }
@@ -105,16 +92,10 @@ class Network {
 
 
 /*------------------------------------------------------USAGE----------------------------------------------------------*/
-const data = [{
-	input: [0, 0],
-	output: [0],
-}, {
-	input: [1, 0],
-	output: [1],
-}];
+
     
-
-
+const data = [[0, 1], 1]; // or [[0, 1], 1]
+    
 const network = new Network();
 const res = network.learn(data);
 console.log(res);
