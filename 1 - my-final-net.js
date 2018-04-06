@@ -1,5 +1,5 @@
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
-const sigmoidGradient = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
+const sgrad = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
 /*------------------------------------------------------NEURON----------------------------------------------------------*/
 class N {
@@ -13,7 +13,7 @@ class N {
 	forward(inputs) {
 		this.inputs = inputs;
 		this.sum = 0;
-		this.weights.forEach((el, index) => this.sum += this.inputs[index] * this.weights[index])
+		this.weights.forEach((el, i) => this.sum += this.inputs[i] * this.weights[i]);
 		return sigmoid(this.sum); // returns (1 / 1 + e^-this.sum)
 	}
 
@@ -22,15 +22,11 @@ class N {
 		return this.weights.map(w => w * error).slice(1); // each w. * error and remove 1st el. (bias)
 	}
 
-	/* adjusting weights: make adjustment proportional to the size of error "sigmoidGradient" ensures the we adjust just a little bit
-	pass "this.sum" from "forward()" into sigmoidGradient,
-	input (0 = no adjustment or 1) * sigmoidGradient * error -> creates "deltas array" 
-	adjust weights by substracting deltas */
+	/* adjusting weights: make adjustment proportional to the size of error "sigmoid gradient" ensures the we adjust just a little bit
+	pass "this.sum" from "forward()" into sigmoid gradient (sgrad), adjust weights by substracting deltas */
 	update() {
-		const deltas = this.inputs.map(input => input * sigmoidGradient(this.sum) * this.error);
-		this.diff = [];
-		this.weights.forEach((el, index) => this.diff.push(this.weights[index] - deltas[index]));
-		this.weights = this.diff;
+		const deltas = this.inputs.map(input => input * sgrad(this.sum) * this.error);
+		this.weights.forEach((el, i) => this.weights[i] = this.weights[i] - deltas[i]);
 	}
 }
 
@@ -66,29 +62,30 @@ class Network {
 		this.layers = [new Layer(3, 3), new Layer(1, 4)];
 	}
 
+	forward(input) {
+		return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input); // add bias
+	}
+
 	learn(data) {
 
 		for (let it = 0; it < 1000; it++) {
-			const first = data[0]; // [0, 1]
-			const second = data[1]; // [1]
 
 			// result from network - desired output send it back, and update the connection weights between nodes
-			const res = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), first);
+			const res = this.forward(data[0]);
 			let err = [];
-			res.forEach((el, index) => err.push(res[index] - second));
-            
-            // backpropagation (call backwards for each layer)
+			res.forEach((el, index) => err.push(res[index] - data[1]));
+
+			// backpropagation (call backwards for each layer)
 			this.layers.reverse().reduce((error, layer) => layer.backward(error), err);
 			this.layers.reverse(); // reverse back
 			this.layers.forEach(l => l.update())
 		}
-            // add bias, and get our result
-            const output = this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), data[0]);
-		    return output;
+		// add bias, and get our result
+		const output = this.forward(data[0]);
+		return output;
 	}
 
 }
-
 
 
 /*------------------------------------------------------USAGE----------------------------------------------------------*/
