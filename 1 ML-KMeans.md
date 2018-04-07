@@ -1,3 +1,5 @@
+## K-means clustering
+
 ```js
 class Point {
 	constructor(x, y) {
