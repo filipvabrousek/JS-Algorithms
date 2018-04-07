@@ -1,3 +1,5 @@
+
+
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
 const sgrad = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
@@ -62,10 +64,9 @@ class Network {
 	constructor() {
 		this.layers = [new Layer(3, 3), new Layer(1, 4)];
 	}
-
  
     forward(first) { // first ([0, 1]) gets passed into concat
-      return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), first); // Layer {n: Array(3)}.forward([1, 0])  
+      return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), first); // Layer {n: Array(3)}.forward([1, 0])  
 	}
 
 	learn() {
@@ -94,7 +95,7 @@ class Network {
 /*------------------------------------------------------USAGE----------------------------------------------------------*/
 
     
-const data = [[0, 1], 1]; // or [[0, 1], 1]
+const data = [[0, 1], 1]; // or [[0, 0], 0]
     
 const network = new Network();
 const res = network.learn(data);
