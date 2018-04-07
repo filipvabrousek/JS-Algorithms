@@ -1,5 +1,3 @@
-
-
 const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
 const sgrad = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
 
