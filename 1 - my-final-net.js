@@ -14,6 +14,7 @@ class N {
 		this.inputs = inputs;
 		this.sum = 0;
 		this.weights.forEach((el, i) => this.sum += this.inputs[i] * this.weights[i]);
+        
 		return sigmoid(this.sum); // returns (1 / 1 + e^-this.sum)
 	}
 
@@ -43,14 +44,15 @@ class Layer {
 
 	forward(inputs) {
 		return this.neurons.map(n => n.forward(inputs));
+        
 	}
 
 	backward(errors) {
 		return this.neurons.map((n, i) => n.backward(errors[i])).reduce((a, b) => a + b); // pass each error backwards and get weighted sum
 	}
 
-	update() {
-		this.neurons.forEach(n => n.update());
+	update(data) {
+		this.neurons.forEach(n => n.update(data));
 	}
 }
 
@@ -62,13 +64,16 @@ class Network {
 		this.layers = [new Layer(3, 3), new Layer(1, 4)];
 	}
 
-	forward(input) {
-		return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), input); // add bias
+ 
+    forward(first) { // first ([0, 1]) gets passed into concat
+      return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), first); // Layer {n: Array(3)}.forward([1, 0])  
 	}
 
-	learn(data) {
+	learn() {
 
+        
 		for (let it = 0; it < 1000; it++) {
+
 
 			// result from network - desired output send it back, and update the connection weights between nodes
 			const res = this.forward(data[0]);
