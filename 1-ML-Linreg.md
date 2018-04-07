@@ -38,16 +38,16 @@ class LR {
 		});
 
 		let f = this.linreg(points);
-		let y = this.line(f.x, f.b);
+		let y = this.line(f.g, f.i);
 		ctx.strokeStyle = "#1abc9c";
 		ctx.beginPath();
-		ctx.moveTo(0, f.b);
+		ctx.moveTo(0, f.i);
 		ctx.lineTo(400, y); // 400 - line across entire width of the element 
 		ctx.stroke();
 	}
 
-	line(x, b) {
-		return 400 * x + b; // m*x + b => 400 * gradient + intercept
+	line(g, i) {
+		return 400 * g + i; // m*x + b => 400 * gradient + intercept
 	}
 
 
@@ -65,11 +65,10 @@ class LR {
 		});
 
 		let gradient = x / b;
-		let intrcpt = meanY - gradient * meanX;
 
 		return {
-			x: gradient,
-			b: intrcpt // intercept with y axis
+			g: gradient, // gradient
+			i: meanY - gradient * meanX // intercept with y axis
 		}
 	}
 
