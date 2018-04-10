@@ -1,4 +1,4 @@
-   const Think = (() => {
+ const Think = (() => {
 
        /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Perceptron :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
        class Perceptron {
@@ -132,7 +132,7 @@
                return this.layers.reduce((inp, lr) => lr.forward([1].concat(inp)), first); // Layer {n: Array(3)}.forward([1, 0])  
            }
 
-           learn() {
+           learn(data) {
 
                for (let it = 0; it < 1000; it++) {
 
@@ -459,8 +459,5 @@
 
    })();
 
-
-
-   let res = Think.PXOR();
-   console.log(res);
-   // Net -> Error (fix)
+let xor = Think.Net([[0, 1], 1]);
+console.log(xor);
