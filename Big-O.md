@@ -1,5 +1,8 @@
+## Big O Notation
 
-´´´js
+
+
+```js
 // O(1) - constant time complexity
 // accessing array index    
     
@@ -27,6 +30,7 @@ for(var i = 0; i < length; i++) {     //has O(n) time complexity
     
     
 // bubble sort  
-´´´
+```
+
 
 ![graph](https://cdn-images-1.medium.com/max/1600/1*_8PfaIyJC7dWJOsKxz47ow.png "Logo Title Text 1")
