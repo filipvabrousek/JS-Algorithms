@@ -1,5 +1,4 @@
-
-  const Think = (() => {
+ const Think = (() => {
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Perceptron :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     class Perceptron {
@@ -302,7 +301,7 @@
             let APoints = [],
                 BPoints = [];
 
-
+let points = this.points;
             points.forEach((val, i) => {
 
                 let zerox = points[i].x - centrs[0].x; // distance to 1st centroid
@@ -332,6 +331,7 @@
 
         // get mean of all assigned points (mean point of APoints and BPoints array), do: if len === 0 condition
         assignedPointsMean(arr, len) {
+        
             const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
             const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
             return {
@@ -362,12 +362,12 @@
         /* calculate mean point with assigned points and draw each cluster centroid
         if we have classified all the points */
         drawMean() {
-            let ctx = this.ctx;
+            let ctx = this.ctx, points = this.points;
             let means = this.initMeans(); // init ranodm means
             let a = this.assign(means); // assign points to means
             let ap = a.AP; // A cluster points
             let bp = a.BP // B cluster points
-
+        
             let amean = this.assignedPointsMean(ap, ap.length);
             let bmean = this.assignedPointsMean(bp, bp.length);
             let done = false;
@@ -471,3 +471,40 @@ let xor = Think.Net([
     [0, 1], 1
 ]);
 console.log(xor);
+    
+ /*   
+class Point{
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+    }
+}
+const data = [
+	// x a y less 50 (top left corner)
+	new Point(30, 40),
+	new Point(20, 10),
+	new Point(70, 30),
+	new Point(20, 50),
+	new Point(10, 30),
+	new Point(20, 50),
+	new Point(10, 20),
+	new Point(40, 30),
+	new Point(20, 60),
+	new Point(20, 40),
+
+	// x and y higher than 50 (bottom right corner)
+	new Point(270, 210),
+	new Point(280, 320),
+	new Point(300, 310),
+	new Point(310, 300),
+	new Point(330, 300),
+	new Point(340, 290),
+	new Point(270, 280),
+	new Point(260, 320),
+	new Point(280, 270),
+	new Point(260, 290)
+];
+
+
+Think.KMeans("canvas", data);
+    */
