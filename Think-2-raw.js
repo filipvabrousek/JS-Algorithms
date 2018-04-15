@@ -1,4 +1,4 @@
- const Think = (() => {
+const Think = (() => {
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Perceptron :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     class Perceptron {
@@ -420,7 +420,7 @@ let points = this.points;
 
 
 
-    const PXOR = () => {
+    const PXOR = (data) => {
         let p = new Perceptron();
 
         p.fill();
@@ -428,7 +428,7 @@ let points = this.points;
         p.train([0, 1], 1);
         p.learn();
 
-        let big = p.calc([0, 1]);
+        let big = p.calc(data);
         return big;
     }
 
@@ -472,6 +472,7 @@ let xor = Think.Net([
 ]);
 console.log(xor);
     
+    
  /*   
 class Point{
     constructor(x, y){
@@ -491,7 +492,6 @@ const data = [
 	new Point(40, 30),
 	new Point(20, 60),
 	new Point(20, 40),
-
 	// x and y higher than 50 (bottom right corner)
 	new Point(270, 210),
 	new Point(280, 320),
@@ -504,7 +504,5 @@ const data = [
 	new Point(280, 270),
 	new Point(260, 290)
 ];
-
-
 Think.KMeans("canvas", data);
     */
