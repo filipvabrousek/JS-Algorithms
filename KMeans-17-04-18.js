@@ -62,91 +62,63 @@ class Means {
     /* pushing points either into APoints / BPoints according to distance from each centroid use "getRanges"
     used in "drawMeans()"*/
     assign(centrs) {
-
         let APoints = [],
-            BPoints = [];
-        let assignments = [];
-        let distances = [];
-        let sum = 0;
+        BPoints = []
+       ,assignments = [],
+         distances = [],
+       sum = 0;
 
         points.forEach((val, i) => {
 
+        let point = points[i];
 
-
-            let point = points[i];
-
-            centrs.forEach((val, e) => {
-                let diffX = point.x - centrs[e].x;
-                let diffY = point.y - centrs[e].y;
+        centrs.forEach((val, e) => {
+                let diffX = (point.x - centrs[e].x) / 10;
+                let diffY = (point.y - centrs[e].y) / 10;
                 sum += Math.sqrt(diffX * diffX) + Math.sqrt(diffY * diffY);
 
                 let obj = {
-                    pointIndex: i,
-                    dist: Math.round(sum),
-                    to: e
+                        pointIndex: i,
+                        dist: Math.round(sum),
+                        to: e
                 }
                 distances.push(obj);
 
-            });
-
-            if (distances[i] < distances[i + 1]) {
-                APoints.push(point);
-            } else {
-                BPoints.push(point);
-            }
-
-
-            console.log(distances) /* make loop and assign according to distance */
-
-
-            /*
-			let zerox = points[i].x - centrs[0].x; // distance to 1st centroid
-			let zeroy = points[i].y - centrs[0].y;
-			let onex = points[i].x - centrs[1].x; // distance to 2nd centroid
-			let oney = points[i].y - centrs[1].y;
-
-
-			// get posititive of each point from each centroid
-			let sqzerox = Math.sqrt(zerox * zerox);
-			let sqzeroy = Math.sqrt(zeroy * zeroy);
-			let sqonex = Math.sqrt(onex * onex);
-			let sqoney = Math.sqrt(oney * oney);
-
-       
-            
-            
-			// if the point is within the range (all points have less distance than 110 px to all points) push it to according array
-			let ranges = this.getRanges();
-			(sqzerox || sqzeroy) < ranges.xrange / 3 ? APoints.push(points[i]) : 0;
-			(sqonex || sqoney) < ranges.xrange / 3 ? BPoints.push(points[i]) : 0;
-            
-            */
-
-
         });
 
-        for (var d in distances) {
+});
+
+
+        let oneClose = [];
+        let secondClose = [];
+
+        
+        
+        distances.forEach((el, i) => {
+           // if (i > distances.length - 1){i = distances.length - 1} work with i
             // what is the distance to to first and to second 
-            let toFirst = distances[d].dist;
-            let toSecond = distances[d].dist; // should be d + 1
-
+            let toFirst = distances[i].dist;
+            let toSecond = distances[i + 1].dist; // should be d + 1
+console.log(toSecond)
             if (toFirst < toSecond) {
-                console.log("Closre to the first centroid ", toFirst)
+                console.log("Closer to the first centroid ", toFirst)
+                oneClose.push(points[i]);
             } else {
-                console.log("Closre to the 2nd centroid ", toSecond)
+                console.log("Closer to the 2nd centroid ", toSecond);
+                secondClose.push(points[i]);
             }
+           // console.log(distances)
+        })
 
-
-
-
-        }
-
-        return {
-            AP: APoints,
-            BP: BPoints
-        };
+        return distances;
+      
     }
 
+    
+    assignC(){
+      /**/
+          
+    }
 
     // get mean of all assigned points (mean point of APoints and BPoints array), do: if len === 0 condition
     assignedPointsMean(arr, len) {
