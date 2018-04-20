@@ -62,86 +62,144 @@ class Means {
     /* pushing points either into APoints / BPoints according to distance from each centroid use "getRanges"
     used in "drawMeans()"*/
     assign(centrs) {
-        let APoints = [], BPoints = [],assignments = [],distances = [],sum = 0;
+        let APoints = [],
+            BPoints = [],
+            assignments = [],
+            distances = [],
+            sum = 0;
         let closertoFirst = [];
 
         let first = centrs[0];
         let second = centrs[1];
 
-          points.forEach((val, i) => {
+        points.forEach((val, i) => {
 
- 	      let point = points[i];
+            let point = points[i];
 
- 	      let distanceZero = Math.sqrt(Math.pow((point.x - first.x), 2) + Math.pow((point.y - first.y), 2));
-          let distanceOne = Math.sqrt(Math.pow((point.x - second.x), 2) + Math.pow((point.y - second.y), 2));
+            let distanceZero = Math.sqrt(Math.pow((point.x - first.x), 2) + Math.pow((point.y - first.y), 2));
+            let distanceOne = Math.sqrt(Math.pow((point.x - second.x), 2) + Math.pow((point.y - second.y), 2));
 
- 	      let res = {
- 		     pointIndex: i,
- 		     zeroDist: distanceZero,
- 		     oneDist: distanceOne,
-             assignTo: 0 // this value will be changed
- 	      }
+            let res = {
+                pointIndex: i,
+                zeroDist: distanceZero,
+                oneDist: distanceOne,
+                assignTo: 0 // this value will be changed
+            }
 
- 	      distances[i] = res;
- });
+            distances[i] = res;
+        });
 
-        
-        
-        
-distances.forEach((el, i) =>{
-    
-    if (distances[i].zeroDist < distances[i].oneDist){ // closer to zero
-    closertoFirst.push(points[distances[i].pointIndex])
-    distances[i].assignTo = 0
-    } else {
-   distances[i].assignTo = 1;
+
+
+
+        distances.forEach((el, i) => {
+
+            if (distances[i].zeroDist < distances[i].oneDist) { // closer to zero
+                closertoFirst.push(points[distances[i].pointIndex])
+                distances[i].assignTo = 0
+            } else {
+                distances[i].assignTo = 1;
+            }
+
+
+        });
+
+        this.ctx.fillStyle = "orange";
+        this.ctx.beginPath();
+        this.ctx.arc(centrs[0].x, centrs[0].y, 6, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+        this.ctx.fillStyle = "blue";
+        this.ctx.beginPath();
+        this.ctx.arc(centrs[1].x, centrs[1].y, 6, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+
+        /*----------------------------------FINAL DATA ARRAY---------------------------*/
+        let data = [];
+
+
+
+        let clustero = distances.filter(el => el.assignTo === 0);
+        clustero.forEach((el, i) => {
+
+            let point = points[clustero[i].pointIndex]
+            console.log(point);
+
+            this.ctx.fillStyle = "orange";
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+            this.ctx.fill();
+
+            data.push(point)
+        });
+
+
+        let clusterb = distances.filter(el => el.assignTo === 1);
+        clusterb.forEach((el, i) => {
+
+            let point = points[clusterb[i].pointIndex];
+
+            this.ctx.fillStyle = "blue";
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+            this.ctx.fill();
+
+            data.push(point);
+        });
+
+
+
+        //console.log(data);
+
+
+        let half = this.clusterMean(data).half;
+        this.ctx.fillStyle = "red";
+        this.ctx.beginPath();
+        this.ctx.arc(half.x, half.y, 4, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+
+        let end = this.clusterMean(data).end;
+        this.ctx.fillStyle = "red";
+        this.ctx.beginPath();
+        this.ctx.arc(end.x, end.y, 4, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+        return distances;
+
     }
-    
-    
-});
 
- this.ctx.fillStyle = "orange";
- this.ctx.beginPath();
- this.ctx.arc(centrs[0].x, centrs[0].y, 6, 0, 2 * Math.PI);
- this.ctx.fill();
 
- this.ctx.fillStyle = "blue";
- this.ctx.beginPath();
- this.ctx.arc(centrs[1].x, centrs[1].y, 6, 0, 2 * Math.PI);
- this.ctx.fill();
 
-        
-//this.ctx.fillStyle = "orange";
-let clustero = distances.filter(el => el.assignTo === 0);     
-clustero.forEach((el, i) => {
- 
-let point = points[clustero[i].pointIndex]
-console.log(point);
 
- this.ctx.fillStyle = "orange";
- this.ctx.beginPath();
- this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
- this.ctx.fill();
+    clusterMean(data) {
+        let half = data.slice(0, Math.floor(data.length / 2));
+        const halfMeanX = half.map(p => p.x).reduce((a, b) => a + b) / half.length; // divide!
+        const halfMeanY = half.map(p => p.y).reduce((a, b) => a + b) / half.length;
 
-});
-        
-        
-let clusterb = distances.filter(el => el.assignTo === 1);     
-clusterb.forEach((el, i) => {
- 
-let point = points[clusterb[i].pointIndex];
+        let end = data.slice(Math.floor(data.length / 2), data.length);
+        const endMeanX = end.map(p => p.x).reduce((a, b) => a + b) / end.length;
+        const endMeanY = end.map(p => p.y).reduce((a, b) => a + b) / end.length;
 
- this.ctx.fillStyle = "blue";
- this.ctx.beginPath();
- this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
- this.ctx.fill();
+        const halfMean = {
+            x: halfMeanX,
+            y: halfMeanY
+        }
 
-});
-        
- return distances;
-        
+        const endMean = {
+            x: endMeanX,
+            y: endMeanY
+        }
+
+        return {
+            half: halfMean,
+            end: endMean
+        }
+
     }
-    
+
+
 
 
     // plot the points we define in our array on the canvas and recolor them according to assigned points
@@ -160,31 +218,13 @@ let point = points[clusterb[i].pointIndex];
         });
     }
 
-
-/*
-
-    // get mean of all assigned points (mean point of APoints and BPoints array), do: if len === 0 condition
-    assignedPointsMean(arr, len) {
-        const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / len;
-        const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / len;
-        return {
-            x: meanX,
-            y: meanY
-        }
-    }
-
-
-
-
-
-*/
-    try(){
+    try () {
         this.plot();
         let means = this.initMeans();
         this.assign(means);
     }
-    
-    
+
+
 }
 
 const points = [
