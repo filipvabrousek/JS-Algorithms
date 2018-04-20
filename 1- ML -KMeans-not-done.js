@@ -63,32 +63,43 @@ class Means {
     used in "drawMeans()"*/
     assign(centrs) {
         let APoints = [], BPoints = [],assignments = [],distances = [],sum = 0;
+        let closertoFirst = [];
 
+        let first = centrs[0];
+        let second = centrs[1];
 
-            let first = centrs[0];
-            let second = centrs[1];
-
-        points.forEach((val, i) => {
+          points.forEach((val, i) => {
 
  	      let point = points[i];
 
- 	      let distanceZero = Math.sqrt((point.x - first.x) * (point.y - first.y));
- 	      let distanceOne = Math.sqrt((point.x - second.x) * (point.y - second.y));
+ 	      let distanceZero = Math.sqrt(Math.pow((point.x - first.x), 2) + Math.pow((point.y - first.y), 2));
+          let distanceOne = Math.sqrt(Math.pow((point.x - second.x), 2) + Math.pow((point.y - second.y), 2));
+        
+ 	     // let distanceOne = Math.sqrt((point.x - second.x) * (point.y - second.y));
 
  	      let res = {
  		     pointIndex: i,
  		     zeroDist: distanceZero,
- 		     oneDist: distanceOne
- 	          }
+ 		     oneDist: distanceOne,
+             assignTo: 0 // this value will be changed
+ 	      }
 
  	      distances[i] = res;
  });
 
+        
+        
+        
+distances.forEach((el, i) =>{
+    
+    if (distances[i].zeroDist < distances[i].oneDist){ // closer to zero
+    closertoFirst.push(points[distances[i].pointIndex])
+    } else {
+  //  closer to second
+    }
+})
 
- console.log(distances)
-
-
- //console.log("Centers0 ", centrs[0], "Centrs1 ", centrs[1]);
+    console.log(closertoFirst)
 
  this.ctx.fillStyle = "orange";
  this.ctx.beginPath();
