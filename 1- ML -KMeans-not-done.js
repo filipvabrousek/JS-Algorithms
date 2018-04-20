@@ -74,8 +74,6 @@ class Means {
 
  	      let distanceZero = Math.sqrt(Math.pow((point.x - first.x), 2) + Math.pow((point.y - first.y), 2));
           let distanceOne = Math.sqrt(Math.pow((point.x - second.x), 2) + Math.pow((point.y - second.y), 2));
-        
- 	     // let distanceOne = Math.sqrt((point.x - second.x) * (point.y - second.y));
 
  	      let res = {
  		     pointIndex: i,
@@ -94,40 +92,56 @@ distances.forEach((el, i) =>{
     
     if (distances[i].zeroDist < distances[i].oneDist){ // closer to zero
     closertoFirst.push(points[distances[i].pointIndex])
+    distances[i].assignTo = 0
     } else {
-  //  closer to second
+   distances[i].assignTo = 1;
     }
-})
-
-    console.log(closertoFirst)
+    
+    
+});
 
  this.ctx.fillStyle = "orange";
  this.ctx.beginPath();
- this.ctx.arc(centrs[0].x, centrs[0].x, 6, 0, 2 * Math.PI);
+ this.ctx.arc(centrs[0].x, centrs[0].y, 6, 0, 2 * Math.PI);
  this.ctx.fill();
 
  this.ctx.fillStyle = "blue";
  this.ctx.beginPath();
- this.ctx.arc(centrs[1].x, centrs[1].x, 6, 0, 2 * Math.PI);
+ this.ctx.arc(centrs[1].x, centrs[1].y, 6, 0, 2 * Math.PI);
  this.ctx.fill();
 
- /* assigned points
- oneClose.forEach((el, i) => {
-     this.ctx.beginPath();
-     this.ctx.arc(oneClose[i].x, oneClose[i].y, 4, 0, 2 * Math.PI);
-     this.ctx.fill();
- });*/
+        
+//this.ctx.fillStyle = "orange";
+let clustero = distances.filter(el => el.assignTo === 0);     
+clustero.forEach((el, i) => {
+ 
+let point = points[clustero[i].pointIndex]
+console.log(point);
 
+ this.ctx.fillStyle = "orange";
+ this.ctx.beginPath();
+ this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+ this.ctx.fill();
+
+});
+        
+        
+let clusterb = distances.filter(el => el.assignTo === 1);     
+clusterb.forEach((el, i) => {
+ 
+let point = points[clusterb[i].pointIndex];
+
+ this.ctx.fillStyle = "blue";
+ this.ctx.beginPath();
+ this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+ this.ctx.fill();
+
+});
+        
  return distances;
         
-        }
-    
-     
-    assignC(){
-      /**/
-          
     }
-
+    
 
 
     // plot the points we define in our array on the canvas and recolor them according to assigned points
@@ -164,84 +178,6 @@ distances.forEach((el, i) =>{
 
 
 */
-    /* calculate mean point with assigned points and draw each cluster centroid
-    if we have classified all the points 
-    drawMean() {
-        let ctx = this.ctx;
-        let means = this.initMeans(); // init ranodm means
-        let a = this.assign(means); // assign points to means
-        let ap = a.AP; // A cluster points
-        let bp = a.BP // B cluster points
-
-        let amean = this.assignedPointsMean(ap, ap.length);
-        let bmean = this.assignedPointsMean(bp, bp.length);
-        let done = false;
-
-
-
-        if (ap.length + bp.length !== points.length) {
-            this.colorPoints(ap, bp);
-            ctx.fillStyle = "#1abc9c";
-            ctx.beginPath();
-            ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
-            ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
-            ctx.fill();
-            console.log("Not done")
-        }
-
-
-
-        // if we have all the points and ap and bp arent equal we found the means :D
-        if (ap.length + bp.length === points.length && amean.x !== bmean.x) {
-            this.colorPoints(ap, bp);
-            ctx.beginPath();
-            ctx.fillStyle = "red";
-            ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
-            ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            console.log("Clustering done. ", "Mean A: ", amean, "Mean B:", bmean);
-            done = true;
-        }
-
-
-        return done;
-        // call from here
-    }
-
-    colorPoints(ap, bp) {
-        let ctx = this.ctx;
-        ctx.fillStyle = "#1abc9c";
-
-        // draw black points from our array
-
-        ap.forEach((el, i) => {
-            ctx.beginPath();
-            ctx.arc(ap[i].x, ap[i].y, 4, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-
-        bp.forEach((el, i) => {
-            ctx.beginPath();
-            ctx.arc(bp[i].x, bp[i].y, 4, 0, Math.PI * 2);
-            ctx.fill();
-        });
-    }
-*/
-
-
-    // try to cluster the points, if "done" in findMeans is false, try again
-   /* try () {
-     this.getRanges();
-        this.plot();
-
-        let finished = this.drawMean();
-        if (!finished) {
-            setTimeout(this.try.bind(this), 500);
-        }
-    }*/
-    
     try(){
         this.plot();
         let means = this.initMeans();
