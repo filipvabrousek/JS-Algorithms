@@ -1,4 +1,3 @@
-
 class P {
     constructor(x, y) {
         this.x = x;
