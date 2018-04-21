@@ -166,7 +166,12 @@ class Means {
         this.ctx.arc(end.x, end.y, 4, 0, 2 * Math.PI);
         this.ctx.fill();
 
-        return distances;
+        return {
+            dist: distances,
+            halfMean: half,
+            endMean: end
+            
+        }
 
     }
 
@@ -222,6 +227,16 @@ class Means {
         this.plot();
         let means = this.initMeans();
         this.assign(means);
+        let res = this.assign(means);
+        
+        
+        setTimeout(() => {
+        let half = res.halfMean;
+        let end = res.endMean;
+        let mn2 = [half, end];
+        this.assign(mn2);
+        }, 2000);
+        
     }
 
 
