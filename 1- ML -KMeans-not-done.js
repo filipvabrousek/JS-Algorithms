@@ -104,6 +104,10 @@ class Means {
 
         });
 
+        this.ctx.clearRect(0, 0, 400, 400);
+        this.plot();
+        
+        /*
         this.ctx.fillStyle = "orange";
         this.ctx.beginPath();
         this.ctx.arc(centrs[0].x, centrs[0].y, 6, 0, 2 * Math.PI);
@@ -113,7 +117,7 @@ class Means {
         this.ctx.beginPath();
         this.ctx.arc(centrs[1].x, centrs[1].y, 6, 0, 2 * Math.PI);
         this.ctx.fill();
-
+*/
 
         /*----------------------------------FINAL DATA ARRAY---------------------------*/
         let data = [];
@@ -215,7 +219,7 @@ class Means {
         this.ctx.fillStyle = "#000";
 
         // draw black points from our array
-        ctx.clearRect(0, 0, this.el.width, this.el.height);
+        //ctx.clearRect(0, 0, this.el.width, this.el.height);
         points.forEach((el, i) => {
             ctx.beginPath();
             ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
@@ -224,7 +228,7 @@ class Means {
     }
 
     try () {
-        this.plot();
+       // this.plot();
         let means = this.initMeans();
         this.assign(means);
         let res = this.assign(means);
