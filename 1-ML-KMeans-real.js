@@ -22,26 +22,9 @@ class Means {
     }
 
 
-    /* -------------GET RANGES--------------- get point ranges, to create random centroids within ranges of our dataset ---------------------------- */
-    getRanges() {
-        let xm = 0, ym = 0, xn = 0, yn = 0, points = this.points;
-       
-        points.forEach((el, i) => {
-            xm = Math.max(...points.map(e => e.x));
-            ym = Math.max(...points.map(e => e.y));
-            xn = Math.min(...points.map(e => e.x));
-            yn = Math.min(...points.map(e => e.y));
-        });
-
-        return {
-            xrange: xm - xn,
-            yrange: ym - yn
-        }
-    }
-
-    /* --------------INIT MEANS-------------- init k means (2 in this case) within range using "getRanges()" ---------------------------- */
+    /* --------------INIT MEANS-------------- init k means (2 in this case) within range ----------------------------
+    we use size of our canvas, but we could get eg. xm range like this xm = Math.max(...points.map(e => e.x));, subtract xn Math.Min*/
     initMeans(k = 2) {
-        const ranges = this.getRanges();
         this.means.length = k;
         this.means.fill(0)
         this.k = k;
