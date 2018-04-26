@@ -462,5 +462,5 @@ const Think = (() => {
 })();
 
 
-let res = Think.XOR([[0, 1], 1]);
-console.log(res); 
+let res = Think.Net([[0, 1], 0]);
+console.log(res);
