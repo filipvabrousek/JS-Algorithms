@@ -1,11 +1,10 @@
-
 const Think = (() => {
 
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: PERCEPTRON :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 class Perceptron{
     constructor(){
         this.weights = [];
-        this.data = [];   
+        this.arr = [];   
     }
     
     fill(){
@@ -17,13 +16,12 @@ class Perceptron{
         }
     }
     
-    train(inputs, expected){
-        const res = this.calc(inputs);
-        this.data.push({input: inputs, target: expected});
-        
+    train(data){ // [[0, 1], 1]
+        const res = this.calc(data[0]); // inputs data 0 ... expected data 1
+        this.arr.push(data)
         this.weights.forEach((el, i) =>{
-            const input = (i == inputs.length) ? 1 : inputs[i]; 
-            let diff = expected - res;
+            const input = (i == data[0].length) ? 1 : data[0][i]; 
+            let diff = data[1] - res;
             this.weights[i] += diff * input * 0.1;
         });
         
@@ -38,10 +36,7 @@ class Perceptron{
     
     
     retrain(){
-        this.data.forEach(a => {
-            const training = this.data.shift();
-            this.train(training.input, training.target);
-        });
+        this.arr.forEach(e => this.train(this.arr.shift()));
     }
     
     learn(){
@@ -431,12 +426,12 @@ class Means {
     
     
 	/*------------------------------------------------------------------------------------------------------*/
-	const XOR = (inputs, expected) => {
+	const XOR = (data) => {
 		const p = new Perceptron();
         p.fill();
-        p.train(inputs, expected);
+        p.train(data);
         p.learn();
-        let res = p.calc(inputs);
+        let res = p.calc(data[0]);
 		return res;
 	}
     
@@ -466,6 +461,8 @@ class Means {
 
 })();
 
-
-let res = Think.Net([[0, 1], 1]);
+    
+let res = Think.XOR([[0, 1], 1]);
 console.log(res); 
+
+    
