@@ -1,629 +1,471 @@
+
 const Think = (() => {
 
-	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	*/
-	class Perceptron {
-		constructor(bias, weights) {
-			this.weights = weights;
-			this.treshold = bias * -1; // -3 in this case
-		}
-
-		// multiply each input with correponding weight
-		run(inputs) {
-			let sum = 0.0;
-			for (let i = 0; i < inputs.length; i++) {
-				sum += inputs[i] * this.weights[i]; // += 0, +=-2
-			}
-
-			// if sum of all weighted inputs is > treshold -> 1   "-2 > -3 => 1"
-			if (sum <= this.treshold) {
-				return 0;
-			} else {
-				return 1;
-			}
-		}
-	}
-
-
-
-    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	*/
-    class Crosover{
-        constructor(mother, father){
-        this.mother = mother;
-        this.father = father;
-        this.dnaSplit = (Math.random() * this.mother.length) | 0; // random number
-        this.daughter = new Array(mother.length);
-        this.son = new Array(mother.length);
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: PERCEPTRON :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+class Perceptron{
+    constructor(){
+        this.weights = [];
+        this.data = [];   
     }
     
-    
-    make(){
-        for (let i = 0; i < this.mother.length; i++){
-            if (i > this.dnaSplit){
-                this.son[i] = this.mother[i];
-                this.daughter[i] = this.father[i];
-            } else {
-                this.son[i] = this.father[i];
-                this.daughter[i] = this.mother[i];
-            }
+    fill(){
+        this.weights.length = 2; // 2
+        this.weights.fill(Math.random());
+        
+        if (this.weights.length == 2){
+            this.weights.push(1);
         }
-        console.log(`D: ${this.daughter} S: ${this.son}`); // return ?
+    }
+    
+    train(inputs, expected){
+        const res = this.calc(inputs);
+        this.data.push({input: inputs, target: expected});
+        
+        this.weights.forEach((el, i) =>{
+            const input = (i == inputs.length) ? 1 : inputs[i]; 
+            let diff = expected - res;
+            this.weights[i] += diff * input * 0.1;
+        });
         
     }
     
+    calc(inputs){
+    let res = 0;
+    inputs.forEach((el, i) => res += this.weights[i] * inputs[i]);
+    res += this.weights[this.weights.length - 1]; // bias, different each time
+    return this.sigmoid(res);
+    }
+    
+    
+    retrain(){
+        this.data.forEach(a => {
+            const training = this.data.shift();
+            this.train(training.input, training.target);
+        });
+    }
+    
+    learn(){
+        for (let i = 0; i < 1000; i++){
+            this.retrain();
+        }
+    }
+    
+    sigmoid(x){
+        return 1 / (1 + Math.exp(-x));
+    }
+}
+   
+
+
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: NEURAL NETWORK :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+const sigmoid = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
+const sgrad = x => sigmoid(x) * (1 - sigmoid(x)); // val * (1 - val)
+
+
+class N {
+	constructor(ni) {
+		this.weights = [];
+		this.weights.length = ni;
+		this.weights.fill(Math.random());
+	}
+
+	forward(inputs) {
+		this.inputs = inputs;
+		this.sum = 0;
+		this.weights.forEach((el, i) => this.sum += this.weights[i] * this.inputs[i]);
+		return sigmoid(this.sum);
+	}
+
+	backward(error) {
+		this.error = error;
+		return this.weights.map(w => w * error).slice(1); // remove bias
+	}
+
+	/* adjusting weights: make adjustment proportional to the size of error "sigmoid gradient" ensures the we adjust just a little bit
+	pass "this.sum" from "forward()" into sigmoid gradient (sgrad), adjust weights by substracting deltas */
+	update() {
+		const deltas = this.inputs.map(input => input * sgrad(this.sum) * this.error);
+		this.weights.forEach((el, i) => this.weights[i] = this.weights[i] - deltas[i]);
+	}
+}
+
+
+//-------------------------
+class Layer {
+	constructor(len, inputs) {
+		this.neurons = [];
+		this.neurons.length = len;
+		this.neurons.fill(new N(inputs));
+	}
+
+	forward(inputs) {
+		return this.neurons.map(n => n.forward(inputs));
+
+	}
+
+	backward(errors) {
+		return this.neurons.map((n, i) => n.backward(errors[i])).reduce((a, b) => a + b); // pass each error backwards and get weighted sum
+	}
+
+	update(data) {
+		this.neurons.forEach(n => n.update());
+	}
 }
 
 
 
-	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-	class Network {
-		constructor(ni, no, hidden, density) {
-
-			this.ni = ni; // number of inputs
-			this.no = no;
-			this.hidden = hidden;
-			this.density = density;
-
-			this.bias = -1.0;
-			this.activationResponse = 1.0; // when will the next unit fire
-			this.layers = [];
-
-			this.init(); // create our network
-		}
-
-
-
-		init() {
-
-			if (this.hidden > 0) {
-
-				// first hidden l.
-				const first = new Layer(this.density, this.ni);
-				this.layers.push(first);
-
-				for (let i = 0; i < this.hidden - 1; i++) {
-					const newHiddenLayer = new Layer(this.density, this.density);
-					this.layers.push(newHiddenLayer);
-				}
-
-				// output layers
-				var outputLayer = new Layer(this.no, this.density);
-				this.layers.push(outputLayer);
-
-			} else {
-				// output layers
-				var outputLayer = new Layer(this.no, this.ni);
-				this.layers.push(outputLayer);
-			}
-		}
-
-
-
-
-		update(inputs) {
-
-			let outputs = [];
-			let cw = 0;
-
-			// number of inputs is incorrect (rem. 0)
-			inputs.length != this.ni ? outputs : 0;
-			let inputLayer = true;
-
-
-			// LOOP -------------------------------------------------------------- through hidden (number) layers, get one at index
-			for (let i = 0; i < this.hidden + 1; i++) {
-				const specificLayer = this.layers[i];
-
-				// no input layer: merge inputs and outputs
-				if (!inputLayer) {
-					inputs = [];
-					inputs = inputs.concat(outputs);
-				} else {
-					inputLayer = false;
-				}
-
-				outputs = [];
-				cw = 0;
-
-
-				for (const neuron of specificLayer.neurons) {
-					let totalInput = 0;
-					// For each weight...
-					for (let k = 0; k < neuron.ni - 1; ++k) {
-						totalInput += neuron.weights[k] * inputs[cw];
-						cw++;
-					}
-
-					// Add in the bias (final weight) and store outputs
-					totalInput += neuron.weights[neuron.weights.length - 1] * this.bias;
-					outputs.push(this.sigmoid(totalInput, this.activationResponse));
-					cw = 0;
-				}
-
-
-			} //------------------------------------------------------------------------------
-
-			return outputs;
-		}
-
-
-		// starter function
-		sigmoid(totalInput, activationResponse) {
-			return (1 / (1 + Math.exp(-totalInput / activationResponse)));
-		}
-	}
-
-
-
-
-
-
-
-
-
-
-	/*------------------------------------------------- NEURON -----------------------------------------------------
-	use number of inputs and add a random weight to  "weigths" array
-	(because we want to start with some connections and compare them to the desired output)
-	*/
-
-	class N {
-		constructor(ni) {
-			this.weights = [];
-			this.ni = ni;
-
-			for (let i = 0; i < ni; i++) {
-				const newWeigth = -1 + (Math.random() * 2);
-				this.weights.push(newWeigth);
-			}
-		}
-	}
-
-
-
-
-
-	/*----------------------------------------------- NEURON LAYER ---------------------------------------------------
-	(density of neurons per hidden layer, number of inputs,)
-	use "N" class to push neuron into the "neurons" array layer, increase density
-	*/
-
-	class Layer {
-		constructor(density, ni) {
-			this.neurons = [];
-
-			for (let i = 0; i < density; i++) {
-				const newN = new N(ni);
-				this.neurons.push(newN);
-			}
-		}
-	}
-
-
-
-
-
-
-
-
-
-	/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	L. regression: we predict scores on one varible Y, based on the scores from 2nd variable X
-	finding best fitting straight line between points (minimizing error)
-	*/
-
-	class L {
-		constructor(selector) {
-			this.selector = selector || null;
-			this.element = null;
-            this.x = [];
-            this.y = [];
-            this.m = 2;
-            this.b = 2;
-            this.mouse = {x:0, y:0};
-		}
-
-		make() {
-			this.element = document.querySelector(this.selector);
-			this.element.ctx = this.element.getContext("2d");
-			this.element.ctx.fillStyle = "green";
-		}
-
-		// fill in "x" and "y" arrays, with coordinates of the click
-		addEL() {
-			this.element.addEventListener("click", e => {
-				this.x.push(e.offsetX);
-				this.y.push(this.element.height - e.offsetY);
-			});
-
-		}
-
-		// draw green points when clicked, called by "setInterval()" every 17ms
-		drawPoints() {
-			for (let i = 0; i < this.x.length; i++) {
-				this.element.ctx.fillRect(this.x[i] - 2, this.element.height - this.y[i] - 2, 4, 4); // x, y, w, h
-			}
-		}
-
-
-
-		// algorithm, which calculates our "b" values, called by "setInterval()" every 17ms
-		learn(alpha) {
-			if (this.x.length <= 0) return;
-
-			let sum1 = 0;
-			let sum2 = 0;
-           
-			// eg.: x [100, 200], y: [200, 300] ======> sum1 is 2 * 100 + 2 - 200 = 2
-			// b is 2 - 1000000 * 0.000001 / 2 and we adjust its value in the "line()", same for "m"
-			for (let i = 0; i < this.x.length; i++) {
-				sum1 += this.line(this.x[i]) - this.y[i];
-				sum2 += (this.line(this.x[i]) - this.y[i]) * this.x[i];
-			}
-
-			this.b = this.b - 1000000 * alpha * sum1 / (this.x.length);
-			this.m = this.m - alpha * sum2 / (this.x.length);
-		}
-
-		// 2x + 2
-		line(x) {
-			return this.m * x + this.b;
-		}
-
-
-		// use the "moveTo()" function to begin and "lineTo()" draw the line
-		drawLine() {
-			let el = this.element;
-			el.ctx.beginPath();
-			el.ctx.moveTo(0, el.height - this.line(0));
-			el.ctx.lineTo(el.width, el.height - this.line(el.width));
-			el.ctx.stroke();
-			return this.element;
-		}
-
-
-		do() {
-			setInterval(() => {
-				this.element.ctx.clearRect(0, 0, this.element.width, this.element.height); // x, y, w, h
-				this.learn(0.000001);
-				this.drawPoints();
-				this.drawLine();
-			}, 1000 / 60);
-		}
-
-	}
     
     
+//-------------------------
+class Network {
+	constructor() {
+		this.layers = [new Layer(3, 3), new Layer(1, 4)];
+	}
+
+	/*
+	"ourdata" is [0, 1] is "first", that gets passed into concat so: Layer {n: Array(1)}.forward([1,0,1]) 
+	the last value is returned (thats why we use reduce) we are training and returning, but we only care about returned value after the loop finishes  */
+	forward(first) {
+		return this.layers.reduce((ourdata, layer) => layer.forward([1].concat(ourdata)), first);
+	}
+
+	learn(data) {
+
+		for (let it = 0; it < 1000; it++) {
+
+			// fill err array with (result from network - desired output), and update the connection weights between nodes
+			const res = this.forward(data[0]);
+			let err = [];
+			res.forEach((el, index) => err.push(res[index] - data[1]));
+
+			// backpropagation , send err array back
+			this.layers.reverse().reduce((error, layer) => layer.backward(error), err);
+			this.layers.reverse(); // reverse back
+
+			// update the connection weights 
+			this.layers.forEach(l => l.update());
+		}
+
+
+		// add bias, and get our result
+		const output = this.forward(data[0]);
+		return output;
+	}
+
+}
+
+ 
     
     
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: LINEAR REGRESSION :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/    
     
-/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	*/
-   class Means {
-	constructor(data, selector) {
-		this.data = data; // our input, points we define
-		this.selector = selector || null; // "canvas"
-		this.means = []; // centroids, we will update data in this array
-		this.assignments = []; // will be array of 0s 1s and 2s
-		this.range = null; // [9, 10]
-		this.dataExtremes = null; // array of 2 min and max objects
-		this.element = null; // selected by selector - <canvas>
-		this.width = 400;
-		this.height = 400;
+    
+class P {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+}
+
+
+class LR {
+	constructor(selector) {
+		this.selector = selector;
+		this.el = null;
+		this.points = [];
 	}
 
-
-	/*------------------------------------------------------MAKE------------------------------------------------------*/
-	make() {
-		this.element = document.querySelector(this.selector);
-		this.element.ctx = this.element.getContext("2d");
-		this.dataExtremes = this.getExtremes(this.data);
-		this.range = this.getDataRanges(this.dataExtremes); // get ranges from extremes 
-		this.means = this.initMeans(3);
-		this.assignPoints();
-		this.draw();
-
-		// call run every 2 sec.
-		this.run = this.run.bind(this);
-		setTimeout(this.run, 2000);
+	init() {
+		this.el = document.querySelector(this.selector);
+		this.ctx = this.el.getContext("2d");
+		this.el.addEventListener("click", e => {
+			let x = e.clientX - this.el.offsetLeft; // top left corner.... coord are [0, 0]
+			let y = e.clientY - this.el.offsetTop;
+			this.points.push(new P(x, y));
+			this.draw();
+		});
 	}
-
-
-
-	/*------------------------------------------------------GET DATA RANGES------------------------------------------------------
-    1) pass in "extremes" array returned from "getExtremes"
-    2) for each member of "extremes" array get max - min value
-    */
-	getDataRanges(extremes) {
-		const ranges = [];
-
-		for (const dimension in extremes) {
-			// extremes is {min: 1, max: 10} => 10 - 1 = 9;  {1, 11} => 11 - 1 = 10
-			ranges[dimension] = extremes[dimension].max - extremes[dimension].min;
-		}
-		return ranges; // [9, 10]
-	}
-
-
-
-	/*------------------------------------------------------GET DATA EXTREMES------------------------------------------------------
-	1) get each point ([x,y]) from the points array
-	2) loop through points and get extreme data points (min and max) [x, y] pair
-	3) if point[dimension] is smaller than current min. (extremes[diemnsion].min), make it the minimum
-	*/
-	getExtremes(points) {
-		const extremes = [];
-
-		let data = this.data;
-
-		// we want to work with every single "point" [x, y]
-		for (const i in data) {
-			// 1 [x, y]
-			const point = data[i];
-
-			// 2 for "x" and for "y"
-			for (const dimension in point) {
-				if (!extremes[dimension]) {
-					extremes[dimension] = {
-						min: 1000,
-						max: 0
-					};
-				}
-
-				// 3
-				if (point[dimension] < extremes[dimension].min) {
-					extremes[dimension].min = point[dimension];
-				}
-
-				if (point[dimension] > extremes[dimension].max) {
-					extremes[dimension].max = point[dimension];
-				}
-				// Extremes: [{min: 1, max: 10} AND  {min: 1, max: 11}]
-				// extremes[dimension] returns one of those
-
-			}
-		}
-		return extremes;
-	}
-
-
-
-
-	/*------------------------------------------------------INIT MEANS-----------------------------------------------------
-    initalize K random clusters - candidates for centroids (3), fill in "means"
-    create new points with random coordinates within the ranges and dimensions of our data set
-    */
-	initMeans(k = 3) {
-
-		while (k--) {
-			const mean = [];
-
-			for (const dimension in this.dataExtremes) {
-				mean[dimension] = this.dataExtremes[dimension].min + (Math.random() * this.range[dimension]);
-				// mean[dimension] = 1 + Math.random() * 9  (OR)  1 + Math.random() * 10
-			}
-			this.means.push(mean);
-		}
-		return this.means; // (3) [Array(2), Array(2), Array(2)]
-	}
-
-
-
-
-
-
-
-	/*------------------------------------------------------ASSIGN POINTS------------------------------------------------------
-called by "run" function and calculate distance between each point and the cluster center
-assigning all our data points to the centroid closest to it
-*/
-	assignPoints() {
-		let data = this.data; // data we define
-		let means = this.means; // random points (candidates)
-		let assignments = this.assignments;
-
-		// we need to get every single point
-		for (const i in data) {
-			const point = data[i];
-			const distances = []; // create "distances"
-
-			// we need to loop through every centroid
-			for (const j in means) {
-				const mean = means[j];
-				let sum = 0;
-
-				// for each dimension in point, get the the difference from corresponding dimension in mean
-				for (const dimension in point) {
-					let difference = point[dimension] - mean[dimension];
-					difference *= difference;
-					sum += difference;
-				}
-
-				distances[j] = Math.sqrt(sum); // no neg. values (pow, than sqrt) eg. [0.69, 6.51, 10.10]
-			}
-
-
-			let lowest = Math.min.apply(null, distances);
-			// fill in assignments with indexes of lowest number from distances (getting the closest centroid)
-			assignments[i] = distances.indexOf(lowest);
-			// (19) [2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0] (center indexes)
-		}
-
-	}
-
-
-
-
-
-	/*------------------------------------------------------MOVE MEANS------------------------------------------------------
-	    moving centroids to the avergae position of all dataPoints assigned to it
-	    repeat util centroids stop moving (as long as moved = true)
-	    */
-
-	moveMeans() {
-		this.assignPoints(); // fill in assignments array
-
-
-		let ms = this.means;
-		const sums = Array(ms.length);
-		const counts = Array(ms.length);
-		let moved = false;
-
-		//-------------------------------------------1st loop CREATE NEW MULTIDIMENSIONAL SUMS ARRAY
-		for (const j in ms) {
-			counts[j] = 0;
-			sums[j] = Array(ms[j].length); // create nested array in sums
-			for (const dimension in ms[j]) {
-				sums[j][dimension] = 0; // zero out the 2nd depth level of sums
-			}
-		}
-
-		//-------------------------------------------2nd loop LOOP THROUGH POINTS
-		for (const pointIndex in this.assignments) {
-			let meanIndex = this.assignments[pointIndex]; // 2 or 1 or 0 - one of the 3 centroids
-			const point = data[pointIndex]; // point assigned to centroid
-			const mean = ms[meanIndex];
-			counts[meanIndex] += 1; //increment count for each cluster center
-
-			// 2.2 - sums[meanIndex] gets one of the 3 nested arrays in "sums"
-			for (const dimension in mean) {
-				sums[meanIndex][dimension] += point[dimension];
-			}
-
-		}
-
-
-		//-------------------------------------------3rd loop GETTING AVERAGE POSTION FOR EACH CLUSTER CENTER AN MOVING IT
-		for (const meanIndex in sums) {
-			// mean with no points, add...
-			for (const dimension in sums[meanIndex]) {
-				sums[meanIndex][dimension] /= counts[meanIndex];
-			}
-		}
-
-		//  // if mean is NOT EQUAL to sums, the center has moved and we are not done yet
-		if (this.means.toString() !== sums.toString()) {
-			moved = true;
-		}
-
-		console.log(moved);
-		this.means = sums; // update our "means" and go again to "assignPoints"
-		return moved;
-	}
-
-
-	// update and redraw
-	run() {
-		const moved = this.moveMeans();
-		this.draw();
-		moved ? setTimeout(this.run, 2000) : 0;
-	}
-
-
-
 
 	draw() {
+		let ctx = this.ctx,
+			points = this.points;
+		ctx.clearRect(0, 0, 400, 400); // this.el.width
+		ctx.fillStyle = "#3498db";
 
-		const width = 400;
-		const height = 400;
-
-		let extremes = this.dataExtremes;
-		let range = this.range;
-
-		let ctx = this.element.ctx;
-		ctx.clearRect(0, 0, this.width, this.height);
-
-		// to add blue lines insert loop here, globAlpha 0.3?
-
-		ctx.globalAlpha = 1;
-		//------------------------------------------------------------ DRAW GREY POINTS
-		for (let i in data) {
-			ctx.save();
-
-			let point = data[i];
-			let x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
-			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
-
-			ctx.strokeStyle = '#333333';
-			ctx.translate(x, y); // set point position
+		points.forEach((el, i) => {
 			ctx.beginPath();
-			ctx.arc(0, 0, 5, 0, Math.PI * 2, true); // draws the circle
-			ctx.stroke();
-			ctx.closePath();
-			ctx.restore();
-		}
-
-
-		//------------------------------------------------------------ DRAW GREEN POINTS
-		for (let i in this.means) {
-			ctx.save();
-
-			// final array
-			let point = this.means[i];
-			let x = (point[0] - extremes[0].min + 1) * (width / (range[0] + 2));
-			let y = (point[1] - extremes[1].min + 1) * (height / (range[1] + 2));
-
-			ctx.fillStyle = 'green';
-			ctx.translate(x, y);
-			ctx.beginPath();
-			ctx.arc(0, 0, 5, 0, Math.PI * 2, true);
+			ctx.arc(points[i].x, points[i].y, 2, 0, 2 * Math.PI);
 			ctx.fill();
-			ctx.closePath();
-			ctx.restore();
-		}
+		});
+
+		let f = this.linreg(points);
+		let y = this.line(f.g, f.i);
+		ctx.strokeStyle = "#1abc9c";
+		ctx.beginPath();
+		ctx.moveTo(0, f.i);
+		ctx.lineTo(400, y); // 400 - line across entire width of the element 
+		ctx.stroke();
 	}
 
+	line(g, i) {
+		return 400 * g + i; // m*x + b => 400 * gradient + intercept
+	}
+
+
+	linreg(points) {
+
+		let x = 0,
+			b = 0;
+
+		let meanX = points.map(a => a.x).reduce((a, b) => a + b) / points.length;
+		let meanY = points.map(a => a.y).reduce((a, b) => a + b) / points.length;
+
+		points.forEach((val, i) => {
+			x += (points[i].x - meanX) * (points[i].y - meanY); // current "x" point - avg "x" point value * (same for "y")
+			b += (points[i].x - meanX) * (points[i].x - meanX); // each "x" point - avg, squared
+		});
+
+		let gradient = x / b;
+
+		return {
+			g: gradient, // gradient
+			i: meanY - gradient * meanX // intercept with y axis
+		}
+	}
 
 }
 
 
    
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: K MEANS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/    
+   
+class Means {
+    constructor(selector) {
+        this.selector = selector;
+        this.points = []; // filled with our input
+        this.means = [];
+        this.assigned = {};
+    }
 
 
+    init(points) {
+        this.el = document.querySelector(this.selector);
+        this.ctx = this.el.getContext("2d");
+        this.points = points;
+    }
+
+
+    /* --------------INIT MEANS-------------- init k means (2 in this case) within range ----------------------------
+    we use size of our canvas, but we could get eg. xm range like this xm = Math.max(...points.map(e => e.x));, subtract xn Math.Min*/
+    initMeans(k = 2) {
+        this.means.length = k;
+        this.means.fill(0)
+        this.k = k;
+
+        this.means.forEach((el, i) => {
+            let cand = new P(400 * Math.random(), 400 * Math.random()); // this.el.width
+            this.means.push(cand);
+        });
+
+        this.means = this.means.slice(k); // [0, 0, Point, Point] remove 2 zeros
+        return this.means;
+    }
+
+   
+    
+    
+    
+    /* --------------ASSIGN-------------- assign each point to either first or second centroid (centrs[0] or centrs[1])  ---------------------------- */
+    assign(centrs) {
+        let distances = [], sum = 0;
+    
+        // 2 random centroid candidates
+        let first = centrs[0]; 
+        let second = centrs[1];
+
+        // get each points positive distance from both centroids and fill-in distances array with objects with those data
+        points.forEach((val, i) => {
+
+            let point = points[i];
+            let distanceZero = Math.sqrt(Math.pow((point.x - first.x), 2) + Math.pow((point.y - first.y), 2));
+            let distanceOne = Math.sqrt(Math.pow((point.x - second.x), 2) + Math.pow((point.y - second.y), 2));
+
+            let res = {
+                pointIndex: i,
+                zeroDist: distanceZero,
+                oneDist: distanceOne,
+                assignTo: 0 // index of centroid we assign to
+            }
+
+            distances[i] = res;
+        });
+
+        // change assignTo property according to distance from the centroid
+        distances.forEach((el, i) => {
+            if (distances[i].zeroDist < distances[i].oneDist) { // closer to zero
+                distances[i].assignTo = 0
+            } else {
+                distances[i].assignTo = 1;
+            }
+        });
+
+        // clear the canvas so we don´t have multiple points (btw. you can plot centers[0] and centers[1] points)
+        this.ctx.clearRect(0, 0, 400, 400);
+        this.plot();
+        
+        
+
+        // --------------------------------------------------------- final data array
+        let data = [];
+
+        // firstly push points assigned to means[0] point to data
+        let clustero = distances.filter(el => el.assignTo === 0);
+        clustero.forEach((el, i) => {
+
+            let point = points[clustero[i].pointIndex];
+
+            this.ctx.fillStyle = "orange";
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+            this.ctx.fill();
+            data.push(point)
+        });
+
+        // second push points assigned to means[0] point to data
+        let clusterb = distances.filter(el => el.assignTo === 1);
+        clusterb.forEach((el, i) => {
+
+            let point = points[clusterb[i].pointIndex];
+
+            this.ctx.fillStyle = "blue";
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+            this.ctx.fill();
+            data.push(point);
+        });
+
+
+        // get both cluster centers using "clusterMean()" and draw it
+        let half = this.clusterMean(data).half;
+        this.ctx.fillStyle = "red";
+        this.ctx.beginPath();
+        this.ctx.arc(half.x, half.y, 6, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+        let end = this.clusterMean(data).end;
+        this.ctx.fillStyle = "red";
+        this.ctx.beginPath();
+        this.ctx.arc(end.x, end.y, 6, 0, 2 * Math.PI);
+        this.ctx.fill();
+
+        return {
+            dist: distances,
+            halfMean: half,
+            endMean: end
+        }
+
+    }
+
+
+
+    /* --------------CLUSTER MEAN-------------- get means of point in first and in 2nd half of arrays ---------------------------- */
+    clusterMean(data) {
+        let half = data.slice(0, Math.floor(data.length / 2)); // first half of distances array
+        const halfMeanX = half.map(p => p.x).reduce((a, b) => a + b) / half.length; 
+        const halfMeanY = half.map(p => p.y).reduce((a, b) => a + b) / half.length;
+
+        let end = data.slice(Math.floor(data.length / 2), data.length); // second half of distances array
+        const endMeanX = end.map(p => p.x).reduce((a, b) => a + b) / end.length;
+        const endMeanY = end.map(p => p.y).reduce((a, b) => a + b) / end.length;
+
+        const halfMean = {
+            x: halfMeanX,
+            y: halfMeanY
+        }
+
+        const endMean = {
+            x: endMeanX,
+            y: endMeanY
+        }
+
+        return {
+            half: halfMean,
+            end: endMean
+        }
+
+    }
+
+      /* --------------PLOT-------------- plot points from array into our canvas ---------------------------- */
+        plot() {
+
+        let points = this.points, ctx = this.ctx;
+        ctx.fillStyle = "#000";
+
+        points.forEach((el, i) => {
+            ctx.beginPath();
+            ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        }
+
+        /* --------------TRY
+        1) assign data points to centroid[0] or centroid[0] according to distance and get their center
+        2) assign all points to that new center position and get their mean position again */
+    try () {
+       
+        let means = this.initMeans();
+        this.assign(means);
+        let res = this.assign(means);  
+    
+        // this is where the magic happens -> one iteration of K-Means algorithm :D
+        setTimeout(() => {
+        let half = res.halfMean;
+        let end = res.endMean;
+        this.assign([half, end]);
+        }, 2000);
+    }
+
+
+}
+    
+    
+    
 	/*------------------------------------------------------------------------------------------------------*/
-	const P = (bias, ...weights) => {
-		const obj = new Perceptron(weights, bias)
-		return obj;
-	}
-
-	const Line = (selector) =>  {
-		const el = new L(selector);
-		el.make();
-		el.addEL();
-		el.do();
-		return el;
-	}
-
-	const Net = (ni, no, hidden, density, ...inputs) => {
-		const network = new Network(ni, no, hidden, density);
-		const outputs = network.update(...inputs);
-		return outputs;
+	const XOR = (inputs, expected) => {
+		const p = new Perceptron();
+        p.fill();
+        p.train(inputs, expected);
+        p.learn();
+        let res = p.calc(inputs);
+		return res;
 	}
     
-    const KMeans = (data, selector) => {
-        const el = new Means(data, selector);
-        el.make();
+    const Net = (data) => {
+        const n = new Network();
+        const res = n.learn(data);
+        return res;
     }
     
+    const Regression = (selector) => {
+       let r = new LR(selector);
+       r.init();
+    }
     
-    const Crossover = (mother, father) => {
-        const obj = new Crosover(mother, father);
-        obj.make(); // ERROR: Rest parameter must be last formal parameter
+    const KMeans = (selector, points) =>{
+        let m = new Means(selector);
+        m.init(points);
+        m.try();
     }
 
 	return {
-		P,
-		Line,
-		Net,
-        KMeans,
-        Crossover
+		XOR,
+        Net,
+        Regression,
+        KMeans
 	}
-
 
 })();
 
 
-let res = Think.P([-2, -2], 3);
-console.log(res.run([0, 1]));
-    
+let res = Think.Net([[0, 1], 1]);
+console.log(res); 
