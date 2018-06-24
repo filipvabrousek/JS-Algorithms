@@ -85,3 +85,8 @@ let w = SOI("The30quick20brown10f0x1203jumps914ov3r1349the102l4zy dog")
 print(w)
 
 // 24.6.2018 - 17:29 rank 7
+
+/* 
+func sumOfIntegersInString(_ string: String) -> Int {
+    return string.components(separatedBy: CharacterSet.decimalDigits.inverted).flatMap({Int($0)}).reduce(0, +)
+}*/
