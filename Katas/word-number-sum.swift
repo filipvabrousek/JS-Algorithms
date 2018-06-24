@@ -12,6 +12,7 @@ func SOI(_ str: String){
     let ints = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     var arr:[Character] = []
     var resnums:[Int] = []
+     var indexes:[Int] = []
     
     // 1 - get all characters other than a number and replace them with "X" symbol
     // "A122a1" -> ["X", "1", "2", "2", "X", "1"]
@@ -24,32 +25,35 @@ func SOI(_ str: String){
         } else {
             arr.append("X")
         }
-        
-        
-        // 2 - using loop over this array and group numbers together
-        // ["X", "1", "2", "2", "X", "1"] -> ["X", "122", "X", "1"]
-        // get index of ech "X" eg. at [1, 3, 4] -> append indexes to array "inds"
-        // if range(inds[i] inds[i + 1] != "X" => we have the whole number :D
-        var str = ""
-        for i in 0..<arr.count - 1{
-            if (arr[i] != "X" && arr[i + 1] != "X") {
-                str += "\(arr[i])"
-            }
-        }
-        
-        print(str)
-        
-        
     }
     
-    print(arr)
+   // 2 - get indexes of all "X"s
     
-    // 3 - sum the elements using "reduce(0, +)" or for loop
+    for i in 0..<arr.count {
+        if (arr[i] == "X") {
+            indexes.append(Int(i))
+        }
+    }
+    
+    
+    print("Array \(arr) ") // ["X", "1", "2", "2", "X", "1", "X", "2"]
+    print("Indexes \(indexes) ") // [0, 4, 6]
+    
+    
+    // 3 - slice array to fit indexes and you have won :D
+    for i in 0..<indexes.count - 2 {
+       // let idx = arr[indexes[0 + 1]]  print(idx)
+        let a = arr[Int(indexes[i] + 1)..<indexes[i + 1]]
+        print("slice \(a)")
+    }
+  
+    
+  
+    // 4 - sum the elements using "reduce(0, +)" or for loop
     
 }
 
-SOI("A122a1")
-
+SOI("A122a1b2")
 
 
 
