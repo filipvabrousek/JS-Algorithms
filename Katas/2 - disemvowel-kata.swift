@@ -21,3 +21,6 @@ func disemvowel(_ str: String) -> String { // test for 3.1 (str.characters)
 
 
 disemvowel("This website is for losers LOL!")
+
+// "This website is for losers LOL!"
+// => "Ths wbst s fr lsrs LL!".
