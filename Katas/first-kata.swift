@@ -90,14 +90,16 @@ func SOI(_ str: String) -> Int {
             print(count)
             sume += count
         }
-        print(sume)
-       // print(Int(count))
+       
     }
     
     
-    return 0
+    return sume
 
     }
 
-SOI("A122A1B2")
+let w = SOI("A122A1B2")
+print(w)
 
+
+// 24.6.2018 - 16:25 - 3 hrs :D
