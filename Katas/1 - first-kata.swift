@@ -84,3 +84,4 @@ func SOI(_ str: String) -> Int {
 let w = SOI("The30quick20brown10f0x1203jumps914ov3r1349the102l4zy dog")
 print(w)
 
+// 24.6.2018 - 17:29 rank 7
