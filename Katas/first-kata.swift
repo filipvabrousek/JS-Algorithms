@@ -1,14 +1,19 @@
+// http://www.codewars.com/kata/sum-of-integers-in-string/train/swift
 func SOI(_ str: String) -> Int {
     
     let ints = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     var arr:[Character] = []
-  
-     var indexes:[Int] = []
+    
+    
     
     var pure:[[Int]] = []
+    
     // 1 - get all characters other than a number and replace them with "X" symbol
     // "A122a1" -> ["X", "1", "2", "2", "X", "1"]
-    for i in 0..<str.count {
+    
+    
+    
+    for i in 0..<str.count { // str.characters.count if we use swift 3.1
         let index = str.index(str.startIndex, offsetBy: i)
         let char = str[index]
         
@@ -19,33 +24,10 @@ func SOI(_ str: String) -> Int {
         }
     }
     
-    
     print(arr) // ["X", "1", "2", "2", "X", "1", "X", "2"]
     
     
-    /*
     
-    var sum = 0
- 
-    var sub = [Int]()
-    
-    for i in 0..<arr.count{
-     
-        if (arr[i] != "X"){
-            sub.append(Int(String(arr[i]))!)
-        } else {
-           
-            pure.append(sub)
-            sub.removeAll()
-        }
-        
-        
-    }
-    
-    print(pure) // [[], [1, 2, 2], [1]]
-   */
-    
-    var sum = 0
     
     var sub = [Int]()
     
@@ -73,12 +55,12 @@ func SOI(_ str: String) -> Int {
         
     }
     
-   // print(pure) // [[], [1, 2, 2], [1]]
+    // print(pure) // [[], [1, 2, 2], [1]]
     
     
     var sume = 0
     for subarr in pure{
-      //  print("S\(subarr)")
+        //  print("S\(subarr)")
         
         var count = ""
         for char in subarr{
@@ -90,16 +72,15 @@ func SOI(_ str: String) -> Int {
             print(count)
             sume += count
         }
-       
+        
     }
     
     
     return sume
+    
+}
 
-    }
 
-let w = SOI("A122A1B2")
+let w = SOI("The30quick20brown10f0x1203jumps914ov3r1349the102l4zy dog")
 print(w)
 
-
-// 24.6.2018 - 16:25 - 3 hrs :D
