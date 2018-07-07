@@ -25,10 +25,10 @@ extension String {
             }
         }
         
+        
+        
+        
         var sub = [String]()
-        
-        
-        
         
         for i in 0..<arr.count{
             if (arr[i] != "X"){
@@ -47,6 +47,9 @@ extension String {
             }
         }
         
+        
+        
+        
         var final = ""
         for i in 0..<pure.count {
             var temp = ""
@@ -63,11 +66,7 @@ extension String {
             temp = ""
             print(temp)
         }
-        
-        
-        print(final)
-        
-        
+
         return final
     }
 }
