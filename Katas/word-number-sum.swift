@@ -6,17 +6,21 @@ For example, in the string "The30quick20brown10f0x1203jumps914ov3r1349the102l4zy
 the sum of the integers is 3635.
 Note: only positive integers will be tested.
 */
+func sumOfIntegersInString(_ str: String) -> Int {
 
-func SOI(_ str: String){
-    
     let ints = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     var arr:[Character] = []
-    var resnums:[Int] = []
-     var indexes:[Int] = []
+    
+
+    
+    var pure:[[Int]] = []
     
     // 1 - get all characters other than a number and replace them with "X" symbol
     // "A122a1" -> ["X", "1", "2", "2", "X", "1"]
-    for i in 0..<str.count {
+    
+    
+    
+    for i in 0..<str.characters.count {
         let index = str.index(str.startIndex, offsetBy: i)
         let char = str[index]
         
@@ -27,34 +31,61 @@ func SOI(_ str: String){
         }
     }
     
-   // 2 - get indexes of all "X"s
+    print(arr) // ["X", "1", "2", "2", "X", "1", "X", "2"]
+    
+    
+    
+ 
+    var sub = [Int]()
     
     for i in 0..<arr.count {
-        if (arr[i] == "X") {
-            indexes.append(Int(i))
+        
+        if (arr[i] != "X"){
+            sub.append(Int(String(arr[i]))!)
+        } else {
+            
+            pure.append(sub)
+            sub.removeAll()
         }
+        
+        if (i == arr.count - 1){
+            print("Now")
+            
+            if (arr[i] != "X"){
+                sub.append(Int(String(arr[i]))!)
+                sub.removeLast()
+                pure.append(sub)
+            }
+            
+        }
+        
+        
+    }
+    
+    // pure: [[], [1, 2, 2], [1]]
+    
+ 
+    var sume = 0
+    for subarr in pure{
+        //  print("S\(subarr)")
+        
+        var count = ""
+        for char in subarr{
+            count += "\(Int(char))"
+        }
+        
+        
+        if let count = Int(count){
+            print(count)
+            sume += count
+        }
+        
     }
     
     
-    print("Array \(arr) ") // ["X", "1", "2", "2", "X", "1", "X", "2"]
-    print("Indexes \(indexes) ") // [0, 4, 6]
-    
-    
-    // 3 - slice array to fit indexes and you have won :D
-    for i in 0..<indexes.count - 2 {
-       // let idx = arr[indexes[0 + 1]]  print(idx)
-        let a = arr[Int(indexes[i] + 1)..<indexes[i + 1]]
-        print("slice \(a)")
-    }
-  
-    
-  
-    // 4 - sum the elements using "reduce(0, +)" or for loop
+    return sume
     
 }
-
-SOI("A122a1b2")
-
 
 
 
