@@ -1,3 +1,5 @@
+// http://www.codewars.com/kata/jaden-casing-strings
+
 extension String {
     func toJadenCase() -> String {
         var arr = [String]()
