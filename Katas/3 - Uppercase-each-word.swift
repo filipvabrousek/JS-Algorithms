@@ -64,7 +64,6 @@ extension String {
             }
             
             temp = ""
-            print(temp)
         }
 
         return final
