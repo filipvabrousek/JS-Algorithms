@@ -87,7 +87,7 @@ func sumOfIntegersInString(_ str: String) -> Int {
     
 }
 
-
+// 7.7.2018
 
 
 
