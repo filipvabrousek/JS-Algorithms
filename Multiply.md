@@ -36,7 +36,6 @@ func multiply(s: String, sem: String) -> Void {
     var firstLine = [String]()
     var holds = [0]
     
-    // 14:43 my first nested cycle
     for i in 0..<second.count {
         for x in 0..<first.count {
             
@@ -72,4 +71,5 @@ multiply(s: "229", sem: "18")
 // 638 * 12
 
 // 238 * 34 does not work
+// 14:43 my first nested cycle
 ```
