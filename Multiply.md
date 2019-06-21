@@ -1,11 +1,6 @@
 ## Multiply
 
 ```swift
-// import Foundation
-
-// https://www.umimeto.org/asset/system/um/img/novadoplnovacka/array-mult-987-12-nok.png
-// print("\(second[i])  * \(first[x]) + \(holds[holds.count - 2]) =  \(m)  just held: \(holds[holds.count - 2])      ")
-
 
 func multiply(s: String, sem: String) -> Void {
     
@@ -15,12 +10,16 @@ func multiply(s: String, sem: String) -> Void {
     var second = Array(mo.reversed())
     
     func getHold(n: Int) -> Int {
+        
+        var ret = 0
         let n = "\(n)"
         if n.count == 2 {
-            return Int(String(n.first!))!
+            ret = Int(String(n.first!))!
         } else {
-            return 0
+            ret = 0
         }
+        
+        return ret
     }
     
     func getWrite(n: Int, isLast: Bool) -> Int {
@@ -35,17 +34,24 @@ func multiply(s: String, sem: String) -> Void {
     
     var firstLine = [String]()
     var holds = [0]
+
     
+    // 14:43 my first nested cycle
     for i in 0..<second.count {
         for x in 0..<first.count {
             
-            let hold = getHold(n: second[i] * first[x])
+            var hold = getHold(n: second[i] * first[x])
+            
+            if holds.count >= 2 {
+                hold = getHold(n: second[i] * first[x] + holds.last!)
+            }
+            
             holds.append(hold)
             
-            let m = second[i] * first[x] + holds[holds.count - 2] //+ hold
+            let m = second[i] * first[x] + holds[holds.count - 2]
             
             if x == first.count - 1 { // Reset holds
-                firstLine.append("\(getWrite(n: Int(m + holds[holds.count - 2]), isLast: true))")
+                firstLine.append("\(getWrite(n: Int(m/* + holds[holds.count - 2]*/), isLast: true))")
                 holds = [0]
                 firstLine.append("X")
             } else {
@@ -53,6 +59,7 @@ func multiply(s: String, sem: String) -> Void {
             }
         }
     }
+    
     
     
     let ret = Array(firstLine.reversed())
@@ -64,12 +71,16 @@ func multiply(s: String, sem: String) -> Void {
     print(w.joined())
 }
 
-multiply(s: "229", sem: "18")
+
+multiply(s: "753", sem: "27")
 
 // 17:58 - 16.6.2019 done for some cases (18:24 end)
-// 229 * 18
 // 638 * 12
+// 238 * 34
+// 229 * 18 :D
 
-// 238 * 34 does not work
-// 14:43 my first nested cycle
+// 13.35 END :D
+// 753 * 27 (random test)
+
+// 21.6.19 - 14:48 done for all !! :) 4 hrs
 ```
