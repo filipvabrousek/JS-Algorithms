@@ -2,7 +2,6 @@
 * multiply large numbers together using standard method
 
 ```swift
-
 func getHold(n: Int) -> Int {
     
     var ret = 0
@@ -25,11 +24,27 @@ func getWrite(n: Int, isLast: Bool) -> Int {
     }
 }
 
+func replaceXWithZero(arr: [String.Element]) -> [Int] {
+    var arr = arr
+    for i in 0..<arr.count {
+        if arr[i] == "X"{
+            arr[i] = "0"
+        }
+    }
+    
+    var ret = [Int]()
+    for i in 0..<arr.count {
+        ret.append(Int(String(arr[i])) ?? -1)
+    }
+    
+    return ret
+}
+
 
 func multiply(s: String, sem: String) {
     
-    var xo = s.compactMap {$0.wholeNumberValue}
-    var mo = sem.compactMap {$0.wholeNumberValue}
+    let xo = s.compactMap {$0.wholeNumberValue}
+    let mo = sem.compactMap {$0.wholeNumberValue}
     var first = Array(xo.reversed())
     var second = Array(mo.reversed())
     
@@ -73,24 +88,22 @@ func multiply(s: String, sem: String) {
     let f = Array(vet[1])
     
     
-    var re = f.flatMap{String($0)}.map{String($0)}
-    var pe = w.flatMap{String($0)}.map{String($0)}
+    let re = f.flatMap{String($0)}.map{String($0)}
+    let pe = w.flatMap{String($0)}.map{String($0)}
     print(re.joined())
     print(pe.joined())
-    print("-------------")
-  
-    finalize(first: f, second: w)
+    print("-----")
     
+    addLines(first: f, second: w)
 }
 
 
-multiply(s: "756", sem: "32")
 
 
-func finalize(first: [String], second: [String]){
+func addLines(first: [String], second: [String]){
     
-    var fs = first.flatMap {$0}
-    var ss = second.flatMap {$0}
+    let fs = first.flatMap {$0}
+    let ss = second.flatMap {$0}
     
     var finta = replaceXWithZero(arr: fs)
     var sinta = replaceXWithZero(arr: ss)
@@ -130,30 +143,12 @@ func finalize(first: [String], second: [String]){
     let rev = Array(ret.reversed())
     let sr = rev.map {String($0)}
     print(sr.joined())
-    
 }
 
 
-
-
-func replaceXWithZero(arr: [String.Element]) -> [Int] {
-    var arr = arr
-    for i in 0..<arr.count {
-        if arr[i] == "X"{
-            arr[i] = "0"
-        }
-    }
-    
-    var ret = [Int]()
-    for i in 0..<arr.count {
-        ret.append(Int(String(arr[i])) ?? -1)
-    }
-    
-    return ret
-}
-
+multiply(s: "638", sem: "12")
 
 // 17:58 - 16.6.2019 done for some cases (18:24 end)
-// 21.6.19 - 14:48 done for all !! :) 4 hrs
 // TOTALLY DONE 21.6.2019 - 23:15
+// 756 * 32
 ```
