@@ -1,8 +1,7 @@
 ## K-Means
 
+
 ```js
-<canvas width="400" height="400"></canvas>
-<script>
 class Point {
 	constructor(x, y) {
 		this.x = x;
@@ -499,9 +498,11 @@ const points = [
 let m = new Means("canvas");
 m.init(points);
 m.try(); // will try to cluster the points into 2 clusters
-    
-    
-    
+```
 
-</script>
+
+```html
+
+<canvas width="400" height="400"></canvas>
+<script>
 ```
