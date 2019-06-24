@@ -7,7 +7,7 @@
 ```
 
 ```js
-  class Point {
+    class Point {
         constructor(x, y) {
             this.x = x;
             this.y = y;
@@ -133,11 +133,6 @@
             var done = false;
             var inc = -1;
 
-            /*
-        get top 3 elements and compare them
-        
-        */
-
             var group = [];
 
             // ALL = array of 3 subarrays (each holds diatnce of each point to one of the 3 centers (one for A, one for B, one for C))
@@ -169,76 +164,7 @@
                     }
                 }
             }
-
-            /* ARRAY [Array(3)...] EACH holds =>
-          [PointDist...] =>
-          PointDist {point: Point, dist: 14, name: "A", center: Point}
-          PointDist {point: Point, dist: 162, name: "B", center: Point}
-          PointDist {point: Point, dist: 404, name: "C", center: Point}
-        */
-
-          //  console.log(group);
-           
-
-          /*  var alreadylet = [];
-            var curl = "";
-            var small = [];
-            var big = [];
-            
-            
-            var PUSHED = [];
-
-            // -------------FINDING THE CLOSEST CENTROID
-            for (var i = 0; i < group.length; i++) {
-                let sub = group[i];
-
-                // get minimal distance from pm: [14, 162, 404]  (comes from sub [PointDist.. x 3])
-
-                let min = Math.min(...sub.map(e=>e.dist));
-                let pm = sub.map(el=>el.dist);
-
-                // get index of min in array (same index in letters will get the closest centroid)
-                // [14, 162, 404] ~ ["A", "B", "C"]
-
-                var letters = ["A", "B", "C"];
-                let s = pm.indexOf(min);
-
-                small.push(sub[0].point); // called 30 times
-
-               // console.log(group);
-                
-              //  if (PUSHED.includes(letters[s]) == false){
-                    //PUSHED.push(letters[s]);
-                  
-                   // console.warn(`NOW ${letters[s]}  ${curl}`);
-                   // curl = letters[s];
-                    
-                    
-                    big.push(small);
-                    small = [];
-                   // console.log(big);
-               // }
-            }
-            
-            
-            */
-            
-            /*
-            const input = [{"name":"john","location":"first"},{"name":"steve","location":"first"},{"name":"paul","location":"another"},{"name":"tony","location":"random"},{"name":"ant","location":"random"}];
-
-const group = input.reduce((acc, item) => {
-  if (!acc[item.location]) {
-    acc[item.location] = [];
-  }
-
-  acc[item.location].push(item);
-  return acc;
-}, {})
-
-console.log(group);
-            
-            */
-            
+      
             let flat = [].concat(...group);
             
             const together = flat.reduce((acc, item) => {
@@ -251,18 +177,11 @@ console.log(group);
                
             }, {});
             
-         //   console.warn(together);
-            
             
             var mega = [];
             for (let [dist, n] of Object.entries(together)){
                 mega.push(n);
             }
-            
-            
-            
-           // console.warn(mega);
-        
             
             
             var ft  = [];
@@ -341,27 +260,6 @@ console.log(group);
                 this.drawPoints(arr, "#3498db");
                 
             });
-            
-            
-            // 24.6.19 - 9:17
-            
-            
-            /*for (var i = 0; i < big.length; i++) {
-                let arr = big[i];
-
-                const meanX = arr.map(p=>p.x).reduce((a,b)=>a + b) / arr.length;
-                const meanY = arr.map(p=>p.y).reduce((a,b)=>a + b) / arr.length;
-                console.log(`CLUSTER CENTER: [${meanX} ${meanY}]`);
-
-                let p = new Point(meanX,meanY);
-                this.drawPoints([p], "orange");
-                this.drawPoints(big[i], "blue");
-            }*/
-            
-            
-            
-            
-
         }
 
         drawPoints(points, color) {
@@ -418,47 +316,6 @@ console.log(group);
             );
         }
 
-        /* calculate mean point with assigned points and draw each cluster centroid
-	if we have classified all the points */
-        /*drawMean() {
-		let ctx = this.ctx;
-		let means = this.initMeans(2); // init ranodm means
-		let a = this.assign(means); // assign points to means
-		let ap = a.AP; // A cluster points
-		let bp = a.BP // B cluster points
-
-		let amean = this.assignedPointsMean(ap, ap.length);
-		let bmean = this.assignedPointsMean(bp, bp.length);
-		let done = false;
-
-
-		if (ap.length + bp.length !== points.length) {
-			ctx.fillStyle = "#1abc9c";
-			ctx.beginPath();
-			ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
-			ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
-			ctx.fill();
-			console.log("Not done");
-		}
-
-		// if we have all the points and ap and bp arent equal we found the means :D
-		if (ap.length + bp.length === points.length && amean.x !== bmean.x) {
-
-			ctx.beginPath();
-			ctx.fillStyle = "red";
-			ctx.arc(amean.x, amean.y, 6, 0, Math.PI * 2);
-			ctx.arc(bmean.x, bmean.y, 6, 0, Math.PI * 2);
-			ctx.fill();
-
-			console.log("Clustering done. ", "Mean A: ", amean, "Mean B:", bmean);
-			done = true;
-		}
-
-		return done;
-
-	}
-*/
-
         // try to cluster the points, if "done" in findMeans is false, try again
         try() {
             this.getRanges();
@@ -498,5 +355,4 @@ console.log(group);
     m.init(points);
     m.try();
     // will try to cluster the points into 3 clusters
-
 ```
