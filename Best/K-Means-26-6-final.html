@@ -1,0 +1,397 @@
+<canvas width="400" height="400" style="border: 1px solid black"></canvas>
+
+<script>
+ class P {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+class PointDist {
+    constructor(point, dist, name, center) {
+        this.point = point
+        this.dist = dist
+        this.name = name
+        this.center = center
+
+    }
+}
+    
+
+class Means {
+    
+    constructor(selector, points, k) {
+        this.k = k;
+        this.selector = selector;
+        this.points = points.map(el => new P(el[0], el[1]));
+        
+        
+        // filled with our input
+        this.means = [];
+        this.assigned = {};
+
+        this.centroids = [];
+
+
+        this.controlF = [];
+        this.tempfin = false;
+        this.el = document.querySelector(this.selector);
+        this.ctx = this.el.getContext("2d");
+
+    }
+
+   
+
+    // get point ranges, to create random centroids within ranges of our dataset
+    getRanges() {
+        let xm = 0,
+            ym = 0,
+            xn = 0,
+            yn = 0,
+            points = this.points;
+        points.forEach((el, i) => {
+            xm = Math.max(...points.map(e => e.x));
+            ym = Math.max(...points.map(e => e.y));
+            xn = Math.min(...points.map(e => e.x));
+            yn = Math.min(...points.map(e => e.y));
+        });
+
+        return {
+            xrange: xm - xn,
+            yrange: ym - yn
+        }
+    }
+
+    // plot the points we define in our array on the canvas and recolor them according to assigned points
+    plot() {
+
+        let points = this.points,
+            ctx = this.ctx;
+        this.ctx.fillStyle = "#000";
+
+        // draw black points from our array
+        ctx.clearRect(0, 0, this.el.width, this.el.height);
+        points.forEach((el, i) => {
+            ctx.beginPath();
+            ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    //init k means (3 in this case) within range using "getRanges()"
+    initMeans(k) {
+        const ranges = this.getRanges();
+        this.means.length = k;
+        this.means.fill(0)
+        this.k = k;
+
+        this.means.forEach((el, i) => {
+            let cand = new P(400 * Math.random(), 400 * Math.random());
+            // this.el.width
+            this.means.push(cand);
+        });
+
+        this.means = this.means.slice(k);
+        // [0, 0, Point, Point] remove 2 zeros
+        return this.means;
+    }
+
+    // get each points distance from each center
+    assign(centrs) {
+
+        var pd = [];
+        var letters = ["A", "B", "C", "D"];
+
+        // centrs = [new P(20,30), new P(112,180), new P(295,345)];
+
+        if (centrs.length == 0) {
+           
+            for (var i = 0; i < this.k; i++){
+                centrs.push(new P(400 * Math.random(), 400 * Math.random()));
+            }
+            
+
+        } else {
+            console.log("USING ARGUMENT!!");
+        }
+        
+
+        centrs.forEach((centr, i) => {
+            this.points.forEach((point, j) => {
+                let dist = this.euclidean(point, centr);
+
+                let centrname = letters[i];
+                let d = new PointDist(point, Math.round(dist), centrname, centr);
+                pd.push(d);
+            });
+        });
+
+        // get split points
+        var st = ""
+        var splits = [];
+        var mel = 0;
+
+        for (var i = 0; i < pd.length; i++) {
+            let el = pd[i];
+
+            if (el.name != st) {
+                st = el.name
+                splits.push(i);
+            } else {
+                mel += 1;
+            }
+        }
+
+        // console.log(splits);
+
+        var all = [];
+
+        splits.forEach((el, i) => {
+            let sub = pd.slice(splits[i], splits[i + 1]);
+            all.push(sub);
+        });
+
+        var clusters = [];
+        var rem = -1;
+        var done = false;
+        var inc = -1;
+
+        var group = [];
+
+        // ALL = array of 3 subarrays (each holds diatnce of each point to one of the 3 centers (one for A, one for B, one for C))
+
+        for (var i = 0; i < all.length; i++) {
+            while (done === false) {
+                inc += 1;
+
+                var sub = [];
+
+                for (var sx = 0; sx < all.length; sx++) {
+                    let s = all[sx][inc];
+                    // sx 0, 1, 2
+
+                    if (s != undefined) {
+                        sub.push(s);
+                    }
+
+
+                    if (sx == all.length - 1) {
+                        if (sub.length > 0) {
+                            group.push(sub);
+                        }
+                    }
+                }
+
+                if (inc == all[i].length) {
+                    done = true;
+                }
+            }
+        }
+
+        let flat = [].concat(...group);
+
+        const together = flat.reduce((acc, item) => {
+            if (!acc[item.name]) {
+                acc[item.name] = [];
+            }
+
+            acc[item.name].push(item);
+            return acc;
+
+        }, {});
+
+
+        var mega = [];
+        for (let [dist, n] of Object.entries(together)) {
+            mega.push(n);
+        }
+
+
+        var ft = [];
+
+        for (var i = 0; i < flat.length; i++) {
+            var sub = [];
+
+            mega.forEach((el, j) => {
+                if (mega[j][i] != undefined) {
+                    // console.warn(mega[j][i]);
+                    sub.push(mega[j][i]);
+                }
+            });
+
+            ft.push(sub);
+            sub = [];
+        }
+
+
+        var eachToEach = ft.filter(el => el.length > 0);
+        //  console.warn(eachToEach);
+
+
+        var ll = "";
+
+        var final = [];
+        var subal = [];
+
+
+
+        //  console.warn(eachToEach);
+
+        // FILL DYNAMICALLY
+       /* var ew = [
+            [],
+            [],
+            []
+        ];
+        */
+        var ew = [];
+        for (var i = 0; i < this.k; i++){
+            ew.push([]);
+        }
+
+
+        for (var i = 0; i < eachToEach.length; i++) {
+            let one = eachToEach[i];
+            let dists = one.map(e => e.dist); // [32, 23, 45]
+
+            let min = Math.min(...dists); // 23
+            let idx = dists.indexOf(min); // 1 
+            let letters = ["A", "B", "C"]; // corresponds to B
+
+            // console.log(one);
+            // console.log(ew);
+
+            let p = ew[idx];
+
+            if (p != undefined) {
+                ew[idx].push(one[idx].point);
+            }
+            //  console.warn(ew);
+
+            final = ew;
+        }
+
+
+
+        // THIS HAS TO CONTAIN ALL 30 POINTS !!!!!!!!
+        //console.log(final); 
+
+        this.controlF = final;
+
+        this.centroids = [];
+
+
+        this.plot();
+
+        centrs.forEach((el, i) => {
+            this.ctx.beginPath();
+            this.ctx.fillStyle = "#1abc9c";
+            this.ctx.arc(centrs[i].x, centrs[i].y, 8, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+
+
+
+        final.forEach((el, i) => {
+
+            let colors = ["green", "#3498db", "orange", "pink", "yellow"];
+
+            let arr = final[i];
+
+            if (arr.length > 0) {
+                const meanX = arr.map(p => p.x).reduce((a, b) => a + b) / arr.length;
+                const meanY = arr.map(p => p.y).reduce((a, b) => a + b) / arr.length;
+                //  console.log(`CLUSTER CENTER: [${meanX} ${meanY}]`);
+
+
+                // plot and clearRect :)
+
+
+                let mean = new P(meanX, meanY);
+                this.drawPoints([mean], "red");
+                this.drawPoints(arr, colors[i]);
+                this.centroids.push(mean);
+
+                // 25.6.2019 - 15:49 WORKING manually calling cluster :D
+            }
+
+        });
+    }
+
+    drawPoints(points, color) {
+        points.forEach((el, i) => {
+            this.ctx.beginPath();
+            this.ctx.fillStyle = color;
+            this.ctx.arc(el.x, el.y, 4, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+    }
+
+   
+
+    euclidean(a, b) {
+        let xd = Math.pow(a.x - b.x, 2);
+        let yd = Math.pow(a.y - b.y, 2);
+        let res = Math.sqrt(xd + yd);
+        return res;
+    }
+
+    
+    isHomogenous(a, b) {
+
+        var ret = true;
+
+        var first = a.map(x => String(x.x + "," + x.y));
+        var second = b.map(x => String(x.x + "," + x.y));
+
+
+        first.forEach((el, i) => {
+            if (second.includes(el) == false) {
+                ret = false;
+            }
+        });
+
+        return ret;
+    }
+
+
+    // cluster to cluster the points, if "done" in findMeans is false, cluster again
+    cluster() {
+
+        window.setInterval(() => {
+             this.getRanges();
+        this.plot();
+        
+
+        var lastX = 0;
+        var lastY = 0;
+
+        var moveAmount = 0;
+
+        var done = false;
+
+        this.assign(this.centroids);
+        let m = this.controlF.flat();
+        console.log(m);
+
+        let cc = this.controlF.length;
+        }, 2000);
+       
+    }
+}
+
+    
+
+/*----------------------------------------USAGE-----------------------------------------------*/
+    
+var data = [[51,40],[40,53],[56,55],[67,43],[68,66],[44,67],[54,83],[80,81],[77,54],[68,80],[107,78],[85,71],[97,63],[95,80],[91,49],[119,62],[120,86],[94,95],[67,95],[80,91],[80,105],[99,105],[104,94],[133,70],[107,54],[91,35],[71,121],[89,126],[105,120],[114,102],[134,99],[55,105],[88,120],[130,118],[113,123],[117,111],[131,89],[137,88],[126,76],[120,48],[137,54],[145,72],[146,89],[120,140],[121,128],[147,112],[137,129],[97,135],[78,135],[112,135],[143,100],[158,77],[154,62],[137,40],[104,30],[169,109],[160,125],[155,155],[145,142],[148,175],[173,171],[183,153],[203,129],[227,127],[262,139],[273,177],[272,208],[252,232],[232,240],[184,245],[157,232],[157,209],[162,196],[168,209],[177,182],[195,162],[226,146],[243,146],[187,136],[229,160],[213,184],[191,189],[189,210],[212,205],[230,199],[233,179],[250,173],[248,211],[259,193],[259,162],[215,169],[210,143],[215,226],[191,226],[170,223],[241,221],[210,238],[170,242],[270,221],[238,257],[260,252],[282,251],[289,267],[270,276],[251,277],[252,326],[272,316],[259,308],[233,291],[255,292],[269,290],[292,290],[290,309],[304,323],[282,333],[253,344],[222,338],[237,326],[214,325],[199,333],[204,354],[243,354],[231,304],[215,310],[292,323],[315,316],[324,340],[295,342],[306,333],[276,341],[270,354],[293,354],[310,354],[313,371],[284,371],[258,368],[235,367],[239,346],[244,339],[243,310],[284,295],[313,295],[303,303],[303,281],[330,284],[330,301],[332,305],[338,324],[351,354],[326,354],[334,375],[347,338],[365,332],[373,319],[169,89],[185,89],[176,70],[162,41],[197,145],[247,249]];
+
+    
+let m = new Means("canvas", data, 3);
+m.cluster();
+
+      
+// 25.6.19 - 16:00 - WORKING !!!
+// 
+</script>
