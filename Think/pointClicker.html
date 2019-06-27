@@ -1,0 +1,50 @@
+<!--<canvas style="width: 400, height:400"></canvas>---->
+
+<canvas width="400" height="400" style="border: 1px solid black"></canvas>
+<style>canvas {border: 1px solid black}</style>
+<script>
+let canvas = document.querySelector("canvas");
+    
+   class P {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    
+var points = [];
+    
+    
+var xvals = [];
+var yvals = [];
+    
+    
+let ctx = canvas.getContext("2d");
+canvas.addEventListener("click", e => {
+			let x = e.clientX - canvas.offsetLeft; // top left corner.... coord are [0, 0]
+			let y = e.clientY - canvas.offsetTop;
+			points.push(new P(x, y));
+    
+            ctx.beginPath();
+			ctx.arc(x, y, 2, 0, 2 * Math.PI);
+			ctx.fill();
+
+    let sub = [x, y];
+    xvals.push(sub);
+    console.log(xvals);
+    console.log(JSON.stringify(xvals));
+});
+    
+    
+
+    
+    
+    
+var xoxo = [56, 85, 70, 98, 84, 82, 43, 34, 64, 64, 77, 98, 93, 105, 108, 109, 125, 110, 70, 43, 89, 104, 133, 128, 159, 168, 162, 147, 140, 140, 136, 126, 163, 110, 82, 92, 111, 135, 139, 210, 124, 178, 134, 98, 110, 136, 119, 153, 172, 190, 198, 224, 203, 233, 256, 222, 173, 208, 180, 145, 163, 147, 188, 183, 197, 226, 230, 254, 229, 204, 179, 206, 222, 236, 228, 215, 205, 240, 237, 220, 198, 194, 162, 164, 165, 275, 295, 305, 329, 315, 273, 314, 354, 306, 294, 333, 353, 300, 321];
+    
+var yso = [26, 29, 42, 37, 51, 61, 71, 48, 48, 61, 82, 80, 62, 59, 65, 46, 67, 91, 92, 82, 87, 106, 102, 82, 59, 100, 100, 88, 82, 66, 54, 54, 74, 122, 123, 134, 134, 134, 121, 112, 150, 140, 158, 175, 207, 196, 181, 181, 163, 160, 160, 155, 141, 123, 153, 171, 172, 170, 183, 208, 199, 228, 215, 213, 194, 192, 185, 207, 210, 224, 253, 254, 254, 248, 238, 204, 187, 187, 151, 134, 132, 151, 153, 173, 196, 208, 196, 278, 274, 290, 291, 291, 291, 304, 298, 298, 276, 306, 235];
+
+                        
+    
+
+</script>

@@ -1,0 +1,42 @@
+<script>
+
+const S = x => 1 / (1 + Math.exp(-x)); // maps any input into value between 0 and 1
+
+class Perceptron {
+    constructor(inputs, desired){
+        this.inputs = inputs;
+        this.desired = desired;
+    }
+    
+    process(){
+        var weights = [0, 0];
+        for (var i = 0; i < weights.length; i++){
+            weights[i] = Math.random();
+        }
+        
+        var sum = 0;
+        var res = 0;
+        
+        
+        for (var c = 0; c < 10; c++){
+            
+            for (var i = 0; i < weights.length; i++){
+                sum += weights[i] * this.inputs[i];
+            }
+            
+            var normalized = S(sum); // normalize to 0 and 1
+           
+            let diff = Math.abs(normalized - this.desired);
+            weights = weights.map(w => w * diff * 100);
+            res = normalized - diff;
+        }
+        
+        return res;
+    }
+}
+    
+    
+let p = new Perceptron([0.0, 1.0], 1.0);
+let res = p.process();
+console.log(res);
+</script>
