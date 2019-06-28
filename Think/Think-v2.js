@@ -216,8 +216,6 @@ class P {
             // first array holds the distance of each point to centroid A, 2nd to B and so on...
             
             
-            
-            
             var clusters = [];
             var rem = -1;
             var done = false;
@@ -261,8 +259,8 @@ class P {
             0: PointDist {point: P, dist: 118, name: "A", center: P}
             1: PointDist {point: P, dist: 55, name: "B", center: P}
             2: PointDist {point: P, dist: 309, name: "C", center: P}
-            
             */
+            
             let flat = [].concat(...group);
        
             console.log(all);
@@ -446,4 +444,4 @@ r.plot();
 */
 
 /*<canvas width="400" height="400" style="border: 1px solid black"></canvas>*/
-    
+ 
