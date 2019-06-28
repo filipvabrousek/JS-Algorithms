@@ -5,12 +5,12 @@ Version 2.0
 
 ```js
 let p = Think.perceptron([0, 1], 1);
-let res = p.process(); // 0.972...
+let res = p.process();   // 0.972...
 ```
 
 ### K-Means
 ```js
-let data =[[162,41],[197,145]....];
+let data = [[162,41]...];
 let means = Think.means("canvas", data, 3);
 means.cluster();
 ```
@@ -18,7 +18,7 @@ means.cluster();
 
 ### Linear regression
 ```js
-let data =[[162,41],[197,145]....];
+let data = [[162,41]...];
 let r = Think.regression("canvas", data);
 r.plot();
 ```
