@@ -1,6 +1,3 @@
-<canvas width="400" height="400" style="border: 1px solid black"></canvas>
-
-<script>
 const Think = (() => {
     
 /*----------------------------------------------PERCEPTRON----------------------------------------------*/
@@ -450,6 +447,3 @@ r.plot();
 
 /*<canvas width="400" height="400" style="border: 1px solid black"></canvas>*/
     
-
-
-</script>
