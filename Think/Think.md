@@ -1,11 +1,12 @@
 ## Think.js
 Version 2.0
 
-### Perceptron
+### Neural Net
 
 ```js
-let p = Think.perceptron([0, 1], 1);
-let res = p.process();   // 0.972...
+const net = new Net();
+let res = net.learn([0, 1], 1); // [0, 0], 0
+console.log(res);
 ```
 
 ### K-Means
