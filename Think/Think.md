@@ -24,3 +24,4 @@ let r = Think.regression("canvas", data);
 r.plot();
 ```
 
+Source: https://github.com/filipvabrousek/Algorithms/blob/master/Think/Net-1-7-19-v2.js
