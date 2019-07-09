@@ -1,0 +1,205 @@
+
+<body>
+
+<div id="app">
+
+<canvas width="400" height="400"></canvas>
+    <button id="rec">Recognize</button> <!--Will clear and try to recognize---> 
+     <button id="save">Save</button>  <!---Save---->
+ </div>
+    
+
+</body>
+
+
+
+
+
+<script>
+// 9.7.19 - 10:56 begin
+    
+    
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
+    
+
+var isDrawing = false;
+    
+var points = [];
+
+    
+canvas.addEventListener("mousedown", e => {
+    ctx.beginPath();
+    ctx.strokeWidth = 2.0;
+    isDrawing = true;
+});
+    
+canvas.addEventListener("mouseup", e => {
+    isDrawing = false;
+});
+    
+    
+canvas.addEventListener("mousemove", e => {
+    if (isDrawing){
+         ctx.lineTo(e.x, e.y);
+         ctx.stroke();
+        
+         points.push({x: e.x, y: e.y});
+        // console.warn(points);
+         getAngles(points);
+    }
+     
+}); 
+    
+
+function draw(coord){
+    var coord = {
+        x,y
+    }
+}
+    
+
+var pts = [{name: "A", x: 23, y: 67}, {name: "B", x: 49, y: 89}, {name: "C", x: 78, y: 22}, {name: "D", x: 87, y: 56}, {name: "F", x: 94, y: 101}, {name: "G", x: 100, y: 134}];
+
+    
+  
+    
+function getBounds(points){
+    
+let xs = points.map(p => p.x);
+let ys = points.map(p => p.y);
+
+var maxX = Math.max(...xs);
+var maxY = Math.max(...ys);
+var minX = Math.min(...xs);
+var minY = Math.max(...ys);
+    
+    
+var e = xs.indexOf(maxX);
+console.log(`Point is [${points[e].x}, ${points[e].y}]`);
+
+    
+var f = ys.indexOf(maxY);
+console.log(`Point is [${points[f].x}, ${points[f].y}]`);
+    
+    
+var g = xs.indexOf(minX);
+console.log(`Point is [${points[g].x}, ${points[g].y}]`);
+  
+    
+var h = ys.indexOf(minY);
+console.log(`Point is [${points[h].x}, ${points[h].y}]`);
+    
+
+let res = {mx: maxX, my: maxY, minx: minX, miny: minY}
+console.log(res);
+    
+ctx.strokeStyle = "green";
+ctx.lineWidth = 4;
+ctx.beginPath();
+
+    
+ctx.moveTo(e.x, e.y);
+ctx.lineTo(f.x, f.y);
+ctx.stroke();
+    
+    
+ctx.moveTo(f.x, f.y);
+ctx.lineTo(g.x, g.y);
+ctx.stroke();
+    
+    
+ctx.moveTo(g.x, g.y);
+ctx.lineTo(h.x, h.y);
+ctx.stroke();
+
+
+}
+    
+    
+    
+    // getBounds(points);
+    
+    
+    
+function getAngles(points){
+    
+    
+    var angles = [];
+    
+    
+    for (var i = 0; i < points.length; i++){
+        
+        // get angle between those 3 points
+        if ((i != 0) && (i != points.length - 1)){
+           
+            var A = points[i - 1];
+            var B = points[i];
+            var C = points[i + 1];
+            
+            var AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y-A.y, 2));
+            var BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y-C.y, 2));
+            var AC = Math.sqrt(Math.pow(C.x - A.x, 2) + Math.pow(C.y-A.y, 2));
+            
+            var angle = Math.acos((BC * BC + AB * AB - AC * AC) / (2 * BC * AB));
+           
+            
+            var arr = [A, B, C];
+           // plotPoints(arr);
+            
+           /* console.log(points[i - 1]);
+            console.log(points[i]);
+            console.log(points[i + 1]);
+            console.warn(angle * 57.2958); // in radians
+            console.log("-------------");
+            */
+            
+             // console.warn(angle * 57.2958); // in degrees
+            
+             angles.push(angle * 57.2958);
+            
+        }
+        
+        
+        var avg = 0;
+        if (angles.length > 0){
+        angles = angles.filter(n => n == n);
+        
+        avg = angles.reduce((a, b) => a + b) / angles.length;
+        }
+        
+        
+    }
+    
+    return {angles, avg};
+}
+    
+    
+
+function plotPoints(points){
+     points.forEach((el, i) => {
+               ctx.beginPath();
+                ctx.arc(el.x, el.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+     });
+}
+    
+document.querySelector("#rec").addEventListener("click", () => {
+    let res = getAngles(points);
+    console.log(res);
+});
+    
+
+
+</script>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    canvas {
+        border: 1px solid black;
+    }
+</style>
