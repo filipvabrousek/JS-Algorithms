@@ -1,0 +1,322 @@
+
+<body>
+
+<div id="app">
+
+<canvas width="400" height="400"></canvas>
+    <button id="rec">Recognize</button> <!--Will clear and try to recognize---> 
+     <button id="save">Save</button>  <!---Save---->
+     <button id="bounds">Angles</button>  <!---Save---->
+     <p id="inc">Inc</p> 
+     <p id="dec">Dec</p> 
+     <p id="ang">Angle</p> 
+     <p id="ratio">W x H</p> 
+ </div>
+  
+
+</body>
+
+
+
+
+
+<script>
+// 9.7.19 - 10:56 begin
+    
+const S = el => document.querySelector(el);
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
+// ctx.transform(1, 0, 0, -1, 0, canvas.height); // make axes normal
+//ctx.translate(0, canvas.height);
+//ctx.scale(1, -1);
+
+const incp = S("#inc");
+const decp = S("#dec");
+const angp = S("#ang");
+    
+var isDrawing = false;
+    
+var points = [];
+
+    
+canvas.addEventListener("mousedown", e => {
+    ctx.beginPath();
+    ctx.strokeWidth = 2.0;
+    isDrawing = true;
+});
+    
+canvas.addEventListener("mouseup", e => {
+    isDrawing = false;
+});
+    
+    
+canvas.addEventListener("mousemove", e => {
+    if (isDrawing){
+         ctx.lineTo(e.x, e.y);
+         ctx.stroke();
+        
+         points.push({x: e.x, y: e.y});
+       
+        
+        
+        
+       
+        // getDirections(points);
+         WHRatio(points);
+        
+    }
+     
+}); 
+    
+
+function draw(coord){
+    var coord = {
+        x,y
+    }
+}
+    
+
+    /*
+function getDirections(points){
+    var sub = [];
+    var dec = 0;
+    var inc = 0;
+    
+    for (var i = 0; i < points.length; i++){
+      
+        var prev = points[i - 1];
+        var curr = points[i];
+        
+        if (i != 0){
+            if ((prev.y < curr.y) && (prev.x < curr.x)) {
+                dec += 1;
+               // incp.innerHTML = `INC ${inc}`;
+                decp.innerHTML = `DEC ${dec}`;
+            } else {
+                inc += 1;
+              //  decp.innerHTML = `DEC ${dec}`;
+                incp.innerHTML = `INC ${inc}`;
+            }
+        }
+        
+        sub.push(points[i]);
+    }
+    
+   
+}    */
+    
+
+
+    
+    
+    
+    
+    
+    
+
+    // getBounds(points);
+    
+  
+    
+function getAngles(points){
+    
+
+    var turncount = 0;
+    var diffocount = 0;
+    var data = ["X"];
+    
+    for (var i = 0; i < points.length; i++){
+       
+        
+        // in what percentage of length do turns happen ?
+        // get angle between those 3 points
+        if ((i != 0) && (i != points.length - 1)){
+          
+            var prev = points[i - 1];
+            var curr = points[i];
+        
+            if ((Math.abs(prev.x - curr.x) < 3) && (Math.abs(prev.y - curr.y) < 3)) {
+           
+                
+            data.push({D: diffocount});
+           
+                
+           // angp.style.color = "blue";
+           // angp.innerHTML += "TURN<br>";
+           
+            turncount += 1;
+                
+    
+            } else {
+            data.push({T: turncount})  
+            
+                
+          //  angp.style.color = "green";
+          //  angp.innerHTML += "DIFFO<br>";
+            diffocount += 1;
+          }
+        }
+    }
+    
+    
+    
+    var dif = 0;
+    var turns = 0;
+    
+    data.forEach((el, i) => {
+       if (el.D){
+           dif += el.D;
+       } else if(el.T) {
+           turns += el.T;
+       }
+        
+    });
+    
+    incp.innerHTML = dif;
+    decp.innerHTML = turns;
+    console.log(dif);
+    console.log(data);
+    
+  
+    
+var currtry = turns / WHRatio(points)
+
+return currtry;
+}
+    
+
+function plotPoints(points){
+     points.forEach((el, i) => {
+               ctx.beginPath();
+                ctx.arc(el.x, el.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+     });
+}
+    
+document.querySelector("#rec").addEventListener("click", () => {
+    let res = getAngles(points);
+    console.log(res);
+    var name = "op";
+   
+    
+    var item = window.localStorage.getItem(name);
+    if (item !== null){
+    let diff = Math.abs(item - res);
+    alert("DIFF " + diff)
+    }
+        
+    window.localStorage.setItem(name, res);
+});
+    
+document.querySelector("#bounds").addEventListener("click", () => {
+  // getBounds(points);
+  let pro = getAngles(points);
+    alert(`ELOQ: ${pro.toFixed(0)}`);
+});
+    
+    
+    
+    
+    
+    
+var pts = [{name: "A", x: 23, y: 67}, {name: "B", x: 49, y: 89}, {name: "C", x: 78, y: 22}, {name: "D", x: 87, y: 56}, {name: "F", x: 94, y: 101}, {name: "G", x: 100, y: 134}];
+
+    
+  
+    
+function WHRatio(points){
+    
+let xs = points.map(p => p.x);
+let ys = points.map(p => p.y);
+
+var maxX = Math.max(...xs);
+var maxY = Math.max(...ys);
+var minX = Math.min(...xs);
+var minY = Math.min(...ys);
+    
+    
+var e = xs.indexOf(maxX);
+console.log(`Point is [${points[e].x}, ${points[e].y}]`);
+
+    
+var f = ys.indexOf(maxY);
+console.log(`Point is [${points[f].x}, ${points[f].y}]`);
+    
+    
+var g = xs.indexOf(minX);
+console.log(`Point is [${points[g].x}, ${points[g].y}]`);
+  
+    
+var h = ys.indexOf(minY);
+console.log(`Point is [${points[h].x}, ${points[h].y}]`);
+    
+
+let res = {mx: maxX, my: maxY, minx: minX, miny: minY}
+console.log(res);
+    
+let width = Math.abs(maxX - minX);
+let height = Math.abs(maxY - minY);
+    
+    
+    
+let w = 0;
+if (width > height) {
+    w = height / width;
+    console.log(`DIMMO ${height / width}`);
+} else {
+    w = width / height;
+    console.log(`DIMMO ${width / height}`);
+}
+    
+S("#ratio").innerHTML = width / height;
+    
+    
+    
+return width / height;
+// SQUARE value close to 1, more narrow, value closer to 0
+
+
+    
+//this.plotPoints([{e.x, e.y}]);
+
+
+}
+    
+    
+    
+    
+/*
+ctx.strokeStyle = "green";
+ctx.lineWidth = 4;
+ctx.beginPath();
+
+ctx.moveTo(points[e].x, points[e].y);
+ctx.lineTo(points[f].x, points[f].y);
+ctx.stroke();
+    
+    
+ctx.moveTo(points[f].x, points[f].y);
+ctx.lineTo(points[g].x, points[g].y);
+ctx.stroke();
+    
+    
+ctx.moveTo(points[g].x, points[g].y);
+ctx.lineTo(points[h].x, points[h].y);
+ctx.stroke();
+*/ 
+    
+    
+
+
+</script>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    canvas {
+        border: 1px solid black;
+    }
+</style>
