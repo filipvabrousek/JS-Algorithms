@@ -1,5 +1,5 @@
 ## Think.js
-Version 2.0
+Version 3.0
 
 ### Neural Net
 
@@ -26,6 +26,14 @@ r.plot();
 
 Source: https://github.com/filipvabrousek/Algorithms/blob/master/Think/Think-3-7-19.js
 
+## Shaper
+```js
+let r = document.querySelector("#compare");
+let s = new Shaper("canvas");
+r.addEventListener("click", () => s.recognize([45, 45, 45, 45, 45, 45, 90, 90, 90, 90, 90]));
+```
 
-## Shaper module
-* coming soon
+```html
+<button id="compare">Compare</button>
+<canvas width="400" height="400"></canvas> 
+```
