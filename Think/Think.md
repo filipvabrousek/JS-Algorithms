@@ -1,5 +1,6 @@
 ## Think.js
-Version 3.0
+* version 3.0 
+* 23/9/2019
 
 ### Neural Net
 
