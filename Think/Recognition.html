@@ -1,0 +1,301 @@
+<body>
+
+    <div id="app">
+
+        <canvas width="400" height="400"></canvas>
+        <button id="compare">Compare</button>
+        <p id="ratio">W x H</p>
+        <p id="lratio">len / height</p>
+
+    </div>
+
+
+</body>
+
+<style>
+    p {
+        padding-left: 1em;
+    }
+
+</style>
+
+
+
+<script>
+    // 9.7.19 - 10:56 begin
+
+    const S = el => document.querySelector(el);
+    const canvas = document.querySelector("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const angp = S("#ang");
+    var isDrawing = false;
+    var points = [];
+
+
+    canvas.addEventListener("mousedown", e => {
+        ctx.beginPath();
+        ctx.strokeWidth = 2.0;
+        isDrawing = true;
+    });
+
+    canvas.addEventListener("mouseup", e => {
+        isDrawing = false;
+    });
+
+
+    function getA(x1, y1, x2, y2) {
+        var dy = Math.abs(y2 - y1);
+        var dx = Math.abs(x2 - x1);
+        var dist = Math.sqrt((dy * dy) + (dx * dx));
+        var val = dy / dist;
+        var asine = Math.asin(val);
+        var deg = asine * (180 / Math.PI);
+        return deg;
+    }
+
+    const getD = (xa, ya, xb, yb) => Math.sqrt(Math.pow(xa - xb, 2) + Math.pow(ya - yb, 2))
+
+
+    var vangles = [];
+
+
+    var TLP = [];
+    var BLP = [];
+    var TRP = [];
+    var BRP = [];
+
+    var ATLP = [];
+    var ABLP = [];
+    var ATRP = [];
+    var ABRP = [];
+
+    var idx = [];
+    var letters = [];
+    var angles = [];
+
+    var IMPORTANT = [];
+
+    canvas.addEventListener("mousemove", e => {
+        if (isDrawing) {
+            //   S("#ang").innerHTML += "ANG " + e.x + " " + e.y;
+            ctx.lineTo(e.x, e.y);
+            ctx.stroke();
+
+            points.push({
+                x: e.x,
+                y: e.y
+            });
+
+            let r = WHRatio(points);
+            S("#ratio").innerHTML = `ratio: ${(r.ratio.toPrecision(3))}`;
+        }
+    });
+
+
+
+    function plotPoints(points) {
+        points.forEach((el, i) => {
+            ctx.beginPath();
+            ctx.arc(el.x, el.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    var goodPoints = 0;
+    var badPoints = 0;
+    var bongles = [];
+
+    function compAngles(points) {
+        var n = 6;
+        var delta = Math.floor(Math.random(points.length / n));
+        let every6th = points.filter((_, i) => i % 9 == 0).filter(Boolean);
+
+        for (var i = 0; i < every6th.length - 1; i++) {
+            let curr = every6th[i];
+            let next = every6th[i + 1];
+            let angle = getA(curr.x, curr.y, next.x, next.y);
+            console.log(`PUSH ${angle}`);
+            bongles.push(Math.round(angle));
+
+        }
+
+        return bongles.filter(Boolean);
+        // return {good: goodPoints, bad: badPoints, ratio: goodPoints / badPoints};
+    }
+
+
+    function meany(arr, n) {
+        let copy = arr;
+        let groups = [];
+        while (copy.length) {
+            groups.push(copy.splice(0, n));
+        }
+
+        return groups.map(g => g.reduce((a, b) => a + b) / g.length).map(n => Math.round(n));
+    }
+    // use meany for shorter length !!!
+
+
+    function getMeanPoints(points) {
+        var anglesB = [45, 45, 45, 45, 45, 45, 90, 90, 90, 90, 90];
+        
+        //[90, 90, 90, 90, 45, 45, 45, 45, 45, 45, 45, 90, 90, 90, 90];
+        // PREV: [90, 90, 90, 72, 60, 57, 58, 60, 18, 76, 63, 60, 48, 63, 72, 84, 88, 90, 90, 90, 90]; 
+        //[36, 45, 90, 88, 90]
+        // [90, 90, 90, 72, 60, 57, 58, 60, 18, 76, 63, 60, 48, 63, 72, 84, 88, 90, 90, 90, 90]
+        var anglesA = compAngles(points);
+
+       // console.clear();
+        console.log("------");
+        console.log("ANGLES A: " + anglesA.length);
+        console.log("ANGLES B: " + anglesB.length);
+
+        const bcopy = [...anglesB];
+        const acopy = [...anglesA];
+
+        const A = anglesA;
+        const B = anglesB;
+
+        console.log("MUTATED");
+
+
+        let K = Math.ceil(A.length > B.length ? A.length / B.length : B.length / A.length);
+
+        var mutated = [];
+        if (A.length > B.length) {
+            mutated = meany(acopy, K);
+        } else {
+            mutated = meany(bcopy, K);
+        }
+
+        console.log("COMPARE " + anglesA.length + " WITH " + mutated.length + "K " + K);
+
+        // A gets mutated to B Length
+        
+
+        let shorter = A.length < B.length ? A : B;
+
+        let good = 0;
+        let bad = 0;
+        
+    
+        
+        console.log("============AB=============");
+        console.log(A);
+        console.log(B);
+        
+        
+        console.log("-----------MUATATED, SHORTER------------");
+        console.log(mutated);
+        console.log(shorter);
+    
+        for (var i = 0; i < shorter.length; i++) {
+            if (Math.abs(shorter[i] - mutated[i]) < 20) {
+                good += 1;
+            } else {
+                bad += 1;
+            }
+        }
+
+        let match = 0;
+        if (good > bad) {
+            match = (bad / good) * 100;
+        } else {
+            (good / bad) * 100;
+        }
+
+        console.log(`Bad ${bad}  Good ${good}`);
+
+        let probability = Math.round((good / (bad + good)) * 100)
+        alert(`Shape is 1 with probability of ${probability} %`);
+        return 0;
+
+
+    }
+
+
+    S("#compare").addEventListener("click", () => {
+        let ret = getMeanPoints(points);
+        // 
+    });
+
+    function splitArr(arr, chunk) {
+        var R = [];
+        let s = new Array(Math.ceil(arr.length / chunk)).fill().map(_ => arr.splice(0, chunk));
+        return s
+    }
+
+
+
+ // [90, 90, 90, 90, 90, 90, 69, 66, 67, 71, 78, 76, 90, 45, 67, 67, 65, 62, 45, 90, 90, 88, 86, 86, 82, 45];
+        //[90, 90, 74.5, 58, 54, 45, 46.5, 48.5, 69.5, 89, 89.5, 88, 90];
+        //[41, 43, 49, 51, 52, 45, 90, 90, 90, 90, 90, 88, 83, 86, 90, 90];
+
+    var good = 0;
+    var bad = 0;
+    var elevation = [];
+
+    function WHRatio(points) {
+
+        let xs = points.map(p => p.x);
+        let ys = points.map(p => p.y);
+
+        var maxX = Math.max(...xs);
+        var maxY = Math.max(...ys);
+        var minX = Math.min(...xs);
+        var minY = Math.min(...ys);
+
+        var e = xs.indexOf(maxX);
+        var f = ys.indexOf(maxY);
+        var g = xs.indexOf(minX);
+        var h = ys.indexOf(minY);
+
+
+        let res = {
+            mx: maxX,
+            my: maxY,
+            minx: minX,
+            miny: minY
+        }
+
+        let width = Math.abs(maxX - minX);
+        let height = Math.abs(maxY - minY);
+
+        let w = 0;
+        if (width > height) {
+            w = height / width;
+        } else {
+            w = width / height;
+        }
+
+        return {
+            w: width,
+            h: height,
+            ratio: width / height
+        };
+    }
+
+</script>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    canvas {
+        border: 1px solid green;
+    }
+
+    button {
+        background: #3498db;
+        border: none;
+        color: white;
+        padding: 1.1em;
+        border-radius: 1em;
+        font-weight: bold;
+
+    }
+
+</style>
