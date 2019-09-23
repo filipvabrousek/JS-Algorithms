@@ -17,15 +17,12 @@ let means = th.means("canvas", data, 3);
 means.cluster();
 ```
 
-
 ### Linear regression
 ```js
 let data = [[162,41]...];
 let r = th.regression("canvas", data);
 r.plot();
 ```
-
-Source: https://github.com/filipvabrousek/Algorithms/blob/master/Think/Think-3-7-19.js
 
 ## Shaper
 ```js
@@ -38,3 +35,8 @@ r.addEventListener("click", () => s.recognize([45, 45, 45, 45, 45, 45, 90, 90, 9
 <button id="compare">Compare</button>
 <canvas width="400" height="400"></canvas> 
 ```
+
+
+Source:
+https://github.com/filipvabrousek/Algorithms/blob/master/Think/Think-3-7-19.js
+https://github.com/filipvabrousek/Algorithms/blob/master/Think/Shaper.js
