@@ -25,3 +25,7 @@ r.plot();
 ```
 
 Source: https://github.com/filipvabrousek/Algorithms/blob/master/Think/Think-3-7-19.js
+
+
+## Shaper module
+* coming soon
