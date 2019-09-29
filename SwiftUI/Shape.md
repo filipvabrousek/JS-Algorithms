@@ -50,7 +50,7 @@ struct SidesView: View {
 ```
 
 ### Polygon
-``swift
+```swift
 struct Polygon: Shape {
     var sides: Double
 
@@ -97,4 +97,4 @@ extension Color {
 
 ```
 
-SOURCE: 
+SOURCE: https://swiftui-lab.com/
