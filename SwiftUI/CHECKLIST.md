@@ -28,6 +28,7 @@
 * GeometryReader
 * GeometryProxy
 * GeometryEffect
+* Alignment Guide
 
 #### To-Do:
 * Transaction
