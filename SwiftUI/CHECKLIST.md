@@ -19,19 +19,17 @@
 * Gestures
 * DynamicProperty (@State, @ObservedObject, @EnvironmentObject, @GestureState, @Binding)
 
-#### Anim:
 
-* Shape morphing  
-* PreferenceKey
-* Slider Animation
-* Progress Bar
-* Preference Key
-* GeometryReader
+### Anim:
+* Shape morphing
+* PreferenceKey
+* Slider (causing animation)
+* Progress Bar
+* GeometryReader
 * GeometryProxy
 * GeometryEffect
 
 #### To-Do:
-
 * Transaction
 
 29/9/2019
