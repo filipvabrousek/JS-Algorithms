@@ -6,7 +6,7 @@
 * Distance measuring
 * List (vertical, horizontal)
 * NavigationView
-* Forms
+* Forms
 * Half Modal
 * PickerView
 * Sheet
