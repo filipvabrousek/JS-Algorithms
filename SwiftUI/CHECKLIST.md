@@ -21,14 +21,14 @@
 
 #### Anim:
 
-* Shape morphing
-* PreferenceKey
-* Slider Animation
-* Progress Bar
-* Preference Key
-* GeometryReader
-* GeometryProxy
-* GeometryEffect
+* Shape morphing  
+* PreferenceKey  
+* Slider Animation  
+* Progress Bar  
+* Preference Key  
+* GeometryReader  
+* GeometryProxy  
+* GeometryEffect  
 
 
 #### To-Do:
