@@ -1,4 +1,3 @@
-```swift
 //
 //  ContentView.swift
 //  BI
@@ -196,19 +195,6 @@ struct ListView: View {
 */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         CV()
@@ -216,4 +202,4 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 
-```
+
