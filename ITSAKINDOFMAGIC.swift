@@ -26,7 +26,12 @@ struct Another: View {
         VStack(alignment: .center) {
             Button("Refresh") {
                 self.messages.append("Hey")
-                self.ref.ref = true
+                
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.ref.ref = true
+                }
+                
                // self.messages = ["Poly"]
             }
 
@@ -58,7 +63,7 @@ struct CV: View {
         SwiftScroll(shouldRefresh: self.$refresh) {
             Another()
             
-        }.onAppear {self.refresh = self.ref.ref}
+        }.onAppear { self.refresh = self.ref.ref }
     }
 }
 
@@ -195,11 +200,21 @@ struct ListView: View {
 */
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         CV()
     }
 }
-
-
-
