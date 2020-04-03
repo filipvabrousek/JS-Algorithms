@@ -3,8 +3,6 @@
 
 <script>
 // --- INVERSE
-
-	
 		
 const S = el => document.querySelector("#content");
 	
