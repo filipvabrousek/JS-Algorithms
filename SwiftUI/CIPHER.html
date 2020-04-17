@@ -1,0 +1,125 @@
+<meta charset="UTF-8">
+<script>
+	
+function getDifferentCharacters(str){
+	return Array.from(new Set(str));
+}
+	
+function getProbability(str){
+let res = getDifferentCharacters(str);
+var probs = [];
+	
+	res.forEach((el, i) => {
+		let occurances = str.split(el).length - 1;
+		let prob = occurances / str.length;
+		probs[`${el}`] = prob;
+	});
+	
+return probs;
+}
+	
+let input = "New York City comprises 5 boroughs sitting where the Hudson River meets the Atlantic Ocean. At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers. Its iconic sites include skyscrapers such as the Empire State Building and sprawling Central Park.";
+let proba = getProbability(input);
+let fre = sortfreq(proba);
+	
+function sortfreq(freqs){
+    var letters = [];
+    for (var ch in freqs){
+        letters.push([freqs[ch],ch]);
+    }
+    return letters.sort();
+
+}
+	
+/*------------------------------------------------------------------------*/
+function buildtree(letters){
+    while(letters.length>1){
+        var leasttwo = letters.slice(0,2);
+        var therest = letters.slice(2,letters.length);
+        var combfreq = letters[0][0] + letters[1][0];
+        letters = therest;
+        var two = [combfreq,leasttwo];
+        letters.push(two);
+        letters.sort();
+}
+    return letters[0];
+}
+
+var tree = buildtree(fre);
+	
+ function trimtree(tree) {
+        var p = tree[1];
+        if (typeof p === 'string'){
+           return p;
+    }  else {
+            return (Array(trimtree(p[0]),trimtree(p[1]))); }
+    }
+
+var node = (trimtree(tree));
+	
+var codes = {}; 
+function assigncodes(node,pat){
+    pat = pat || "";
+    if(typeof(node) == typeof("")){
+        codes[node] = pat;
+    }
+    else{
+        assigncodes(node[0],pat+"0");
+        assigncodes(node[1],pat+"1");
+    }
+    return codes;
+}
+/*------------------------------------------------------------------------*/
+	
+	
+	
+	
+	
+let r = assigncodes(node);
+let letters = Object.keys(r);
+let values = Object.values(r);
+
+var assigned = [];
+	
+for (var i = 0; i < input.length; i++){
+	 let idx = letters.indexOf(input[i]);
+	let binary = values[idx];
+	assigned.push(binary);
+}
+	
+	
+// AVERAGE CODE WORD LENGTH
+	
+var sum = 0;
+	
+for (var i = 0; i < assigned.length; i++){
+	let sub = assigned[i];
+	console.warn(sub);
+	sum += sub.length;
+}
+
+
+let together = assigned.join("");
+console.log(together);			
+	
+let avg = sum/assigned.length;
+console.log(`Average code word length is ${avg}`);
+	
+	
+	
+
+	
+	
+	
+	
+	/*
+
+function encode(str){
+    var output = "";
+    for (var i=0;i<str.length;i++){
+        output = output+codes[str[i]];
+    }
+    return output;
+}*/
+
+</script>
