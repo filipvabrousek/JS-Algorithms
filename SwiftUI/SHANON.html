@@ -1,0 +1,123 @@
+<script>
+var results = [];
+function draw() {
+}
+
+function all_char(str){
+  return [...new Set(str.match(/[A-z]/g))];
+}
+
+function nb_apr(sub,str) {
+  var regExp = new RegExp(sub, "gi");
+  return (str.match(regExp) || []).length;
+}
+
+function Maping(str){
+  return sort_map(all_char(str).map(x=>[x,nb_apr(x,str)]));
+}
+
+function sort_map(Tab){
+ Tab.sort(tricol);
+
+function tricol(a, b) {
+    if (a[1] === b[1]) {
+        return 0;
+    }
+    else {
+        return (a[1] < b[1]) ? -1 : 1;
+    }
+}
+return Tab;
+}
+
+var letters = [];
+var binaries = [];
+var str = "New York City comprises 5 boroughs sitting where the Hudson River meets the Atlantic Ocean. At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers. Its iconic sites include skyscrapers such as the Empire State Building and sprawling Central Park.";
+
+function coder() {
+  var str = Maping("New York City comprises 5 boroughs sitting where the Hudson River meets the Atlantic Ocean. At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers. Its iconic sites include skyscrapers such as the Empire State Building and sprawling Central Park.");
+  var result = tableau_code(shannon_fano(str));
+	
+ for (var i = 0; i < result.length; i++){ 
+	 letters.push(result[i][0]);
+	 binaries.push(result[i][1]);
+ }
+} 
+
+coder();
+
+var FINALIES = [];
+
+for (var i = 0; i < (str.length); i++){
+	let idx = letters.indexOf(str[i]);
+	// console.log(idx);
+	FINALIES.push(binaries[idx]);
+}
+
+var res = FINALIES.join("");
+console.log(res);
+
+var sum = 0;
+for (var i = 0; i < binaries.length; i++){
+	let sub = binaries[i];
+	sum += sub.length;
+}
+
+let avg = sum / binaries.length;
+console.log("Average length of code word is " + Math.round(avg * 100) / 100);
+
+function shannon_fano(chaine){
+   var P1=[] ;
+   var P2 =[];
+   if(chaine.length>1){
+   while((some_elem(P1) < some_elem(sub_array(chaine,P1.length,chaine.length)))  && (P1.length<chaine.length -1)){
+     P1.push(chaine[P1.length]);
+   }
+
+   P2=sub_array(chaine,P1.length,chaine.length);
+   P1=affect_code(P1,"0");  
+   P2=affect_code(P2,"1");
+ 
+   return shannon_fano(P1).concat(shannon_fano(P2));
+  } else {
+    return chaine;
+  }
+}
+
+
+function sub_array(arr,i,j){
+var subarray=[];
+for(var k = i ; k<j; k++) {
+   subarray.push(arr[k]); //1 for 2nd element
+}
+return subarray; 
+}
+
+// la some
+function some_elem(chaine) {
+var s = 0;
+  chaine.forEach(element => {
+     s += element[1];
+  });
+ return s;
+}
+
+function affect_code(chaine,s){
+  chaine.forEach(element => {
+    element[0]=element[0].concat(s);
+ });
+ return chaine;
+}
+
+function tableau_code(chaine){
+  var tab=[]
+  chaine.forEach(element => {
+    tab.push([element[0][0],element[0].substring(1,element[0].length)]);
+	  results.push(element[0].substring(1,element[0].length));
+ });
+ return tab;
+}
+
+coder();
+	
+	</script>
